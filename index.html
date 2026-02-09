@@ -362,6 +362,87 @@
         }, { passive: false });
 
     </script>
+
+    <!-- Redemption Modal (Hidden by default) -->
+    <div id="redeem-modal"
+        class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-dark-900/90 backdrop-blur-md p-4">
+        <div class="bg-dark-800 border border-white/10 rounded-3xl p-8 max-w-md w-full text-center shadow-2xl relative">
+            <!-- Close Button -->
+            <button id="redeem-close-btn"
+                class="absolute top-4 right-4 text-slate-500 hover:text-white transition-colors">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+
+            <!-- Spinner (shown while waiting) -->
+            <div id="redeem-spinner"
+                class="w-12 h-12 border-4 border-dark-700 border-t-potasio-400 rounded-full animate-spin mx-auto mb-6">
+            </div>
+
+            <!-- Icon (hidden initially) -->
+            <div id="redeem-icon" class="hidden text-6xl mb-6">🎮</div>
+
+            <h2 id="redeem-title" class="text-2xl font-bold text-white mb-4">Abriendo Impostor...</h2>
+            <p id="redeem-message" class="text-slate-400 mb-8">Si la app no se abre automáticamente, toca el botón de
+                abajo.</p>
+
+            <a id="redeem-open-btn" href="#"
+                class="inline-block bg-potasio-400 text-dark-900 font-bold px-8 py-4 rounded-xl hover:scale-105 transition-transform shadow-lg">
+                Abrir App
+            </a>
+
+            <p class="text-slate-500 text-sm mt-6">¿No tienes la app? <a
+                    href="https://play.google.com/store/apps/details?id=com.augustodelisio.impostor" target="_blank"
+                    class="text-potasio-400 hover:underline">Descárgala aquí</a></p>
+        </div>
+    </div>
+
+    <script>
+        // --- Code Redemption Deep Link Logic ---
+        (function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const code = urlParams.get('code');
+
+            if (code) {
+                const appUrl = `impostor://redeem?code=${encodeURIComponent(code)}`;
+                const modal = document.getElementById('redeem-modal');
+                const openBtn = document.getElementById('redeem-open-btn');
+                const spinner = document.getElementById('redeem-spinner');
+                const icon = document.getElementById('redeem-icon');
+                const title = document.getElementById('redeem-title');
+                const message = document.getElementById('redeem-message');
+                const closeBtn = document.getElementById('redeem-close-btn');
+
+                if (!modal) return;
+
+                // Show modal
+                modal.classList.remove('hidden');
+                openBtn.href = appUrl;
+
+                // Re-initialize icons just for the modal
+                lucide.createIcons();
+
+                // Attempt to open the app automatically after 500ms
+                setTimeout(() => {
+                    window.location.href = appUrl;
+                }, 500);
+
+                // After 2 seconds, show manual UI
+                setTimeout(() => {
+                    if (spinner) spinner.classList.add('hidden');
+                    if (icon) icon.classList.remove('hidden');
+                    if (title) title.textContent = '¡Código Detectado!';
+                    if (message) message.textContent = 'Toca el botón para activar tu código en la app Impostor.';
+                }, 2000);
+
+                // Close modal
+                closeBtn.addEventListener('click', () => {
+                    modal.classList.add('hidden');
+                    // Clean URL
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                });
+            }
+        })();
+    </script>
 </body>
 
 </html>
