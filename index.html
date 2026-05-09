@@ -8,8 +8,56 @@
     <meta name="description"
         content="Estudio de desarrollo de videojuegos indie. Creadores de Impostor y experiencias sociales únicas.">
 
-    <!-- Vite Main Script (Includes Tailwind CSS via PostCSS) -->
-    <script type="module" src="/assets/ts/main.ts"></script>
+    <!-- Tailwind CSS (CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- GSAP for Animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollToPlugin.min.js"></script>
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="assets/css/style.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        potasio: {
+                            primary: '#f4ee5a', // Yellow
+                            secondary: '#c578cb',  // Bordo/Burgundy
+                        },
+                        dark: {
+                            900: '#0a0f1a',
+                            800: '#111827',
+                            700: '#1f2937',
+                        }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'glow': 'glow 2s ease-in-out infinite alternate',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        glow: {
+                            'from': { boxShadow: '0 0 10px #f4ee5a, 0 0 20px #f4ee5a' },
+                            'to': { boxShadow: '0 0 20px #f4ee5a, 0 0 30px #f4ee5a' },
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
 </head>
 
 <body class="bg-dark-900 text-slate-100 font-sans antialiased overflow-x-hidden">
@@ -241,6 +289,134 @@
         </div>
     </div>
 
+    <!-- Main Logic -->
+    <script>
+        // Initialize Icons
+        lucide.createIcons();
+
+        // Register GSAP Plugins
+        gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
+
+        // State control
+        let textVisible = false;
+        let animating = false;
+
+        // Timeline Setup
+        const tl = gsap.timeline({ paused: true });
+
+        // Build Animation (Splash -> Text)
+        tl.to("#scroll-indicator", { opacity: 0, scale: 0.5, duration: 0.3, ease: "power1.out" })
+          .to("#hero-bg", { opacity: 0, scale: 1.1, duration: 1.2, ease: "power2.inOut" }, 0)
+          .to("#hero-content", { opacity: 1, y: 0, duration: 1, ease: "power2.out" }, "-=0.8")
+          .to("#navbar", { backgroundColor: "rgba(10, 15, 26, 0.95)", backdropFilter: "blur(12px)", borderBottom: "1px solid rgba(255, 255, 255, 0.05)", duration: 0.5 }, 0.2);
+
+        // Helper Functions
+        function animateToText() {
+          animating = true;
+          tl.play().then(() => {
+            animating = false;
+            textVisible = true;
+          });
+        }
+
+        function animateToSplash() {
+          animating = true;
+          tl.reverse().then(() => {
+            animating = false;
+            textVisible = false;
+          });
+        }
+
+        // --- Custom Observer Logic for "Scroll-Jacking" ---
+        window.addEventListener("wheel", (e) => {
+          if (animating) {
+            e.preventDefault();
+            return;
+          }
+
+          if (!textVisible) {
+            e.preventDefault();
+            if (e.deltaY > 0) {
+              animateToText();
+            }
+          } else {
+            if (window.scrollY <= 0 && e.deltaY < 0) {
+              e.preventDefault();
+              animateToSplash();
+            }
+          }
+        }, { passive: false });
+
+        let touchStartY = 0;
+        window.addEventListener("touchstart", (e) => {
+          touchStartY = e.touches[0].clientY;
+        }, { passive: false });
+
+        window.addEventListener("touchmove", (e) => {
+          if (animating) {
+            e.preventDefault();
+            return;
+          }
+
+          const currentY = e.touches[0].clientY;
+          const deltaY = touchStartY - currentY;
+
+          if (!textVisible) {
+            e.preventDefault();
+            if (deltaY > 5) {
+              animateToText();
+            }
+          } else {
+            if (window.scrollY <= 0 && deltaY < -5) {
+              e.preventDefault();
+              animateToSplash();
+            }
+          }
+        }, { passive: false });
+
+        // --- Code Redemption Deep Link Logic ---
+        (function () {
+          const urlParams = new URLSearchParams(window.location.search);
+          const code = urlParams.get('code');
+
+          if (code) {
+            const appUrl = `impostor://redeem?code=${encodeURIComponent(code)}`;
+            const modal = document.getElementById('redeem-modal');
+            const openBtn = document.getElementById('redeem-open-btn');
+            const spinner = document.getElementById('redeem-spinner');
+            const icon = document.getElementById('redeem-icon');
+            const title = document.getElementById('redeem-title');
+            const message = document.getElementById('redeem-message');
+            const closeBtn = document.getElementById('redeem-close-btn');
+
+            if (!modal) return;
+
+            modal.classList.remove('hidden');
+            if (openBtn) openBtn.href = appUrl;
+
+            // Re-initialize icons just for the modal
+            lucide.createIcons();
+
+            setTimeout(() => {
+              window.location.href = appUrl;
+            }, 500);
+
+            setTimeout(() => {
+              if (spinner) spinner.classList.add('hidden');
+              if (icon) icon.classList.remove('hidden');
+              if (title) title.textContent = '¡Código Detectado!';
+              if (message) message.textContent = 'Toca el botón para activar tu código en la app Impostor.';
+            }, 2000);
+
+            if (closeBtn) {
+              closeBtn.addEventListener('click', () => {
+                modal.classList.add('hidden');
+                window.history.replaceState({}, document.title, window.location.pathname);
+              });
+            }
+          }
+        })();
+    </script>
 </body>
 
 </html>
