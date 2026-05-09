@@ -8,82 +8,32 @@
     <meta name="description"
         content="Estudio de desarrollo de videojuegos indie. Creadores de Impostor y experiencias sociales únicas.">
 
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-
-    <!-- GSAP for Animations -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/Observer.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollToPlugin.min.js"></script>
-
-    <!-- Custom Styles -->
-    <link rel="stylesheet" href="assets/css/style.css">
-
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        potasio: {
-                            400: '#a3ff00', // Neon Yellow/Green
-                            500: '#88d600',
-                            600: '#6db300',
-                        },
-                        dark: {
-                            900: '#0a0f1a',
-                            800: '#111827',
-                            700: '#1f2937',
-                        }
-                    },
-                    animation: {
-                        'float': 'float 6s ease-in-out infinite',
-                        'glow': 'glow 2s ease-in-out infinite alternate',
-                    },
-                    keyframes: {
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0)' },
-                            '50%': { transform: 'translateY(-20px)' },
-                        },
-                        glow: {
-                            'from': { boxShadow: '0 0 10px #a3ff00, 0 0 20px #a3ff00' },
-                            'to': { boxShadow: '0 0 20px #a3ff00, 0 0 30px #a3ff00' },
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
+    <!-- Vite Main Script (Includes Tailwind CSS via PostCSS) -->
+    <script type="module" src="/assets/ts/main.ts"></script>
 </head>
 
 <body class="bg-dark-900 text-slate-100 font-sans antialiased overflow-x-hidden">
 
     <!-- Navigation -->
-    <nav class="fixed w-full z-50 bg-dark-900/80 backdrop-blur-md border-b border-white/5">
+    <nav id="navbar" class="fixed w-full z-50 bg-dark-900/80 backdrop-blur-md border-b border-white/5">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-20">
                 <div class="flex items-center gap-3">
                     <div
-                        class="w-10 h-10 bg-potasio-400 rounded-xl flex items-center justify-center shadow-[0_0_15px_rgba(163,255,0,0.3)]">
+                        class="w-10 h-10 bg-potasio-primary rounded-xl flex items-center justify-center shadow-[0_0_15px_rgba(244,238,90,0.3)]">
                         <span class="text-dark-900 font-bold text-xl">P</span>
                     </div>
-                    <span class="text-2xl font-bold tracking-tight text-white">Potasio<span
-                            class="text-potasio-400">Games</span></span>
+                    <span class="text-2xl font-bold tracking-tight text-white select-none">Potasio<span
+                            class="text-potasio-secondary">Games</span></span>
                 </div>
                 <div class="hidden md:block">
                     <div class="ml-10 flex items-baseline space-x-8">
                         <a href="#games"
-                            class="hover:text-potasio-400 transition-colors px-3 py-2 rounded-md text-sm font-medium">Juegos</a>
+                            class="hover:text-potasio-primary transition-colors px-3 py-2 rounded-md text-sm font-medium select-none">Juegos</a>
                         <a href="#about"
-                            class="hover:text-potasio-400 transition-colors px-3 py-2 rounded-md text-sm font-medium">Nosotros</a>
+                            class="hover:text-potasio-primary transition-colors px-3 py-2 rounded-md text-sm font-medium select-none">Nosotros</a>
                         <a href="#contact"
-                            class="bg-white/10 hover:bg-white/20 px-4 py-2 rounded-full text-sm font-medium transition-all">Contacto</a>
+                            class="bg-white/10 hover:bg-white/20 px-4 py-2 rounded-full text-sm font-medium transition-all select-none">Contacto</a>
                     </div>
                 </div>
             </div>
@@ -107,9 +57,9 @@
         <!-- Flex container to center content -->
         <div class="relative z-10 w-full h-full flex flex-col items-center justify-center">
             <div id="hero-content" class="text-center opacity-0 translate-y-20 px-4 max-w-5xl">
-                <h1 class="text-5xl md:text-8xl font-extrabold tracking-tight mb-8 text-white drop-shadow-2xl">
+                <h1 class="text-5xl md:text-8xl font-extrabold tracking-tight mb-8 text-white drop-shadow-2xl select-none">
                     Desarrollando <br>
-                    <span class="bg-clip-text text-transparent bg-gradient-to-r from-potasio-400 to-green-400">Diversión
+                    <span class="bg-clip-text text-transparent bg-gradient-to-r from-potasio-primary to-potasio-secondary">Diversión
                         Pura</span>
                 </h1>
                 <p class="mb-12 text-xl md:text-2xl text-slate-300 font-light max-w-3xl mx-auto leading-relaxed">
@@ -118,7 +68,7 @@
 
                 <div class="flex justify-center gap-6">
                     <a href="#games"
-                        class="group relative px-10 py-5 bg-potasio-400 text-dark-900 font-bold text-lg rounded-full overflow-hidden transition-all hover:scale-110 hover:shadow-[0_0_40px_rgba(163,255,0,0.5)]">
+                        class="group relative px-10 py-5 bg-potasio-primary text-dark-900 font-bold text-lg rounded-full overflow-hidden transition-all hover:scale-110 hover:shadow-[0_0_40px_rgba(244,238,90,0.5)]">
                         <span class="relative z-10">Ver Juegos</span>
                     </a>
                 </div>
@@ -126,11 +76,11 @@
 
             <!-- Scroll Indicator (UX Cue) -->
             <div id="scroll-indicator"
-                class="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-3 text-slate-400 opacity-80 mix-blend-difference pointer-events-none">
+                class="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-3 text-slate-400 opacity-80 mix-blend-difference pointer-events-none select-none">
                 <span class="text-xs uppercase tracking-[0.2em] animate-pulse">Desliza para descubrir</span>
                 <div
                     class="w-6 h-10 border-2 border-slate-400 rounded-full flex justify-center p-1 shadow-[0_0_10px_rgba(255,255,255,0.1)]">
-                    <div class="w-1 h-2 bg-potasio-400 rounded-full animate-[bounce_1.5s_infinite]"></div>
+                    <div class="w-1 h-2 bg-potasio-primary rounded-full animate-[bounce_1.5s_infinite]"></div>
                 </div>
             </div>
         </div>
@@ -139,14 +89,14 @@
     <!-- Games Section -->
     <section id="games" class="py-20 bg-dark-800/50 relative z-20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
+            <div class="text-center mb-16 select-none">
                 <h2 class="text-3xl font-bold text-white mb-4">Nuestros Juegos</h2>
-                <div class="w-20 h-1 bg-potasio-400 mx-auto rounded-full"></div>
+                <div class="w-20 h-1 bg-potasio-secondary mx-auto rounded-full"></div>
             </div>
 
             <!-- Game Card: Impostor -->
             <div
-                class="bg-dark-700/50 rounded-3xl overflow-hidden border border-white/5 hover:border-potasio-400/50 transition-all duration-300 shadow-2xl group max-w-4xl mx-auto">
+                class="bg-dark-700/50 rounded-3xl overflow-hidden border border-white/5 hover:border-potasio-primary/50 transition-all duration-300 shadow-2xl group max-w-4xl mx-auto">
                 <div class="grid md:grid-cols-2 gap-0">
                     <div
                         class="h-64 md:h-auto bg-gradient-to-br from-indigo-900 to-purple-900 relative overflow-hidden flex items-center justify-center p-8">
@@ -161,7 +111,7 @@
                             <div class="text-center p-4">
                                 <img src="assets/img/icon.png" alt="Impostor Icon"
                                     class="w-20 h-20 rounded-2xl shadow-lg mx-auto mb-2">
-                                <p class="text-xs font-bold uppercase tracking-widest text-potasio-400">Impostor ¿Sabes
+                                <p class="text-xs font-bold uppercase tracking-widest text-potasio-primary select-none">Impostor ¿Sabes
                                     mentir?
                                 </p>
                             </div>
@@ -171,17 +121,15 @@
                     <div class="p-8 md:p-12 flex flex-col justify-center">
                         <div class="flex items-center gap-3 mb-4">
                             <span
-                                class="px-3 py-1 bg-potasio-400/10 text-potasio-400 text-xs font-bold rounded-full uppercase tracking-wider">Social
+                                class="px-3 py-1 bg-potasio-primary/10 text-potasio-primary text-xs font-bold rounded-full uppercase tracking-wider">Social
                                 Deduction</span>
                             <span
                                 class="px-3 py-1 bg-purple-500/10 text-purple-400 text-xs font-bold rounded-full uppercase tracking-wider">Party
                                 Game</span>
                         </div>
-                        <h3 class="text-3xl font-bold text-white mb-4">Impostor ¿Sabes mentir?</h3>
+                        <h3 class="text-3xl font-bold text-white mb-4 select-none">Impostor ¿Sabes mentir?</h3>
                         <p class="text-slate-400 mb-8 leading-relaxed">
-                            El juego definitivo para tus reuniones. Un jugador es el impostor y debe engañar a todos.
-                            Los demás deben descubrir quién miente usando palabras secretas e ingenio social. ¿Podrás
-                            sobrevivir sin ser descubierto?
+                            El juego definitivo para tus reuniones. Disfruta del modo clásico donde un jugador debe engañar a todos, o explora nuestros nuevos modos de juego que llevarán la tensión y las risas al siguiente nivel. ¡Descubre quién miente usando palabras secretas e ingenio social!
                         </p>
 
                         <div class="flex flex-col sm:flex-row gap-4">
@@ -200,7 +148,7 @@
 
     <!-- About Section -->
     <section id="about" class="py-20 relative overflow-hidden">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10 select-none">
             <h2 class="text-3xl font-bold text-white mb-8">Sobre Potasio Games</h2>
             <p class="text-xl text-slate-300 leading-relaxed">
                 Somos un pequeño estudio indie apasionado por conectar personas a través de juegos simples pero
@@ -216,24 +164,24 @@
                 class="bg-gradient-to-b from-dark-800 to-dark-900 rounded-3xl p-10 border border-white/5 shadow-2xl relative overflow-hidden group">
                 <!-- Decorative background elements -->
                 <div
-                    class="absolute top-0 right-0 w-64 h-64 bg-potasio-400/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:bg-potasio-400/10 transition-all duration-700">
+                    class="absolute top-0 right-0 w-64 h-64 bg-potasio-secondary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:bg-potasio-secondary/10 transition-all duration-700">
                 </div>
 
                 <div class="relative z-10">
                     <div
-                        class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-potasio-400/10 text-potasio-400 mb-6 group-hover:scale-110 transition-transform duration-300">
+                        class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-potasio-secondary/10 text-potasio-secondary mb-6 group-hover:scale-110 transition-transform duration-300">
                         <i data-lucide="mail" class="w-8 h-8"></i>
                     </div>
 
-                    <h2 class="text-3xl font-bold text-white mb-4">¿Hablamos?</h2>
+                    <h2 class="text-3xl font-bold text-white mb-4 select-none">¿Hablamos?</h2>
                     <p class="text-slate-400 mb-8 max-w-lg mx-auto text-lg">
                         ¿Tienes alguna sugerencia, encontraste un bug o simplemente quieres saludar?
                         Estamos siempre atentos a nuestra comunidad.
                     </p>
 
                     <a href="mailto:potasiogames@hotmail.com"
-                        class="inline-flex items-center gap-3 px-8 py-4 bg-white text-dark-900 font-bold rounded-xl hover:bg-potasio-400 transition-all duration-300 hover:shadow-[0_0_20px_rgba(163,255,0,0.3)] group-hover:-translate-y-1">
-                        <span>potasiogames@hotmail.com</span>
+                        class="inline-flex items-center gap-3 px-8 py-4 bg-white text-dark-900 font-bold rounded-xl hover:bg-potasio-primary transition-all duration-300 hover:shadow-[0_0_20px_rgba(244,238,90,0.3)] group-hover:-translate-y-1">
+                        <span>Contáctanos</span>
                         <i data-lucide="arrow-right" class="w-5 h-5 transition-transform group-hover:translate-x-1"></i>
                     </a>
                 </div>
@@ -245,13 +193,12 @@
     <footer class="bg-dark-900 border-t border-white/5 py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex flex-col md:flex-row justify-between items-center gap-8">
-                <div class="flex items-center gap-2">
-                    <span class="text-xl font-bold text-white">Potasio<span class="text-potasio-400">Games</span></span>
+                <div class="flex items-center gap-2 select-none">
+                    <span class="text-xl font-bold text-white">Potasio<span class="text-potasio-secondary">Games</span></span>
                 </div>
 
                 <div class="flex gap-8 text-sm text-slate-400">
                     <a href="privacy.html" class="hover:text-white transition-colors">Política de Privacidad</a>
-                    <a href="#" class="hover:text-white transition-colors">Términos de Uso</a>
                 </div>
 
                 <div class="text-sm text-slate-500">
@@ -260,108 +207,6 @@
             </div>
         </div>
     </footer>
-
-    <!-- Initialize Icons -->
-    <script>
-        lucide.createIcons();
-
-        // GSAP Plugins
-        gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
-
-        // State control
-        let textVisible = false;
-        let animating = false;
-
-        // Timeline Setup
-        const tl = gsap.timeline({ paused: true });
-
-        // Build Animation (Splash -> Text)
-        // 1. Hide Scroll Indicator
-        // 2. Zoom/Fade out Splash
-        // 3. Move Text Up and Fade In
-        // 4. Darken Navbar
-        tl.to("#scroll-indicator", { opacity: 0, scale: 0.5, duration: 0.3, ease: "power1.out" })
-            .to("#hero-bg", { opacity: 0, scale: 1.1, duration: 1.2, ease: "power2.inOut" }, 0)
-            .to("#hero-content", { opacity: 1, y: 0, duration: 1, ease: "power2.out" }, "-=0.8")
-            .to("#navbar", { backgroundColor: "rgba(10, 15, 26, 0.95)", backdropFilter: "blur(12px)", borderBottom: "1px solid rgba(255, 255, 255, 0.05)", duration: 0.5 }, 0.2);
-
-        // Helper Functions
-        function animateToText() {
-            animating = true;
-            tl.play().then(() => {
-                animating = false;
-                textVisible = true;
-            });
-        }
-
-        function animateToSplash() {
-            animating = true;
-            tl.reverse().then(() => {
-                animating = false;
-                textVisible = false;
-            });
-        }
-
-        // --- Custom Observer Logic for "Scroll-Jacking" ---
-
-        // Wheel Handler
-        window.addEventListener("wheel", (e) => {
-            if (animating) {
-                e.preventDefault();
-                return;
-            }
-
-            if (!textVisible) {
-                // State 0: Splash Mode
-                // Block ALL scroll until we transition
-                e.preventDefault();
-
-                // If scrolling DOWN, trigger transition
-                if (e.deltaY > 0) {
-                    animateToText();
-                }
-            } else {
-                // State 1: Text Mode
-                // Only block if we are at the top and scrolling UP
-                if (window.scrollY <= 0 && e.deltaY < 0) {
-                    e.preventDefault();
-                    animateToSplash();
-                }
-            }
-        }, { passive: false });
-
-        // Touch Handler (Mobile)
-        let touchStartY = 0;
-
-        window.addEventListener("touchstart", (e) => {
-            touchStartY = e.touches[0].clientY;
-        }, { passive: false });
-
-        window.addEventListener("touchmove", (e) => {
-            if (animating) {
-                e.preventDefault();
-                return;
-            }
-
-            const currentY = e.touches[0].clientY;
-            const deltaY = touchStartY - currentY; // Positive = Scroll Down
-
-            if (!textVisible) {
-                // Splash Mode: Block all
-                e.preventDefault();
-                if (deltaY > 5) { // Threshold
-                    animateToText();
-                }
-            } else {
-                // Text Mode: Block Top-Up
-                if (window.scrollY <= 0 && deltaY < -5) {
-                    e.preventDefault();
-                    animateToSplash();
-                }
-            }
-        }, { passive: false });
-
-    </script>
 
     <!-- Redemption Modal (Hidden by default) -->
     <div id="redeem-modal"
@@ -375,7 +220,7 @@
 
             <!-- Spinner (shown while waiting) -->
             <div id="redeem-spinner"
-                class="w-12 h-12 border-4 border-dark-700 border-t-potasio-400 rounded-full animate-spin mx-auto mb-6">
+                class="w-12 h-12 border-4 border-dark-700 border-t-potasio-primary rounded-full animate-spin mx-auto mb-6">
             </div>
 
             <!-- Icon (hidden initially) -->
@@ -386,63 +231,16 @@
                 abajo.</p>
 
             <a id="redeem-open-btn" href="#"
-                class="inline-block bg-potasio-400 text-dark-900 font-bold px-8 py-4 rounded-xl hover:scale-105 transition-transform shadow-lg">
+                class="inline-block bg-potasio-primary text-dark-900 font-bold px-8 py-4 rounded-xl hover:scale-105 transition-transform shadow-lg">
                 Abrir App
             </a>
 
             <p class="text-slate-500 text-sm mt-6">¿No tienes la app? <a
                     href="https://play.google.com/store/apps/details?id=com.augustodelisio.impostor" target="_blank"
-                    class="text-potasio-400 hover:underline">Descárgala aquí</a></p>
+                    class="text-potasio-primary hover:underline">Descárgala aquí</a></p>
         </div>
     </div>
 
-    <script>
-        // --- Code Redemption Deep Link Logic ---
-        (function () {
-            const urlParams = new URLSearchParams(window.location.search);
-            const code = urlParams.get('code');
-
-            if (code) {
-                const appUrl = `impostor://redeem?code=${encodeURIComponent(code)}`;
-                const modal = document.getElementById('redeem-modal');
-                const openBtn = document.getElementById('redeem-open-btn');
-                const spinner = document.getElementById('redeem-spinner');
-                const icon = document.getElementById('redeem-icon');
-                const title = document.getElementById('redeem-title');
-                const message = document.getElementById('redeem-message');
-                const closeBtn = document.getElementById('redeem-close-btn');
-
-                if (!modal) return;
-
-                // Show modal
-                modal.classList.remove('hidden');
-                openBtn.href = appUrl;
-
-                // Re-initialize icons just for the modal
-                lucide.createIcons();
-
-                // Attempt to open the app automatically after 500ms
-                setTimeout(() => {
-                    window.location.href = appUrl;
-                }, 500);
-
-                // After 2 seconds, show manual UI
-                setTimeout(() => {
-                    if (spinner) spinner.classList.add('hidden');
-                    if (icon) icon.classList.remove('hidden');
-                    if (title) title.textContent = '¡Código Detectado!';
-                    if (message) message.textContent = 'Toca el botón para activar tu código en la app Impostor.';
-                }, 2000);
-
-                // Close modal
-                closeBtn.addEventListener('click', () => {
-                    modal.classList.add('hidden');
-                    // Clean URL
-                    window.history.replaceState({}, document.title, window.location.pathname);
-                });
-            }
-        })();
-    </script>
 </body>
 
 </html>

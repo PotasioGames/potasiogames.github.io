@@ -1,6 +1,10 @@
 /* Custom Styles & Overrides */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 body {
     font-family: 'Inter', sans-serif;
 }
@@ -30,5 +34,5 @@ html {
 
 /* Utilities */
 .text-glow {
-    text-shadow: 0 0 20px rgba(163, 255, 0, 0.5);
+    text-shadow: 0 0 20px #f4ee5a;
 }
