@@ -7,25 +7,28 @@
     <title>Potasio Games - We Make Fun</title>
     <meta name="description"
         content="Estudio de desarrollo de videojuegos indie. Creadores de Impostor y experiencias sociales únicas.">
-    <meta name="keywords" content="videojuegos indie, potasio games, impostor, juego de rol, juegos de cartas, deducción social, party game, juegos de mesa para celular">
+    <meta name="keywords"
+        content="videojuegos indie, potasio games, impostor, juego de rol, juegos de cartas, deducción social, party game, juegos de mesa para celular">
     <meta name="robots" content="index, follow">
     <meta name="theme-color" content="#f4ee5a">
 
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="assets/img/logo-potasiogames.png">
+    <link rel="icon" type="image/png" href="assets/img/logo-potasiogames-rounded.png">
     <link rel="apple-touch-icon" href="assets/img/logo-potasiogames.png">
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:title" content="Potasio Games - We Make Fun">
-    <meta property="og:description" content="Estudio de desarrollo de videojuegos indie. Creadores de Impostor y experiencias sociales únicas.">
+    <meta property="og:description"
+        content="Estudio de desarrollo de videojuegos indie. Creadores de Impostor y experiencias sociales únicas.">
     <!-- NOTA: Reemplaza 'potasio-games-web.vercel.app' con tu dominio final para que las redes sociales puedan cargar la imagen -->
     <meta property="og:image" content="https://potasio-games-web.vercel.app/logo-share.png">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary">
     <meta property="twitter:title" content="Potasio Games - We Make Fun">
-    <meta property="twitter:description" content="Estudio de desarrollo de videojuegos indie. Creadores de Impostor y experiencias sociales únicas.">
+    <meta property="twitter:description"
+        content="Estudio de desarrollo de videojuegos indie. Creadores de Impostor y experiencias sociales únicas.">
     <meta property="twitter:image" content="https://potasio-games-web.vercel.app/logo-share.png">
 
     <!-- Tailwind CSS (CDN) -->
@@ -80,15 +83,15 @@
     </script>
 </head>
 
-<body class="bg-dark-900 text-slate-100 font-sans antialiased overflow-x-hidden">
+<body class="bg-dark-900 text-slate-100 font-sans antialiased overflow-x-hidden overflow-hidden">
 
     <!-- Navigation -->
-    <nav id="navbar" class="fixed w-full z-50 bg-dark-900/80 backdrop-blur-md border-b border-white/5">
+    <nav id="navbar" class="fixed w-full z-50 bg-dark-900/80 backdrop-blur-md border-b border-white/5 opacity-0 pointer-events-none">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-20">
                 <div class="flex items-center gap-3">
                     <img src="assets/img/logo-potasiogames.png" alt="Potasio Games Logo"
-                        class="w-10 h-10 object-cover rounded-xl shadow-[0_0_15px_rgba(244,238,90,0.3)]">
+                        class="w-10 h-10 object-cover rounded-xl">
                     <span class="text-2xl font-bold tracking-tight text-white select-none">Potasio<span
                             class="text-potasio-secondary">Games</span></span>
                 </div>
@@ -108,24 +111,76 @@
 
     <!-- Hero Section (GSAP Container) -->
     <!-- h-screen: The section takes exactly one viewport. GSAP will add the scroll space. -->
-    <section id="hero-trigger" class="relative h-screen bg-dark-900 overflow-hidden">
+    <section id="hero-trigger" class="relative h-screen overflow-hidden">
 
-        <!-- Layer 1: Background Splash (Starts Visible) -->
-        <div id="hero-bg" class="absolute inset-0 z-0 origin-center">
-            <picture class="w-full h-full block">
-                <source media="(min-width: 500px)" srcset="assets/img/splash-big.png">
-                <img src="assets/img/splash.png" alt="Potasio Games Background" class="w-full h-full object-cover">
-            </picture>
-            <div class="absolute inset-0 bg-dark-900/20"></div>
+        <!-- Layer 1: Background (CSS gradient, no image) -->
+        <div id="hero-bg" class="absolute inset-0 z-0" style="
+            background-color: #030612;
+            background-image: radial-gradient(ellipse at 50% 50%, rgba(55, 40, 100, 0.25) 0%, transparent 65%);
+        "></div>
+
+        <!-- Interactive Spotlight (follows cursor) -->
+        <div id="hero-spotlight" class="absolute inset-0 pointer-events-none z-0 opacity-0 transition-opacity duration-700" style="
+            --mouse-x: 50%;
+            --mouse-y: 50%;
+            background: radial-gradient(circle 350px at var(--mouse-x) var(--mouse-y), rgba(244, 238, 90, 0.08) 0%, rgba(197, 120, 203, 0.08) 50%, transparent 100%);
+        "></div>
+
+        <!-- Layer 2: Logo images (Stacked, centered) -->
+        <div id="hero-logo-layer" class="relative z-10 w-full h-full flex flex-col items-center justify-center" style="
+            perspective: 1000px;
+            transform-style: preserve-3d;
+        ">
+
+            <!-- Logo + GAMES STUDIOS wrapper (relative container for overlay) -->
+            <div id="hero-logo-wrapper" class="relative w-full px-4 md:px-32 lg:px-48 xl:px-72 2xl:px-[24rem]" style="
+                max-width: 1728px;
+                transform-style: preserve-3d;
+            ">
+
+                <!-- Full logo: [icon] POTASIO -->
+                <img
+                    src="assets/img/full-logo-potasio.png"
+                    alt="Potasio"
+                    class="w-full object-contain logo-glow-pulse"
+                    style="
+                        transform: translateZ(10px);
+                    "
+                >
+
+                <!-- GAMES STUDIOS text: overlapping, bottom-right of logo -->
+                <img
+                    src="assets/img/text-games-studios.png"
+                    alt="Games Studios"
+                    class="absolute object-contain w-[55%] md:w-[38%] right-[8%] md:right-[18%] bottom-[8%]"
+                    style="
+                        transform: translateZ(45px);
+                        max-width: 1252px;
+                    "
+                >
+
+            </div>
+
         </div>
 
-        <!-- Layer 2: Text Content (Starts Invisible) -->
-        <!-- Flex container to center content -->
-        <div class="relative z-10 w-full h-full flex flex-col items-center justify-center">
+        <!-- Scroll Indicator (UX Cue) -->
+        <div id="scroll-indicator"
+            class="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-3 text-slate-400 opacity-80 mix-blend-difference cursor-pointer select-none">
+            <span class="text-xs uppercase tracking-[0.2em] animate-pulse whitespace-nowrap">Desliza para descubrir</span>
+            <div
+                class="w-6 h-10 border-2 border-slate-400 rounded-full flex justify-center p-1 shadow-[0_0_10px_rgba(255,255,255,0.1)]">
+                <div class="w-1 h-2 bg-potasio-primary rounded-full animate-[bounce_1.5s_infinite]"></div>
+            </div>
+        </div>
+
+        <!-- Layer 3: Text Content (Starts Invisible, shown after transition) -->
+        <div class="absolute inset-0 z-10 w-full h-full flex flex-col items-center justify-center">
             <div id="hero-content" class="text-center opacity-0 translate-y-20 px-4 max-w-5xl">
-                <h1 class="text-5xl md:text-8xl font-extrabold tracking-tight mb-8 text-white drop-shadow-2xl select-none">
+                <h1
+                    class="text-5xl md:text-8xl font-extrabold tracking-tight mb-8 text-white drop-shadow-2xl select-none">
                     Desarrollando <br>
-                    <span class="bg-clip-text text-transparent bg-gradient-to-r from-potasio-primary to-potasio-secondary">Diversión
+                    <span
+                        class="bg-clip-text text-transparent bg-gradient-to-r from-potasio-primary to-potasio-secondary">Diversión
                         Pura</span>
                 </h1>
                 <p class="mb-12 text-xl md:text-2xl text-slate-300 font-light max-w-3xl mx-auto leading-relaxed">
@@ -139,18 +194,9 @@
                     </a>
                 </div>
             </div>
-
-            <!-- Scroll Indicator (UX Cue) -->
-            <div id="scroll-indicator"
-                class="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-3 text-slate-400 opacity-80 mix-blend-difference pointer-events-none select-none">
-                <span class="text-xs uppercase tracking-[0.2em] animate-pulse">Desliza para descubrir</span>
-                <div
-                    class="w-6 h-10 border-2 border-slate-400 rounded-full flex justify-center p-1 shadow-[0_0_10px_rgba(255,255,255,0.1)]">
-                    <div class="w-1 h-2 bg-potasio-primary rounded-full animate-[bounce_1.5s_infinite]"></div>
-                </div>
-            </div>
         </div>
     </section>
+
 
     <!-- Games Section -->
     <section id="games" class="py-20 bg-dark-800/50 relative z-20">
@@ -177,7 +223,8 @@
                             <div class="text-center p-4">
                                 <img src="assets/img/icon.png" alt="Impostor Icon"
                                     class="w-20 h-20 rounded-2xl shadow-lg mx-auto mb-2">
-                                <p class="text-xs font-bold uppercase tracking-widest text-potasio-primary select-none">Impostor ¿Sabes
+                                <p class="text-xs font-bold uppercase tracking-widest text-potasio-primary select-none">
+                                    Impostor ¿Sabes
                                     mentir?
                                 </p>
                             </div>
@@ -195,7 +242,9 @@
                         </div>
                         <h3 class="text-3xl font-bold text-white mb-4 select-none">Impostor ¿Sabes mentir?</h3>
                         <p class="text-slate-400 mb-8 leading-relaxed">
-                            El juego definitivo para tus reuniones. Disfruta del modo clásico donde un jugador debe engañar a todos, o explora nuestros nuevos modos de juego que llevarán la tensión y las risas al siguiente nivel. ¡Descubre quién miente usando palabras secretas e ingenio social!
+                            El juego definitivo para tus reuniones. Disfruta del modo clásico donde un jugador debe
+                            engañar a todos, o explora nuestros nuevos modos de juego que llevarán la tensión y las
+                            risas al siguiente nivel. ¡Descubre quién miente usando palabras secretas e ingenio social!
                         </p>
 
                         <div class="flex flex-col sm:flex-row gap-4">
@@ -260,7 +309,8 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex flex-col md:flex-row justify-between items-center gap-8">
                 <div class="flex items-center gap-2 select-none">
-                    <span class="text-xl font-bold text-white">Potasio<span class="text-potasio-secondary">Games</span></span>
+                    <span class="text-xl font-bold text-white">Potasio<span
+                            class="text-potasio-secondary">Games</span></span>
                 </div>
 
                 <div class="flex gap-8 text-sm text-slate-400">
@@ -324,115 +374,192 @@
 
         // Build Animation (Splash -> Text)
         tl.to("#scroll-indicator", { opacity: 0, scale: 0.5, duration: 0.3, ease: "power1.out" })
-          .to("#hero-bg", { opacity: 0, scale: 1.1, duration: 1.2, ease: "power2.inOut" }, 0)
-          .to("#hero-content", { opacity: 1, y: 0, duration: 1, ease: "power2.out" }, "-=0.8")
-          .to("#navbar", { backgroundColor: "rgba(10, 15, 26, 0.95)", backdropFilter: "blur(12px)", borderBottom: "1px solid rgba(255, 255, 255, 0.05)", duration: 0.5 }, 0.2);
+            .to("#hero-bg", { opacity: 0, duration: 0.8, ease: "power2.inOut" }, 0)
+            .to("#hero-spotlight", { opacity: 0, duration: 0.8, ease: "power2.inOut" }, 0)
+            .to("#hero-logo-layer", { opacity: 0, scale: 1.05, duration: 1.0, ease: "power2.inOut" }, 0)
+            .to("#hero-content", { opacity: 1, y: 0, duration: 1, ease: "power2.out" }, "-=0.8")
+            .to("#navbar", { 
+                opacity: 1, 
+                pointerEvents: "auto", 
+                backgroundColor: "rgba(10, 15, 26, 0.95)", 
+                backdropFilter: "blur(12px)", 
+                borderBottom: "1px solid rgba(255, 255, 255, 0.05)", 
+                duration: 0.8, 
+                ease: "power2.out" 
+            }, "-=0.8");
 
         // Helper Functions
         function animateToText() {
-          animating = true;
-          tl.play().then(() => {
-            animating = false;
-            textVisible = true;
-          });
+            animating = true;
+            const hw = document.getElementById('hero-logo-wrapper');
+            if (hw) {
+                gsap.to(hw, { rotateX: 0, rotateY: 0, duration: 0.5 });
+            }
+            tl.play().then(() => {
+                animating = false;
+                textVisible = true;
+                document.body.classList.remove('overflow-hidden');
+            });
         }
 
         function animateToSplash() {
-          animating = true;
-          tl.reverse().then(() => {
-            animating = false;
-            textVisible = false;
-          });
+            animating = true;
+            document.body.classList.add('overflow-hidden');
+            window.scrollTo(0, 0); // Ensure window is at top when returning to splash
+            tl.reverse().then(() => {
+                animating = false;
+                textVisible = false;
+            });
+        }
+
+        // --- Interactive 3D Tilt & Mouse Spotlight Logic ---
+        const heroTrigger = document.getElementById('hero-trigger');
+        const heroWrapper = document.getElementById('hero-logo-wrapper');
+        const heroSpotlight = document.getElementById('hero-spotlight');
+
+        if (heroTrigger && heroWrapper && heroSpotlight) {
+            heroTrigger.addEventListener('mousemove', (e) => {
+                if (textVisible) return;
+
+                const rect = heroTrigger.getBoundingClientRect();
+                const normX = (e.clientX - rect.left) / rect.width - 0.5;
+                const normY = (e.clientY - rect.top) / rect.height - 0.5;
+
+                const pctX = ((e.clientX - rect.left) / rect.width) * 100;
+                const pctY = ((e.clientY - rect.top) / rect.height) * 100;
+
+                gsap.to(heroWrapper, {
+                    rotateX: normY * -12,
+                    rotateY: normX * 12,
+                    duration: 0.5,
+                    ease: "power1.out",
+                    overwrite: "auto"
+                });
+
+                gsap.to(heroSpotlight, {
+                    "--mouse-x": `${pctX}%`,
+                    "--mouse-y": `${pctY}%`,
+                    duration: 0.8,
+                    ease: "power2.out",
+                    overwrite: "auto"
+                });
+            });
+
+            heroTrigger.addEventListener('mouseenter', () => {
+                if (textVisible) return;
+                gsap.to(heroSpotlight, { opacity: 1, duration: 0.5 });
+            });
+
+            heroTrigger.addEventListener('mouseleave', () => {
+                gsap.to(heroWrapper, {
+                    rotateX: 0,
+                    rotateY: 0,
+                    duration: 0.5,
+                    ease: "power1.out",
+                    overwrite: "auto"
+                });
+                gsap.to(heroSpotlight, { opacity: 0, duration: 0.5 });
+            });
+        }
+
+        // --- Scroll Indicator Click Logic ---
+        const scrollIndicator = document.getElementById('scroll-indicator');
+        if (scrollIndicator) {
+            scrollIndicator.addEventListener('click', () => {
+                if (!textVisible && !animating) {
+                    animateToText();
+                }
+            });
         }
 
         // --- Custom Observer Logic for "Scroll-Jacking" ---
         window.addEventListener("wheel", (e) => {
-          if (animating) {
-            e.preventDefault();
-            return;
-          }
+            if (animating) {
+                e.preventDefault();
+                return;
+            }
 
-          if (!textVisible) {
-            e.preventDefault();
-            if (e.deltaY > 0) {
-              animateToText();
+            if (!textVisible) {
+                e.preventDefault();
+                if (e.deltaY > 0) {
+                    animateToText();
+                }
+            } else {
+                if (window.scrollY <= 0 && e.deltaY < 0) {
+                    e.preventDefault();
+                    animateToSplash();
+                }
             }
-          } else {
-            if (window.scrollY <= 0 && e.deltaY < 0) {
-              e.preventDefault();
-              animateToSplash();
-            }
-          }
         }, { passive: false });
 
         let touchStartY = 0;
         window.addEventListener("touchstart", (e) => {
-          touchStartY = e.touches[0].clientY;
+            touchStartY = e.touches[0].clientY;
         }, { passive: false });
 
         window.addEventListener("touchmove", (e) => {
-          if (animating) {
-            e.preventDefault();
-            return;
-          }
-
-          const currentY = e.touches[0].clientY;
-          const deltaY = touchStartY - currentY;
-
-          if (!textVisible) {
-            e.preventDefault();
-            if (deltaY > 5) {
-              animateToText();
+            if (animating) {
+                e.preventDefault();
+                return;
             }
-          } else {
-            if (window.scrollY <= 0 && deltaY < -5) {
-              e.preventDefault();
-              animateToSplash();
+
+            const currentY = e.touches[0].clientY;
+            const deltaY = touchStartY - currentY;
+
+            if (!textVisible) {
+                e.preventDefault();
+                if (deltaY > 5) {
+                    animateToText();
+                }
+            } else {
+                if (window.scrollY <= 0 && deltaY < -5) {
+                    e.preventDefault();
+                    animateToSplash();
+                }
             }
-          }
         }, { passive: false });
 
         // --- Code Redemption Deep Link Logic ---
         (function () {
-          const urlParams = new URLSearchParams(window.location.search);
-          const code = urlParams.get('code');
+            const urlParams = new URLSearchParams(window.location.search);
+            const code = urlParams.get('code');
 
-          if (code) {
-            const appUrl = `impostor://redeem?code=${encodeURIComponent(code)}`;
-            const modal = document.getElementById('redeem-modal');
-            const openBtn = document.getElementById('redeem-open-btn');
-            const spinner = document.getElementById('redeem-spinner');
-            const icon = document.getElementById('redeem-icon');
-            const title = document.getElementById('redeem-title');
-            const message = document.getElementById('redeem-message');
-            const closeBtn = document.getElementById('redeem-close-btn');
+            if (code) {
+                const appUrl = `impostor://redeem?code=${encodeURIComponent(code)}`;
+                const modal = document.getElementById('redeem-modal');
+                const openBtn = document.getElementById('redeem-open-btn');
+                const spinner = document.getElementById('redeem-spinner');
+                const icon = document.getElementById('redeem-icon');
+                const title = document.getElementById('redeem-title');
+                const message = document.getElementById('redeem-message');
+                const closeBtn = document.getElementById('redeem-close-btn');
 
-            if (!modal) return;
+                if (!modal) return;
 
-            modal.classList.remove('hidden');
-            if (openBtn) openBtn.href = appUrl;
+                modal.classList.remove('hidden');
+                if (openBtn) openBtn.href = appUrl;
 
-            // Re-initialize icons just for the modal
-            lucide.createIcons();
+                // Re-initialize icons just for the modal
+                lucide.createIcons();
 
-            setTimeout(() => {
-              window.location.href = appUrl;
-            }, 500);
+                setTimeout(() => {
+                    window.location.href = appUrl;
+                }, 500);
 
-            setTimeout(() => {
-              if (spinner) spinner.classList.add('hidden');
-              if (icon) icon.classList.remove('hidden');
-              if (title) title.textContent = '¡Código Detectado!';
-              if (message) message.textContent = 'Toca el botón para activar tu código en la app Impostor.';
-            }, 2000);
+                setTimeout(() => {
+                    if (spinner) spinner.classList.add('hidden');
+                    if (icon) icon.classList.remove('hidden');
+                    if (title) title.textContent = '¡Código Detectado!';
+                    if (message) message.textContent = 'Toca el botón para activar tu código en la app Impostor.';
+                }, 2000);
 
-            if (closeBtn) {
-              closeBtn.addEventListener('click', () => {
-                modal.classList.add('hidden');
-                window.history.replaceState({}, document.title, window.location.pathname);
-              });
+                if (closeBtn) {
+                    closeBtn.addEventListener('click', () => {
+                        modal.classList.add('hidden');
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                    });
+                }
             }
-          }
         })();
     </script>
 </body>

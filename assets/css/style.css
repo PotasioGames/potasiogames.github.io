@@ -6,9 +6,10 @@ body {
     font-family: 'Inter', sans-serif;
 }
 
-/* Smooth Scrolling */
+/* Smooth Scrolling & Layout Stability */
 html {
     scroll-behavior: smooth;
+    scrollbar-gutter: stable;
 }
 
 /* Custom Scrollbar */
@@ -32,4 +33,19 @@ html {
 /* Utilities */
 .text-glow {
     text-shadow: 0 0 20px #f4ee5a;
+}
+
+/* Logo Neon Glow pulse animation */
+.logo-glow-pulse {
+    animation: logoGlow 4s ease-in-out infinite alternate;
+    will-change: filter;
+}
+
+@keyframes logoGlow {
+    0% {
+        filter: drop-shadow(0 0 10px rgba(240, 238, 130, 0.32)) drop-shadow(0 0 20px rgba(240, 238, 130, 0.15));
+    }
+    100% {
+        filter: drop-shadow(0 0 13px rgba(240, 238, 130, 0.38)) drop-shadow(0 0 25px rgba(240, 238, 130, 0.2));
+    }
 }
