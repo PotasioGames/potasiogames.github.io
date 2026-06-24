@@ -49,3 +49,10 @@ html {
         filter: drop-shadow(0 0 13px rgba(240, 238, 130, 0.38)) drop-shadow(0 0 25px rgba(240, 238, 130, 0.2));
     }
 }
+
+/* Fix mobile browser address bar cut-off on Hero Section */
+#hero-trigger {
+    height: 100vh;
+    height: 100svh;
+}
+
