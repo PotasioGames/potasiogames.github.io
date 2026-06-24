@@ -53,6 +53,6 @@ html {
 /* Fix mobile browser address bar cut-off on Hero Section */
 #hero-trigger {
     height: 100vh;
-    height: 100svh;
+    height: 100dvh;
 }
 
