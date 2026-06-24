@@ -50,9 +50,14 @@ html {
     }
 }
 
-/* Fix mobile browser address bar cut-off on Hero Section */
+/* Fix mobile browser address bar cut-off and prevent layout shifts on scroll */
 #hero-trigger {
-    height: 100vh;
-    height: 100dvh;
+    height: 100vh; /* Stable full height, never changes on scroll */
+}
+
+#hero-logo-layer,
+#hero-content-layer {
+    height: 100%; /* Fallback for older browsers */
+    height: 100svh; /* Matches visible viewport height on load, stable on scroll */
 }
 
