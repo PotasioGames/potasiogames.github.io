@@ -111,7 +111,7 @@
 
     <!-- Hero Section (GSAP Container) -->
     <!-- h-screen: The section takes exactly one viewport. GSAP will add the scroll space. -->
-    <section id="hero-trigger" class="relative h-screen overflow-hidden">
+    <section id="hero-trigger" class="relative overflow-hidden">
 
         <!-- Layer 1: Background (CSS gradient, no image) -->
         <div id="hero-bg" class="absolute inset-0 z-0" style="
@@ -161,20 +161,20 @@
 
             </div>
 
-        </div>
-
-        <!-- Scroll Indicator (UX Cue) -->
-        <div id="scroll-indicator"
-            class="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-3 text-slate-400 opacity-80 mix-blend-difference cursor-pointer select-none">
-            <span class="text-xs uppercase tracking-[0.2em] animate-pulse whitespace-nowrap">Desliza para descubrir</span>
-            <div
-                class="w-6 h-10 border-2 border-slate-400 rounded-full flex justify-center p-1 shadow-[0_0_10px_rgba(255,255,255,0.1)]">
-                <div class="w-1 h-2 bg-potasio-primary rounded-full animate-[bounce_1.5s_infinite]"></div>
+            <!-- Scroll Indicator (UX Cue) -->
+            <div id="scroll-indicator"
+                class="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-3 text-slate-400 opacity-80 mix-blend-difference cursor-pointer select-none">
+                <span class="text-xs uppercase tracking-[0.2em] animate-pulse whitespace-nowrap">Desliza para descubrir</span>
+                <div
+                    class="w-6 h-10 border-2 border-slate-400 rounded-full flex justify-center p-1 shadow-[0_0_10px_rgba(255,255,255,0.1)]">
+                    <div class="w-1 h-2 bg-potasio-primary rounded-full animate-[bounce_1.5s_infinite]"></div>
+                </div>
             </div>
+
         </div>
 
         <!-- Layer 3: Text Content (Starts Invisible, shown after transition) -->
-        <div class="absolute inset-0 z-10 w-full h-full flex flex-col items-center justify-center">
+        <div id="hero-content-layer" class="absolute inset-x-0 top-0 z-10 w-full flex flex-col items-center justify-center">
             <div id="hero-content" class="text-center opacity-0 translate-y-20 px-4 max-w-5xl">
                 <h1
                     class="text-5xl md:text-8xl font-extrabold tracking-tight mb-8 text-white drop-shadow-2xl select-none">
@@ -294,7 +294,7 @@
                         Estamos siempre atentos a nuestra comunidad.
                     </p>
 
-                    <a href="mailto:potasiogames@hotmail.com"
+                    <a href="#" id="contact-btn"
                         class="inline-flex items-center gap-3 px-8 py-4 bg-white text-dark-900 font-bold rounded-xl hover:bg-potasio-primary transition-all duration-300 hover:shadow-[0_0_20px_rgba(244,238,90,0.3)] group-hover:-translate-y-1">
                         <span>Contáctanos</span>
                         <i data-lucide="arrow-right" class="w-5 h-5 transition-transform group-hover:translate-x-1"></i>
@@ -561,6 +561,14 @@
                 }
             }
         })();
+
+        // Prevent spam bots from harvesting the contact email
+        document.getElementById('contact-btn')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            const u = "potasiogames";
+            const d = "hotmail.com";
+            window.location.href = `mailto:${u}@${d}`;
+        });
     </script>
 </body>
 
