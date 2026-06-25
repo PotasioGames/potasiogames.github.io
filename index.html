@@ -294,7 +294,7 @@
                         Estamos siempre atentos a nuestra comunidad.
                     </p>
 
-                    <a href="mailto:potasiogames@hotmail.com"
+                    <a href="#" id="contact-btn"
                         class="inline-flex items-center gap-3 px-8 py-4 bg-white text-dark-900 font-bold rounded-xl hover:bg-potasio-primary transition-all duration-300 hover:shadow-[0_0_20px_rgba(244,238,90,0.3)] group-hover:-translate-y-1">
                         <span>Contáctanos</span>
                         <i data-lucide="arrow-right" class="w-5 h-5 transition-transform group-hover:translate-x-1"></i>
@@ -561,6 +561,14 @@
                 }
             }
         })();
+
+        // Prevent spam bots from harvesting the contact email
+        document.getElementById('contact-btn')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            const u = "potasiogames";
+            const d = "hotmail.com";
+            window.location.href = `mailto:${u}@${d}`;
+        });
     </script>
 </body>
 
