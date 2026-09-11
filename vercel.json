@@ -1,13 +1,20 @@
 {
   "cleanUrls": true,
-  "rewrites": [
+  "redirects": [
     {
       "source": "/jedrar",
-      "destination": "/JedRar"
-    },
+      "destination": "/JedRar",
+      "permanent": false
+    }
+  ],
+  "rewrites": [
     {
       "source": "/jedrar/(.*)",
       "destination": "/JedRar/$1"
+    },
+    {
+      "source": "/Build/(.*)",
+      "destination": "/JedRar/Build/$1"
     }
   ],
   "headers": [
