@@ -4,17 +4,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>JedRar | Portal de Evaluación</title>
+    <title>JedRar | Potasio Games</title>
     <meta name="robots" content="noindex, nofollow">
     <meta name="theme-color" content="#070a13">
 
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="logo-potasiogames-rounded.png">
+    <link rel="icon" type="image/png" href="../assets/img/logo-potasiogames-rounded.png">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap"
+        rel="stylesheet">
 
     <!-- Tailwind CSS (CDN) -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -47,7 +49,7 @@
     <style>
         body {
             background-color: #070a13;
-            background-image: 
+            background-image:
                 radial-gradient(at 0% 0%, rgba(225, 29, 72, 0.12) 0px, transparent 50%),
                 radial-gradient(at 100% 100%, rgba(244, 63, 94, 0.08) 0px, transparent 50%),
                 radial-gradient(at 50% 50%, rgba(15, 23, 42, 0.5) 0px, transparent 100%);
@@ -56,7 +58,7 @@
 
         .cyber-grid {
             background-size: 40px 40px;
-            background-image: 
+            background-image:
                 linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
                 linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
         }
@@ -74,10 +76,27 @@
         }
 
         @keyframes shake {
-            10%, 90% { transform: translate3d(-1px, 0, 0); }
-            20%, 80% { transform: translate3d(2px, 0, 0); }
-            30%, 50%, 70% { transform: translate3d(-3px, 0, 0); }
-            40%, 60% { transform: translate3d(3px, 0, 0); }
+
+            10%,
+            90% {
+                transform: translate3d(-1px, 0, 0);
+            }
+
+            20%,
+            80% {
+                transform: translate3d(2px, 0, 0);
+            }
+
+            30%,
+            50%,
+            70% {
+                transform: translate3d(-3px, 0, 0);
+            }
+
+            40%,
+            60% {
+                transform: translate3d(3px, 0, 0);
+            }
         }
 
         /* Unity Canvas & Viewport */
@@ -121,7 +140,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-20">
                 <a href="/" class="flex items-center gap-3 group">
-                    <img src="logo-potasiogames-rounded.png" alt="Potasio Games Logo"
+                    <img src="../assets/img/logo-potasiogames.png" alt="Potasio Games Logo"
                         class="w-10 h-10 object-cover rounded-xl shadow-md group-hover:scale-105 transition-transform">
                     <span class="text-2xl font-bold tracking-tight text-white select-none">Potasio<span
                             class="text-[#c578cb]">Games</span></span>
@@ -139,7 +158,8 @@
     </nav>
 
     <!-- MAIN CONTAINER -->
-    <main class="relative z-10 flex-1 flex flex-col justify-center items-center w-full min-h-screen p-4 sm:p-6 lg:p-8 pt-24 sm:pt-28 pb-10">
+    <main
+        class="relative z-10 flex-1 flex flex-col justify-center items-center w-full min-h-screen p-4 sm:p-6 lg:p-8 pt-24 sm:pt-28 pb-10">
 
         <!-- ========================================== -->
         <!-- STATE 1: AUTHENTICATION FORM (GATEKEEPER) -->
@@ -147,25 +167,30 @@
         <div id="auth-section" class="w-full max-w-md transition-all duration-500 transform">
             <div class="glass-card rounded-2xl p-6 sm:p-8 relative overflow-hidden">
                 <!-- Top Accent Line -->
-                <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-rose-600 via-rose-400 to-amber-500"></div>
+                <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-rose-600 via-rose-400 to-amber-500">
+                </div>
 
                 <!-- Logo & Badge -->
                 <div class="text-center mb-7">
-                    <div class="inline-flex items-center justify-center gap-2 px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs font-mono mb-4 tracking-wider uppercase">
+                    <div
+                        class="inline-flex items-center justify-center gap-2 px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs font-mono mb-4 tracking-wider uppercase">
                         <i data-lucide="shield-alert" class="w-3.5 h-3.5 text-rose-400"></i>
-                        <span>Acceso Restringido</span>
+                        <span>Acceso Restringido a asociados</span>
                     </div>
-                    <h1 class="text-3xl font-extrabold tracking-tight text-white flex items-center justify-center gap-2">
+                    <h1
+                        class="text-3xl font-extrabold tracking-tight text-white flex items-center justify-center gap-2">
                         <span>JedRar</span>
-                        <span class="text-rose-500 text-sm px-2 py-0.5 rounded bg-rose-500/10 border border-rose-500/20 font-mono">v1.0</span>
+                        <span
+                            class="text-rose-500 text-sm px-2 py-0.5 rounded bg-rose-500/10 border border-rose-500/20 font-mono">v1.0</span>
                     </h1>
                     <p class="text-sm text-slate-400 mt-2 font-normal">
-                        Ingresa tus credenciales autorizadas para iniciar el desafío psicotécnico.
+                        Ingresa tu email y la contraseña que te pasó el creador del juego.
                     </p>
                 </div>
 
                 <!-- Error Alert Banner -->
-                <div id="auth-error-banner" class="hidden mb-5 p-3.5 rounded-xl bg-rose-950/60 border border-rose-500/30 text-rose-200 text-sm flex items-start gap-3">
+                <div id="auth-error-banner"
+                    class="hidden mb-5 p-3.5 rounded-xl bg-rose-950/60 border border-rose-500/30 text-rose-200 text-sm flex items-start gap-3">
                     <i data-lucide="alert-circle" class="w-5 h-5 text-rose-400 shrink-0 mt-0.5"></i>
                     <div id="auth-error-text" class="flex-1 text-xs sm:text-sm"></div>
                 </div>
@@ -174,72 +199,62 @@
                 <form id="auth-form" class="space-y-5" novalidate>
                     <!-- Email Input -->
                     <div>
-                        <label for="input-email" class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">
+                        <label for="input-email"
+                            class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">
                             Correo Electrónico
                         </label>
                         <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                            <div
+                                class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                                 <i data-lucide="mail" class="w-4 h-4"></i>
                             </div>
-                            <input 
-                                type="email" 
-                                id="input-email" 
-                                name="email" 
-                                required 
-                                autocomplete="email"
+                            <input type="email" id="input-email" name="email" required autocomplete="email"
                                 placeholder="tu.nombre@redjar.com.ar"
-                                class="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-900/80 border border-slate-700/70 text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500/50 focus:border-rose-500 transition-all font-sans"
-                            >
+                                class="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-900/80 border border-slate-700/70 text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500/50 focus:border-rose-500 transition-all font-sans">
                         </div>
                     </div>
 
                     <!-- Password Input -->
                     <div>
-                        <label for="input-password" class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">
+                        <label for="input-password"
+                            class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">
                             Contraseña
                         </label>
                         <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                            <div
+                                class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                                 <i data-lucide="key-round" class="w-4 h-4"></i>
                             </div>
-                            <input 
-                                type="password" 
-                                id="input-password" 
-                                name="password" 
-                                required 
-                                autocomplete="current-password"
-                                placeholder="Ingresa la clave de acceso"
-                                class="w-full pl-10 pr-11 py-3 rounded-xl bg-slate-900/80 border border-slate-700/70 text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500/50 focus:border-rose-500 transition-all font-mono"
-                            >
-                            <button 
-                                type="button" 
-                                id="toggle-password-btn" 
-                                aria-label="Mostrar u ocultar contraseña"
-                                class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-200 transition-colors"
-                            >
+                            <input type="password" id="input-password" name="password" required
+                                autocomplete="current-password" placeholder="Contraseña"
+                                class="w-full pl-10 pr-11 py-3 rounded-xl bg-slate-900/80 border border-slate-700/70 text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500/50 focus:border-rose-500 transition-all font-mono">
+                            <button type="button" id="toggle-password-btn" aria-label="Mostrar u ocultar contraseña"
+                                class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-200 transition-colors">
                                 <i data-lucide="eye" id="eye-icon" class="w-4 h-4"></i>
                             </button>
                         </div>
                     </div>
 
                     <!-- Submit Button -->
-                    <button 
-                        type="submit" 
-                        id="btn-login"
-                        class="w-full mt-2 py-3 px-4 rounded-xl bg-gradient-to-r from-rose-600 to-rose-500 hover:from-rose-500 hover:to-rose-400 text-white font-semibold text-sm shadow-lg shadow-rose-600/30 hover:shadow-rose-600/50 active:scale-[0.98] transition-all flex items-center justify-center gap-2 group cursor-pointer"
-                    >
+                    <button type="submit" id="btn-login"
+                        class="w-full mt-2 py-3 px-4 rounded-xl bg-gradient-to-r from-rose-600 to-rose-500 hover:from-rose-500 hover:to-rose-400 text-white font-semibold text-sm shadow-lg shadow-rose-600/30 hover:shadow-rose-600/50 active:scale-[0.98] transition-all flex items-center justify-center gap-2 group cursor-pointer">
                         <span id="btn-login-text">Ingresar a la Evaluación</span>
-                        <i data-lucide="arrow-right" id="btn-login-icon" class="w-4 h-4 group-hover:translate-x-0.5 transition-transform"></i>
-                        <svg id="btn-login-spinner" class="hidden animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        <i data-lucide="arrow-right" id="btn-login-icon"
+                            class="w-4 h-4 group-hover:translate-x-0.5 transition-transform"></i>
+                        <svg id="btn-login-spinner" class="hidden animate-spin h-4 w-4 text-white" fill="none"
+                            viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                            </circle>
+                            <path class="opacity-75" fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                            </path>
                         </svg>
                     </button>
                 </form>
 
                 <!-- Footer note -->
                 <div class="mt-6 pt-5 border-t border-slate-800 text-center text-xs text-slate-400">
-                    <p>Potasio Games &copy; 2026 &bull; Confidencial</p>
+                    <p>Potasio Games &copy; 2026</p>
                 </div>
             </div>
         </div>
@@ -248,25 +263,25 @@
         <!-- STATE 2: UNITY GAME WRAPPER (LAZY LOADED) -->
         <!-- ========================================== -->
         <div id="game-section" class="hidden w-full max-w-6xl flex-1 flex flex-col justify-center items-center my-auto">
-            
+
             <!-- Game Top Bar -->
             <div class="w-full flex items-center justify-between pb-3 px-2 text-xs text-slate-400 font-mono">
                 <div class="flex items-center gap-3">
-                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+                    <span
+                        class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
                         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                         <span>Evaluación Activa</span>
                     </span>
                     <span id="active-user-badge" class="hidden sm:inline-block text-slate-400">
-                        <span class="text-slate-500">Candidato:</span> <strong id="active-user-email" class="text-slate-200"></strong>
+                        <span class="text-slate-500">Candidato:</span> <strong id="active-user-email"
+                            class="text-slate-200"></strong>
                     </span>
                 </div>
 
                 <div class="flex items-center gap-2">
-                    <button 
-                        id="btn-fullscreen"
+                    <button id="btn-fullscreen"
                         class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 hover:border-slate-600 transition-colors font-sans text-xs font-medium cursor-pointer"
-                        title="Pantalla Completa"
-                    >
+                        title="Pantalla Completa">
                         <i data-lucide="maximize" class="w-3.5 h-3.5"></i>
                         <span>Pantalla Completa</span>
                     </button>
@@ -274,27 +289,34 @@
             </div>
 
             <!-- Canvas Container (Responsive 16:9 Aspect Ratio) -->
-            <div id="unity-fullscreen-container" class="relative w-full aspect-video max-h-[85vh] bg-black rounded-xl overflow-hidden border border-slate-800 shadow-2xl flex items-center justify-center">
-                
+            <div id="unity-fullscreen-container"
+                class="relative w-full aspect-video max-h-[85vh] bg-black rounded-xl overflow-hidden border border-slate-800 shadow-2xl flex items-center justify-center">
+
                 <!-- Unity Canvas -->
                 <canvas id="unity-canvas" width="1920" height="1080" tabindex="-1"></canvas>
 
                 <!-- Loading Screen Overlay -->
-                <div id="unity-loading-container" class="absolute inset-0 z-30 bg-[#070a13] flex flex-col items-center justify-center p-6 text-center">
-                    
+                <div id="unity-loading-container"
+                    class="absolute inset-0 z-30 bg-[#070a13] flex flex-col items-center justify-center p-6 text-center">
+
                     <!-- Pulsing Icon / Logo -->
                     <div class="relative mb-6">
-                        <div class="w-20 h-20 rounded-2xl bg-gradient-to-tr from-rose-600 to-amber-500 flex items-center justify-center shadow-lg shadow-rose-600/30 animate-pulse">
+                        <div
+                            class="w-20 h-20 rounded-2xl bg-gradient-to-tr from-rose-600 to-amber-500 flex items-center justify-center shadow-lg shadow-rose-600/30 animate-pulse">
                             <i data-lucide="gamepad-2" class="w-10 h-10 text-white"></i>
                         </div>
                     </div>
 
                     <h2 class="text-xl sm:text-2xl font-bold text-white mb-2">Cargando Entorno de Simulación</h2>
-                    <p id="loading-status-text" class="text-xs sm:text-sm text-slate-400 mb-6 font-mono">Descargando recursos del juego (Unity WebGL)...</p>
+                    <p id="loading-status-text" class="text-xs sm:text-sm text-slate-400 mb-6 font-mono">Descargando
+                        recursos del juego (Unity WebGL)...</p>
 
                     <!-- Progress Bar Container -->
-                    <div class="w-full max-w-md bg-slate-800/80 rounded-full h-3.5 p-0.5 border border-slate-700 overflow-hidden relative shadow-inner">
-                        <div id="unity-progress-bar-full" class="bg-gradient-to-r from-rose-600 via-rose-500 to-amber-400 h-full rounded-full transition-all duration-200 ease-out shadow-lg" style="width: 0%;"></div>
+                    <div
+                        class="w-full max-w-md bg-slate-800/80 rounded-full h-3.5 p-0.5 border border-slate-700 overflow-hidden relative shadow-inner">
+                        <div id="unity-progress-bar-full"
+                            class="bg-gradient-to-r from-rose-600 via-rose-500 to-amber-400 h-full rounded-full transition-all duration-200 ease-out shadow-lg"
+                            style="width: 0%;"></div>
                     </div>
 
                     <!-- Percentage Counter -->
@@ -302,12 +324,14 @@
                 </div>
 
                 <!-- Warning Banner (Hidden unless Unity sends warning/error) -->
-                <div id="unity-warning" class="hidden absolute top-4 left-4 right-4 z-40 p-3 rounded-lg text-xs font-mono"></div>
+                <div id="unity-warning"
+                    class="hidden absolute top-4 left-4 right-4 z-40 p-3 rounded-lg text-xs font-mono"></div>
             </div>
 
             <!-- Mobile advisory -->
             <div id="mobile-warning" class="hidden mt-3 text-center text-xs text-amber-400/90 font-mono">
-                💡 Se recomienda jugar en pantalla completa o desde una computadora de escritorio para la mejor experiencia.
+                💡 Se recomienda jugar en pantalla completa o desde una computadora de escritorio para la mejor
+                experiencia.
             </div>
         </div>
 
@@ -566,7 +590,7 @@
                     }
                 }).then((unityInstance) => {
                     currentUnityInstance = unityInstance;
-                    
+
                     // Smoothly fade out loading overlay
                     if (loadingContainer) {
                         loadingContainer.style.transition = "opacity 0.6s ease-out";
