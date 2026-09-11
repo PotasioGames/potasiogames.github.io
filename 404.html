@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full bg-[#0a0f1a] text-white">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página no encontrada | Potasio Games</title>
+    <link rel="icon" type="image/png" href="/assets/img/logo-potasiogames-rounded.png">
+
+    <!-- Script de redirección automática para rutas como /jedrar -->
+    <script>
+        (function() {
+            var path = window.location.pathname;
+            var pathLower = path.toLowerCase().replace(/\/+$/, ""); // quitar trailing slash para comparar
+
+            // Si intentaron acceder a /jedrar o variaciones
+            if (pathLower === "/jedrar" || pathLower.endsWith("/jedrar")) {
+                var search = window.location.search || "";
+                var hash = window.location.hash || "";
+                window.location.replace("/JedRar/" + search + hash);
+            }
+        })();
+    </script>
+
+    <!-- Tailwind CSS (CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body class="h-full flex items-center justify-center p-6 antialiased selection:bg-[#f4ee5a] selection:text-black">
+    <div class="max-w-md w-full text-center space-y-6">
+        <div class="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-white/5 border border-white/10 shadow-2xl">
+            <span class="text-3xl font-black text-[#f4ee5a]">404</span>
+        </div>
+
+        <div class="space-y-2">
+            <h1 class="text-2xl font-bold tracking-tight">Página no encontrada</h1>
+            <p class="text-slate-400 text-sm">
+                La dirección a la que intentas acceder no existe o fue movida.
+            </p>
+        </div>
+
+        <div class="pt-2">
+            <a href="/" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#f4ee5a] hover:bg-[#e0da4d] text-black font-semibold text-sm transition-all shadow-lg shadow-[#f4ee5a]/20 hover:scale-105 active:scale-95">
+                <i data-lucide="home" class="w-4 h-4"></i>
+                <span>Volver al Inicio</span>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+
+</html>

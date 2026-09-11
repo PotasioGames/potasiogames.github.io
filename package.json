@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "update-game": "scripts\\update-game.bat"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.16",

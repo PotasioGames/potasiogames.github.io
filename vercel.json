@@ -1,0 +1,63 @@
+{
+  "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/jedrar",
+      "destination": "/JedRar"
+    },
+    {
+      "source": "/jedrar/(.*)",
+      "destination": "/JedRar/$1"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/JedRar/Build/(.*)\\.wasm\\.unityweb",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/wasm"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/JedRar/Build/(.*)\\.data\\.unityweb",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/octet-stream"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/JedRar/Build/(.*)\\.framework\\.js\\.unityweb",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/javascript"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/JedRar/Build/(.*)\\.loader\\.js",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/javascript"
+        }
+      ]
+    }
+  ]
+}
