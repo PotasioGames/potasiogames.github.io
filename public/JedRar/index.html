@@ -341,60 +341,69 @@
     <!-- LOGIC & UNITY INTEGRATION -->
     <!-- ========================================== -->
     <script>
-        // 1. LIST OF AUTHORIZED EMAILS (Normalized to lowercase)
-        const ALLOWED_EMAILS = [
-            "admin@redjar.com.ar",
-            "adrian.ferrari@redjar.com.ar",
-            "agustin.ganuza@redjar.com.ar",
-            "andres.olavarria@redjar.com.ar",
-            "augusto.delisio@redjar.com.ar",
-            "axel.vazquez@redjar.com.ar",
-            "brian.merce@redjar.com.ar",
-            "bruno.gario@redjar.com.ar",
-            "carlos.forconi@redjar.com.ar",
-            "cian.vergara@redjar.com.ar",
-            "david.cicconi@redjar.com.ar",
-            "elemanuel.reinoso@redjar.com.ar",
-            "emiliano.negrini@redjar.com.ar",
-            "eric.farley@redjar.com.ar",
-            "federico.botti@redjar.com.ar",
-            "flavia.arce@redjar.com.ar",
-            "franco.bertolotti@redjar.com.ar",
-            "franco.camposaragna@redjar.com.ar",
-            "franco.luna@redjar.com.ar",
-            "guillermo.mangiante@redjar.com.ar",
-            "indira.sosa@redjar.com.ar",
-            "irina.kainer@redjar.com.ar",
-            "jorge.capodimonte@redjar.com.ar",
-            "julian.gorosito@redjar.com.ar",
-            "julian.viso@redjar.com.ar",
-            "kevin.ahumada@redjar.com.ar",
-            "lucas.ferraro@redjar.com.ar",
-            "lucas.galvan@redjar.com.ar",
-            "lucas.ganuza@redjar.com.ar",
-            "luciano.lionello@redjar.com.ar",
-            "lucia.feroglio@redjar.com.ar",
-            "lucia.masciangelo@redjar.com.ar",
-            "manuel.leiva@redjar.com.ar",
-            "mario.rossi@redjar.com.ar",
-            "mariela.herrera@redjar.com.ar",
-            "mariano.roibon@redjar.com.ar",
-            "mauricio.taborda@redjar.com.ar",
-            "mauro.pettinari@redjar.com.ar",
-            "melani.antuna@redjar.com.ar",
-            "melisa.aramayo@redjar.com.ar",
-            "natalia.herrera@redjar.com.ar",
-            "nicolas.farina@redjar.com.ar",
-            "rafael.casco@redjar.com.ar",
-            "romeo.jovel@redjar.com.ar",
-            "seba.andrada@redjar.com.ar",
-            "sebastian.gimenez@redjar.com.ar",
-            "sofia.errecalde@redjar.com.ar",
-            "stefano.leone@redjar.com.ar"
+        // 1. LIST OF AUTHORIZED EMAIL HASHES (SHA-256)
+        // Protege la privacidad evitando la cosecha de correos corporativos por bots de spam
+        const ALLOWED_EMAIL_HASHES = [
+            "45568582100010668960d6a300c3a96b5c74160c5e4aa48c179533c426a6dfff",
+            "f0441b738662e383e58c24631262fac04e7192dd115ba3f1ae0d93fcc7e31b3e",
+            "233ff349eb17ac5df122117e567394d562dbd8363a8574d61d43f28d72320ee7",
+            "999bed2c0904abb209f6d117443d9e5c612985d87d3201a44685aa09757316b8",
+            "8d93c71a720385a074a2b2d07d653ec8aec1f8efeb6d54c3f8479348c3081e02",
+            "f03219361299fd295c3e720eecd4f4ffc21a97806bd921b68bd89057692d12c6",
+            "ce837a7371409ebc723626ada6241809dacbe00599143118890d33015793ff1b",
+            "f7a51e976d3973d4a457969ef9099a3a42736db35161a6ca243a4249006c40e7",
+            "1df86e77087d8b61a03c5538cd680d22515e2f930d7cafb47e991358aef97b72",
+            "03546cda1c34b641bc52331ca7592bea940cb5790bd867d87545842d2cd05726",
+            "e38f8986923f25434b3b9ea4a104a57f2d743ecbcac5d8d6dd4d7d3e954791cd",
+            "abf8b82f35fa644f1172547f1c1c3fe4949203b615cb059c180a38b1199cf8b9",
+            "1e9983a97c7e3f8741a717d9d4b49f27fab9c6249ac52ed96f4c88b7998a2004",
+            "df468661e02150a0e7a5d9db3c2ee7069c616ef6f72204d12ff2ebdaa357a2d4",
+            "4e94ba9891a948c72446cec51e0bd9a3b63a21bfc0cc4a5397b4b1df5d6a570e",
+            "a1b9a24d49697393ff5489bb9192fc85a782381bebfa08568f3f512bd5937304",
+            "5442d3a5d3fe5705c68822d5cb017e4618fbeb8241ed398a4865bed30ea3dee2",
+            "ffbc660a4daa692735fb7d06e60e09d46202f90b4a2c7c2da1a49cfe04b8052d",
+            "59aab6066d06ea8d72b2aa79f0f3974cc3e3d6c89eb7c1f4eeb49be1fc754acb",
+            "4e4c9335f124880871cac8d770aa24adfe39bd87e7a5c59068226dedbe7fa151",
+            "26e3722ab36b32bc875cf489b3bcba18cb030190743203d84efe2236319b796f",
+            "92f43e6a830da63140bc03dbd915a4b1ff8413f4a105a1a30888f17e412e6435",
+            "e57337bc31b3d0a7e2182593eaaa752107ea670bd077d2c68e2d04ac7ae08c4f",
+            "a824fedef31b8d33d0c8d1592bbef465523d64e4971f087ad84f747868adac5f",
+            "5d46d93b84bca707f5436963736f585a77131117f7135e3558c44f4ff8091650",
+            "3aee45ca177e80eb8757d6da58c5dc138106f4aab7ea2decac9910efff40aa33",
+            "a9c8a04b3c3e385066207f58cd7023a89ee6a5f11766c2f0144faecbc64509f1",
+            "25f2198892d15efcdf1ea2180f76dbdc648e1fe21f3f60463a5acfe759238d53",
+            "6c10cb379fa191d716210d99875394d7bb7e9dd3da55d67fcb08188657aa1ce0",
+            "723f193ffd3997a02d264eb5e695e7b870ef763232ed722f1edc0df39b02467c",
+            "ad8ec97665f3d4ed969f6b84f566e5dd0b35160ed516f1f3c9e91ec68465fc41",
+            "38bda19bef95fc43bfd11ec457970f215767c284eabccb4f820b08b7dee42942",
+            "a9cf00ad698b9a0a6c2dd58d94504b4150df59980d9c6cafaf8aa52464f65055",
+            "fbbb53dd371821754ab1d584bdfb842558ba5c6ec95d8e466448176864fb6856",
+            "56cb9fa5dc5f11c139749e726ba4c3db125d7d8617068fd29f868ed7031fd161",
+            "2a893e8f55eb694d01ad2b614e2a17c984608d29d641103db2166e50bed98df3",
+            "078e104a1c3b9f832c2efcb47e237ef21305f9f8278b1c1097737c73362f638c",
+            "6243f5aed249b6517ba6d238b0d0661dd52019d676ca292a4ad77bc34e1a5dde",
+            "c5ada72b033eb4b7a4c6e88619c9e1e23364ef357a829119c2da779b4590193a",
+            "03192d47fb83f043d0568f251a9eca93678bff3d048a65b9bdbe841089d9528d",
+            "7273b8989c28337bbcf5e4c9743eee043915e78fc6d66b70c804af9e7f7c3dcf",
+            "e3f216248fb3884485295444ddbc03abbecd446597a2b230cc37961b8da59860",
+            "916211f30ae5e675c7cf129099c1bb3cbadb22a563321079c8e7ab8f6a7612f7",
+            "3a14900ad69d8d1fabe2745bf9768815dcc93bcfd21794a1c48c17e810918134",
+            "a6799f016cf9de54b818426643f0c6f3ff1755fe6774d83b666a0abbe37476d5",
+            "29274b7d5829c27fda6d04c3ea9aabba34d51ab21e202a3732811764f222a39c",
+            "d5057e15a9c36bf6f173310d7c590baf839025583a0c190f7533789f23c0e2c9",
+            "dddf7e32526c76646ef3ceecc1f29641c541cd13e44b48e65f836a27394f2f26"
         ];
 
-        const ALLOWED_EMAILS_SET = new Set(ALLOWED_EMAILS.map(e => e.trim().toLowerCase()));
+        const ALLOWED_EMAIL_HASHES_SET = new Set(ALLOWED_EMAIL_HASHES);
         const REQUIRED_PASSWORD = "JedRar2026";
+
+        // Función criptográfica SHA-256 nativa del navegador
+        async function sha256(message) {
+            const msgBuffer = new TextEncoder().encode(message.trim().toLowerCase());
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
 
         // Global Unity reference
         let currentUnityInstance = null;
@@ -452,7 +461,7 @@
         }
 
         // Validate and Authenticate
-        authForm.addEventListener("submit", (e) => {
+        authForm.addEventListener("submit", async (e) => {
             e.preventDefault();
             clearError();
 
@@ -466,7 +475,8 @@
                 return;
             }
 
-            if (!ALLOWED_EMAILS_SET.has(email)) {
+            const emailHash = await sha256(email);
+            if (!ALLOWED_EMAIL_HASHES_SET.has(emailHash)) {
                 showError("El correo ingresado no se encuentra en el listado de accesos autorizados.");
                 inputEmail.focus();
                 return;
@@ -502,13 +512,16 @@
         });
 
         // Check if user is already authenticated in this session
-        function checkExistingSession() {
+        async function checkExistingSession() {
             const isAuth = sessionStorage.getItem("jedrar_auth") === "true";
             const savedEmail = (sessionStorage.getItem("player_email") || "").trim().toLowerCase();
 
-            if (isAuth && savedEmail && ALLOWED_EMAILS_SET.has(savedEmail)) {
-                console.log("[JedRar] Sesión activa detectada para:", savedEmail);
-                startUnityExperience(savedEmail);
+            if (isAuth && savedEmail) {
+                const emailHash = await sha256(savedEmail);
+                if (ALLOWED_EMAIL_HASHES_SET.has(emailHash)) {
+                    console.log("[JedRar] Sesión activa detectada para:", savedEmail);
+                    startUnityExperience(savedEmail);
+                }
             }
         }
 
