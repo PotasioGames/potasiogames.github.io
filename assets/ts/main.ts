@@ -3,6 +3,14 @@ import { createIcons, Users, Mail, ArrowRight, X } from 'lucide';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
+import { inject } from '@vercel/analytics';
+import { injectSpeedInsights } from '@vercel/speed-insights';
+
+// Initialize Vercel Analytics
+inject();
+
+// Initialize Vercel Speed Insights
+injectSpeedInsights();
 
 // Initialize Icons
 createIcons({
