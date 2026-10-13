@@ -15,11 +15,11 @@ Nuestro primer gran lanzamiento. Un juego de deducción social diseñado para re
 *Próximamente más títulos en desarrollo...*
 
 ## 🌐 Visítanos
-Puedes ver el sitio en vivo aquí: [https://potasiogames.github.io/](https://potasiogames.github.io/)
+Puedes ver el sitio en vivo aquí: [https://potasiogames.com/](https://potasiogames.com/)
 
 ## 📬 Contacto
 ¿Tienes dudas, sugerencias o quieres colaborar con nosotros?
--   **Email**: [potasiogames@hotmail.com](mailto:potasiogames@hotmail.com)
+-   **Formulario de Contacto**: [potasiogames.com/#contact](https://potasiogames.com/#contact)
 -   **Perfil de Desarrollador**: [Potasio Games en Google Play](https://play.google.com/store/apps/developer?id=Potasio)
 
 ---
@@ -55,7 +55,7 @@ Asegúrate de tener instalado [Node.js](https://nodejs.org/) (se recomienda vers
 El repositorio sigue un esquema de desarrollo basado en las siguientes ramas principales:
 
 *   **`dev`**: Rama principal de desarrollo. Todos los nuevos cambios, características y correcciones de errores deben integrarse aquí primero.
-*   **`main`**: Rama de producción. Contiene el código estable que se despliega en producción ([potasiogames.github.io](https://potasiogames.github.io/)).
+*   **`main`**: Rama de producción. Contiene el código estable que se despliega en producción ([potasiogames.com](https://potasiogames.com/)).
 
 ### Flujo de trabajo sugerido:
 1. Crea una nueva rama a partir de `dev`:

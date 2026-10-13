@@ -295,8 +295,9 @@
                     </p>
 
                     <a href="#" id="contact-btn"
-                        class="inline-flex items-center gap-3 px-8 py-4 bg-white text-dark-900 font-bold rounded-xl hover:bg-potasio-primary transition-all duration-300 hover:shadow-[0_0_20px_rgba(244,238,90,0.3)] group-hover:-translate-y-1">
-                        <span>Contáctanos</span>
+                        class="inline-flex items-center gap-3 px-8 py-4 bg-potasio-primary text-dark-900 font-bold rounded-xl hover:bg-yellow-300 transition-all duration-300 hover:shadow-[0_0_20px_rgba(244,238,90,0.3)] hover:-translate-y-0.5 active:translate-y-0 group-hover:-translate-y-1 cursor-pointer">
+                        <i data-lucide="mail" class="w-5 h-5"></i>
+                        <span>Escríbenos un Correo</span>
                         <i data-lucide="arrow-right" class="w-5 h-5 transition-transform group-hover:translate-x-1"></i>
                     </a>
                 </div>
@@ -562,12 +563,13 @@
             }
         })();
 
-        // Prevent spam bots from harvesting the contact email
+        // Abre el cliente de correo predeterminado del usuario sin exponer el correo en texto plano en el HTML
         document.getElementById('contact-btn')?.addEventListener('click', (e) => {
             e.preventDefault();
-            const u = "potasiogames";
-            const d = "hotmail.com";
-            window.location.href = `mailto:${u}@${d}`;
+            const user = "potasiogames";
+            const domain = "hotmail.com";
+            const subject = encodeURIComponent("Contacto desde Potasio Games");
+            window.location.href = `mailto:${user}@${domain}?subject=${subject}`;
         });
     </script>
 </body>
