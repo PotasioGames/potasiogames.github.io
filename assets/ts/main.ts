@@ -90,23 +90,30 @@ function updatePlasmaWave(phase: number): void {
   const core = document.getElementById('plasma-filament-core');
   if (!outer && !core) return;
 
-  const w1 = Math.sin(phase) * 12;
-  const w2 = Math.cos(phase * 1.3) * 12;
+  const w1 = Math.sin(phase) * 10;
+  const w2 = Math.cos(phase * 0.85) * 10;
 
-  const dOuter = `M 30,60 C ${80 + w1 * 0.5},${40 + w1} ${180 - w2 * 0.5},${80 - w2} 230,60`;
-  const dCore = `M 30,60 C ${90 - w2 * 0.4},${48 - w2 * 0.7} ${170 + w1 * 0.4},${72 + w1 * 0.7} 230,60`;
+  // Ondulación sinusoidal pausada y natural de los filamentos entre microplanetas
+  const dOuter = `M 30,60 C ${80 + w1 * 0.3},${45 + w1} ${180 - w2 * 0.3},${75 - w2} 230,60`;
+  const dCore = `M 30,60 C ${95 - w2 * 0.25},${52 - w2 * 0.6} ${165 + w1 * 0.25},${68 + w1 * 0.6} 230,60`;
 
   if (outer) outer.setAttribute('d', dOuter);
   if (core) core.setAttribute('d', dCore);
 }
 
-function updateBotMotionEffects(currentX: number, currentY: number): void {
+function updateBotMotionEffects(currentX: number, currentY: number, isFlying: boolean = false): void {
   if (lastBotX !== null && lastBotY !== null) {
     const dx = currentX - lastBotX;
     const dy = currentY - lastBotY;
-    if (Math.abs(dx) > 0.05 || Math.abs(dy) > 0.05) {
-      addStarParallax?.(-dx * 0.25, -dy * 0.25);
-      plasmaWavePhase += Math.hypot(dx, dy) * 0.04;
+    const dist = Math.hypot(dx, dy);
+
+    if (dist > 0.05) {
+      // Las estrellas solo se mueven cuando el personaje está volando (no cuando rota en un planeta)
+      if (isFlying) {
+        addStarParallax?.(-dx * 0.25, -dy * 0.25);
+      }
+      // Ondulación sinusoidal suave de la barrera de plasma (ritmo pausado y apreciable)
+      plasmaWavePhase += dist * 0.005;
       updatePlasmaWave(plasmaWavePhase);
     }
   }
@@ -279,9 +286,16 @@ export function selectSkin(skinKey: SkinKey): void {
   const portalImg = document.getElementById('portal-bot-img') as HTMLImageElement | null;
   if (portalImg) portalImg.src = cfg.normal;
 
-  // Update theater bot image
+  // Update theater bot image (en planeta de inicio astronauta usa alert)
   const botImg = document.getElementById('orbitar-bot-img') as HTMLImageElement | null;
-  if (botImg) botImg.src = cfg.normal;
+  if (botImg) {
+    if (skinKey === 'astronaut') {
+      const isInitial = !orbitarTimeline || orbitarTimeline.time() < 2.95;
+      botImg.src = isInitial ? cfg.alert : cfg.normal;
+    } else {
+      botImg.src = cfg.normal;
+    }
+  }
 
   // Update active pill button UI in the card
   ['astronaut', 'pilot', 'mecha'].forEach((k) => {
@@ -373,6 +387,8 @@ function getOrbitarGeometry(): OrbitarGeometry | null {
 function setupInitialOrbitarPosition(): void {
   const geom = getOrbitarGeometry();
   const bot = document.getElementById('scrolly-bot');
+  const botImg = document.getElementById('orbitar-bot-img') as HTMLImageElement | null;
+  const thruster = document.getElementById('bot-thruster');
   if (!geom || !bot) return;
 
   // Ubicado inicialmente sobre la superficie del Planeta de Inicio en ángulo 0:
@@ -388,6 +404,14 @@ function setupInitialOrbitarPosition(): void {
     y: y,
     rotation: rot
   });
+
+  // Sprite inicial en planeta de inicio: alert
+  if (currentSkin === 'astronaut' && botImg) {
+    botImg.src = SKIN_CONFIG.astronaut.alert;
+  }
+  if (thruster) {
+    thruster.classList.remove('bot-thruster-boost');
+  }
 }
 
 function setupInitialImpostorPosition(): void {
@@ -498,7 +522,6 @@ function buildOrbitarTimeline(): gsap.core.Timeline {
   const tl = gsap.timeline({ paused: true });
   const bot = document.getElementById('scrolly-bot');
   const botImg = document.getElementById('orbitar-bot-img') as HTMLImageElement | null;
-  const botThruster = document.getElementById('bot-thruster');
   const m1 = document.getElementById('orbitar-m1');
   const m2 = document.getElementById('orbitar-m2');
   const m3 = document.getElementById('orbitar-m3');
@@ -528,7 +551,7 @@ function buildOrbitarTimeline(): gsap.core.Timeline {
         const y = p1.y + Math.sin(orbit1.angle) * p1.r;
         const rot = (orbit1.angle * 180 / Math.PI) + 90; // inicia en 90° y termina en 810° (90° mod 360)
         gsap.set(bot, { x: x, y: y, rotation: rot });
-        updateBotMotionEffects(x, y);
+        updateBotMotionEffects(x, y, false); // En órbita: las estrellas no se mueven
       }
     }, 0)
     .to(m1, { opacity: 0, y: -10, duration: 0.4 }, 2.6);
@@ -536,10 +559,7 @@ function buildOrbitarTimeline(): gsap.core.Timeline {
   // -------------------------------------------------------------------------
   // FASE 2: Salto desde ángulo 0° hacia Planeta Intermedio (horizontal)
   // -------------------------------------------------------------------------
-  tl.call(() => {
-      gsap.to(botThruster, { opacity: 1, duration: 0.2 });
-    }, [], 3.0)
-    .to(m2, { opacity: 1, y: 0, duration: 0.5 }, 3.0)
+  tl.to(m2, { opacity: 1, y: 0, duration: 0.5 }, 3.0)
     .to(bot, {
       x: pMid.x - pMid.r,
       y: pMid.y,
@@ -549,7 +569,7 @@ function buildOrbitarTimeline(): gsap.core.Timeline {
       onUpdate: () => {
         const bx = gsap.getProperty(bot, "x") as number;
         const by = gsap.getProperty(bot, "y") as number;
-        updateBotMotionEffects(bx, by);
+        updateBotMotionEffects(bx, by, true); // En vuelo: las estrellas se mueven en parallax inverso
       }
     }, 3.0)
     .to(m2, { opacity: 0, y: -10, duration: 0.4 }, 4.7);
@@ -557,10 +577,7 @@ function buildOrbitarTimeline(): gsap.core.Timeline {
   // -------------------------------------------------------------------------
   // FASE 3: Órbita en Planeta Intermedio y preparación de salida a 90° (arriba)
   // -------------------------------------------------------------------------
-  tl.call(() => {
-      gsap.to(botThruster, { opacity: 0, duration: 0.2 });
-    }, [], 5.0)
-    .to(orbitMid, {
+  tl.to(orbitMid, {
       // De Math.PI (lado izquierdo) gira 1.25 vueltas hasta 3.5*PI (vértice superior = hacia arriba)
       angle: Math.PI + Math.PI * 2.5,
       duration: 2.2,
@@ -572,17 +589,14 @@ function buildOrbitarTimeline(): gsap.core.Timeline {
         const t = (orbitMid.angle - Math.PI) / (Math.PI * 2.5);
         const rot = 810 - t * 90;
         gsap.set(bot, { x: x, y: y, rotation: rot });
-        updateBotMotionEffects(x, y);
+        updateBotMotionEffects(x, y, false); // En órbita: las estrellas no se mueven
       }
     }, 5.0);
 
   // -------------------------------------------------------------------------
   // FASE 4: Salto a 90° (vertical hacia arriba) esquivando la Barrera de Plasma
   // -------------------------------------------------------------------------
-  tl.call(() => {
-      gsap.to(botThruster, { opacity: 1, duration: 0.2 });
-    }, [], 7.2)
-    .to(m3, { opacity: 1, y: 0, duration: 0.5 }, 7.2)
+  tl.to(m3, { opacity: 1, y: 0, duration: 0.5 }, 7.2)
     .to(bot, {
       x: p2.x,
       y: p2.y + p2.r,
@@ -592,7 +606,7 @@ function buildOrbitarTimeline(): gsap.core.Timeline {
       onUpdate: () => {
         const bx = gsap.getProperty(bot, "x") as number;
         const by = gsap.getProperty(bot, "y") as number;
-        updateBotMotionEffects(bx, by);
+        updateBotMotionEffects(bx, by, true); // En vuelo: las estrellas se mueven en parallax inverso
       }
     }, 7.2)
     .to(m3, { opacity: 0, y: -10, duration: 0.4 }, 8.9);
@@ -600,13 +614,7 @@ function buildOrbitarTimeline(): gsap.core.Timeline {
   // -------------------------------------------------------------------------
   // FASE 5: Captura y Órbita en Planeta Objetivo
   // -------------------------------------------------------------------------
-  tl.call(() => {
-      gsap.to(botThruster, { opacity: 0, duration: 0.3 });
-      if (botImg && currentSkin === 'astronaut') {
-        botImg.src = SKIN_CONFIG.astronaut.relaxed;
-      }
-    }, [], 9.2)
-    .to(orbitGoal, {
+  tl.to(orbitGoal, {
       angle: (Math.PI / 2) + Math.PI * 3.5,
       duration: 2.8,
       ease: "power2.out",
@@ -615,9 +623,46 @@ function buildOrbitarTimeline(): gsap.core.Timeline {
         const y = p2.y + Math.sin(orbitGoal.angle) * p2.r;
         const rot = (orbitGoal.angle * 180 / Math.PI) + 90 + 540;
         gsap.set(bot, { x: x, y: y, rotation: rot });
-        updateBotMotionEffects(x, y);
+        updateBotMotionEffects(x, y, false); // En órbita: las estrellas no se mueven
       }
     }, 9.2);
+
+  // Callback general reactivo para sincronizar sprite y propulsor hacia adelante y en reversa
+  tl.eventCallback("onUpdate", () => {
+    const t = tl.time();
+    const botImgEl = document.getElementById('orbitar-bot-img') as HTMLImageElement | null;
+    const thrusterEl = document.getElementById('bot-thruster');
+
+    // Transición de sprite según la fase de vuelo (skin astronauta):
+    // 1. Planeta de Inicio (t < 2.95): alert
+    // 2. Volando y tránsito intermedio (2.95 <= t < 9.15): normal
+    // 3. Planeta Objetivo (t >= 9.15): relaxed
+    if (currentSkin === 'astronaut' && botImgEl) {
+      if (t < 2.95) {
+        if (!botImgEl.src.includes('player-astronaut-alert.svg')) {
+          botImgEl.src = SKIN_CONFIG.astronaut.alert;
+        }
+      } else if (t < 9.15) {
+        if (!botImgEl.src.includes('player-astronaut.svg') || botImgEl.src.includes('alert') || botImgEl.src.includes('relaxed')) {
+          botImgEl.src = SKIN_CONFIG.astronaut.normal;
+        }
+      } else {
+        if (!botImgEl.src.includes('player-astronaut-relaxed.svg')) {
+          botImgEl.src = SKIN_CONFIG.astronaut.relaxed;
+        }
+      }
+    }
+
+    // Efecto de propulsor: boost al volar, idle vivo al orbitar o detenerse
+    const isFlying = (t >= 2.95 && t <= 5.05) || (t >= 7.15 && t <= 9.25);
+    if (thrusterEl) {
+      if (isFlying) {
+        thrusterEl.classList.add('bot-thruster-boost');
+      } else {
+        thrusterEl.classList.remove('bot-thruster-boost');
+      }
+    }
+  });
 
   return tl;
 }
