@@ -94,32 +94,45 @@
 <body class="bg-dark-900 text-slate-100 font-sans antialiased overflow-x-hidden">
 
     <!-- ================================================================= -->
+    <!-- STAGE GLOBAL PERSISTENTE: FONDO FIJO ENTRE ESCENAS               -->
+    <!-- Da la sensación de que la posición en pantalla es fija y solo se desplaza el contenido -->
+    <!-- ================================================================= -->
+    <div id="global-scrolly-background" class="fixed inset-0 z-0 pointer-events-none overflow-hidden select-none">
+        <!-- Base Color Layer -->
+        <div id="global-bg-base" class="absolute inset-0 transition-colors duration-700 bg-[#030612]"></div>
+
+        <!-- 1. Splash Purple Glow (Hero) -->
+        <div id="global-hero-glow" class="absolute inset-0 transition-opacity duration-700 opacity-100"
+            style="background-image: radial-gradient(ellipse at 50% 50%, rgba(55, 40, 100, 0.25) 0%, transparent 65%);">
+        </div>
+
+        <!-- 2. Interactive Spotlight (Hero Splash) -->
+        <div id="hero-spotlight" class="absolute inset-0 opacity-0 transition-opacity duration-700" style="
+            --mouse-x: 50%;
+            --mouse-y: 50%;
+            background: radial-gradient(circle 350px at var(--mouse-x) var(--mouse-y), rgba(244, 238, 90, 0.08) 0%, rgba(197, 120, 203, 0.08) 50%, transparent 100%);
+        "></div>
+
+        <!-- 3. Orbitar Ambient Glow (Cyan) -->
+        <div id="global-orbitar-glow" class="absolute inset-0 transition-opacity duration-700 opacity-0"
+            style="background: radial-gradient(ellipse at 50% 30%, rgba(72,202,228,0.18) 0%, rgba(11,16,25,0.92) 65%, transparent 100%);">
+        </div>
+
+        <!-- 4. Impostor Ambient Glow (Purple / Potasio) -->
+        <div id="global-impostor-glow" class="absolute inset-0 transition-opacity duration-700 opacity-0"
+            style="background: radial-gradient(ellipse at 50% 45%, rgba(197,120,203,0.18) 0%, rgba(10,15,26,0.95) 70%, transparent 100%);">
+        </div>
+
+        <!-- 5. Single Persistent Space Canvas (Stars and Comets for Orbitar) -->
+        <canvas id="global-space-canvas" class="absolute inset-0 w-full h-full opacity-0 transition-opacity duration-700"></canvas>
+    </div>
+
+    <!-- ================================================================= -->
     <!-- ESCENA 1: HERO (SPLASH -> ELEGÍ TU PRÓXIMA AVENTURA)              -->
     <!-- Transición idéntica preservada, accionada por scroll nativo       -->
     <!-- ================================================================= -->
-    <div id="hero-scene" class="scrolly-scene snap-scene h-[220svh]">
-        <section id="hero-trigger" class="scrolly-sticky-viewport flex items-center justify-center select-none">
-
-            <!-- Layer 1: Cosmic Background -->
-            <div id="hero-bg" class="absolute inset-0 z-0 bg-dark-900 transition-colors duration-700" style="
-                background-color: #030612;
-                background-image: radial-gradient(ellipse at 50% 50%, rgba(55, 40, 100, 0.25) 0%, transparent 65%);
-            "></div>
-
-            <!-- Layer 1.5: Orbitar Sky Transition Layer (estrellas y ambient glow progresivo) -->
-            <div id="hero-orbitar-sky" class="absolute inset-0 z-0 pointer-events-none opacity-0 transition-opacity duration-300">
-                <div class="absolute inset-0 opacity-60"
-                    style="background: radial-gradient(ellipse at 50% 30%, rgba(72,202,228,0.18) 0%, rgba(11,16,25,0.92) 65%, transparent 100%);">
-                </div>
-                <canvas id="hero-space-canvas" class="absolute inset-0 w-full h-full pointer-events-none"></canvas>
-            </div>
-
-            <!-- Interactive Spotlight (follows cursor on Splash) -->
-            <div id="hero-spotlight" class="absolute inset-0 pointer-events-none z-0 opacity-0 transition-opacity duration-700" style="
-                --mouse-x: 50%;
-                --mouse-y: 50%;
-                background: radial-gradient(circle 350px at var(--mouse-x) var(--mouse-y), rgba(244, 238, 90, 0.08) 0%, rgba(197, 120, 203, 0.08) 50%, transparent 100%);
-            "></div>
+    <div id="hero-scene" class="scrolly-scene snap-scene h-[220svh] relative z-10">
+        <section id="hero-trigger" class="scrolly-sticky-viewport flex items-center justify-center select-none bg-transparent">
 
             <!-- Layer 2: Central 3D Logo Layer (Splash Screen) -->
             <div id="hero-logo-layer" class="relative z-10 w-full h-full flex flex-col items-center justify-center" style="
@@ -305,16 +318,8 @@
     <!-- ESCENA 2: TEATRO CINEMÁTICO (ORBITAR & IMPOSTOR CON SCRUB)        -->
     <!-- Paleta oficial de Colors.ts y Barrera de Plasma solar             -->
     <!-- ================================================================= -->
-    <div id="games-theater-scene" class="scrolly-scene snap-scene h-[350svh] sm:h-[400svh]">
-        <section id="games-theater" class="scrolly-sticky-viewport transition-colors duration-700 bg-dark-900 select-none">
-            
-            <!-- Background Ambient Glow -->
-            <div id="games-ambient-glow" class="absolute inset-0 pointer-events-none transition-all duration-700 opacity-60"
-                style="background: radial-gradient(ellipse at 50% 30%, rgba(72,202,228,0.18) 0%, rgba(11,16,25,0.92) 65%, transparent 100%);">
-            </div>
-
-            <!-- Canvas Espacial de Orbitar (Estrellas titilantes #8B949E & Cometas cian) -->
-            <canvas id="orbitar-space-canvas" class="absolute inset-0 w-full h-full pointer-events-none z-0 transition-opacity duration-700"></canvas>
+    <div id="games-theater-scene" class="scrolly-scene snap-scene h-[350svh] sm:h-[400svh] relative z-10">
+        <section id="games-theater" class="scrolly-sticky-viewport transition-colors duration-700 bg-transparent select-none">
 
             <!-- ============================================== -->
             <!-- MUNDO 1: ORBITAR (La Odisea Gravitatoria)      -->
@@ -563,13 +568,8 @@
     <!-- ESCENA 3: SHOWCASE Y CONTACTO                                     -->
     <!-- Ficha de descarga y panel de contacto                             -->
     <!-- ================================================================= -->
-    <div id="bottom-scene" class="scrolly-scene snap-scene h-[220svh]">
-        <section id="bottom-trigger" class="scrolly-sticky-viewport flex items-center justify-center select-none bg-dark-900">
-            
-            <!-- Ambient Radial Glows -->
-            <div id="showcase-ambient-glow" class="absolute inset-0 pointer-events-none transition-all duration-700 opacity-60"
-                style="background: radial-gradient(circle 500px at 50% 50%, rgba(72,202,228,0.18) 0%, transparent 70%);">
-            </div>
+    <div id="bottom-scene" class="scrolly-scene snap-scene h-[220svh] relative z-10">
+        <section id="bottom-trigger" class="scrolly-sticky-viewport flex items-center justify-center select-none bg-transparent">
 
             <!-- Capa 1: Ficha de Juego y Descarga Oficial -->
             <div id="showcase-layer" class="absolute inset-0 z-10 w-full h-full flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 select-none transition-all">

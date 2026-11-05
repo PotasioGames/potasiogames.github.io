@@ -77,9 +77,69 @@ const SKIN_CONFIG: Record<SkinKey, { normal: string; alert: string; relaxed: str
   }
 };
 
+let spaceCanvasWakeup: (() => void) | null = null;
+let spaceCanvasSleep: (() => void) | null = null;
+
 // ---------------------------------------------------------------------------
-// 3. Scene 1: Hero Transition (Splash -> Adventure) & Sky Blending
+// 3. Persistent Fixed Background System & Hero Transition
 // ---------------------------------------------------------------------------
+export function updateGlobalBackground(progress: number, gameId: GameId): void {
+  const bgBase = document.getElementById('global-bg-base');
+  const heroGlow = document.getElementById('global-hero-glow');
+  const orbGlow = document.getElementById('global-orbitar-glow');
+  const impGlow = document.getElementById('global-impostor-glow');
+  const spaceCanvas = document.getElementById('global-space-canvas');
+
+  // Hero Splash Screen (progress <= 0.35)
+  if (progress <= 0.35) {
+    if (bgBase) bgBase.style.backgroundColor = '#030612';
+    if (heroGlow) heroGlow.style.opacity = '1';
+    if (orbGlow) orbGlow.style.opacity = '0';
+    if (impGlow) impGlow.style.opacity = '0';
+    if (spaceCanvas) spaceCanvas.style.opacity = '0';
+    spaceCanvasSleep?.();
+    return;
+  }
+
+  // Smooth blending as user scrolls through "Elegí tu Próxima Aventura" (0.35 -> 0.85)
+  const blend = Math.min(Math.max((progress - 0.35) / 0.50, 0), 1);
+
+  if (heroGlow) heroGlow.style.opacity = (1 - blend).toString();
+
+  if (gameId === 'orbitar') {
+    if (orbGlow) orbGlow.style.opacity = blend.toString();
+    if (impGlow) impGlow.style.opacity = '0';
+    if (spaceCanvas) spaceCanvas.style.opacity = blend.toString();
+    if (bgBase) bgBase.style.backgroundColor = blend > 0.4 ? '#0B1019' : '#030612';
+    if (blend > 0) spaceCanvasWakeup?.();
+  } else {
+    // Impostor
+    if (impGlow) impGlow.style.opacity = blend.toString();
+    if (orbGlow) orbGlow.style.opacity = '0';
+    if (spaceCanvas) spaceCanvas.style.opacity = '0';
+    if (bgBase) bgBase.style.backgroundColor = blend > 0.4 ? '#0a0f1a' : '#030612';
+    spaceCanvasSleep?.();
+  }
+}
+
+export function updatePortalCardsUI(gameId: GameId): void {
+  const portalOrb = document.getElementById('portal-orbitar');
+  const portalImp = document.getElementById('portal-impostor');
+  if (!portalOrb || !portalImp) return;
+
+  if (gameId === 'orbitar') {
+    portalOrb.classList.add('active', 'border-2', 'border-cyan-400/80', 'shadow-[0_0_35px_rgba(34,211,238,0.25)]');
+    portalOrb.classList.remove('border-white/10');
+    portalImp.classList.remove('active', 'border-2', 'border-potasio-primary/80', 'shadow-[0_0_35px_rgba(244,238,90,0.3)]');
+    portalImp.classList.add('border-white/10');
+  } else {
+    portalImp.classList.add('active', 'border-2', 'border-potasio-primary/80', 'shadow-[0_0_35px_rgba(244,238,90,0.3)]');
+    portalImp.classList.remove('border-white/10');
+    portalOrb.classList.remove('active', 'border-2', 'border-cyan-400/80', 'shadow-[0_0_35px_rgba(34,211,238,0.25)]');
+    portalOrb.classList.add('border-white/10');
+  }
+}
+
 const heroTl = gsap.timeline({ paused: true });
 heroTl
   .to("#scroll-indicator", { opacity: 0, scale: 0.5, duration: 0.3, ease: "power1.out" })
@@ -100,20 +160,7 @@ ScrollTrigger.create({
       spotlight.style.opacity = '0';
     }
 
-    // Sky transition as we continue scrolling down in "Elegí tu Próxima Aventura"
-    const heroSky = document.getElementById('hero-orbitar-sky');
-    const heroBg = document.getElementById('hero-bg');
-    if (heroSky && heroBg) {
-      if (activeGameId === 'orbitar' && self.progress > 0.45) {
-        // Ramp opacity smoothly from 0 at progress=0.45 to 1.0 at progress=0.92
-        const skyProgress = Math.min(Math.max((self.progress - 0.45) / 0.47, 0), 1);
-        heroSky.style.opacity = skyProgress.toString();
-        heroBg.style.backgroundColor = skyProgress > 0.5 ? '#0B1019' : '#030612';
-      } else {
-        heroSky.style.opacity = '0';
-        heroBg.style.backgroundColor = '#030612';
-      }
-    }
+    updateGlobalBackground(self.progress, activeGameId);
   }
 });
 
@@ -339,30 +386,31 @@ function setupInitialImpostorPosition(): void {
 // ---------------------------------------------------------------------------
 // 6. Theater Worlds Sync & Switching
 // ---------------------------------------------------------------------------
+export function selectGame(gameId: GameId): void {
+  activeGameId = gameId;
+  updatePortalCardsUI(gameId);
+  updateGlobalBackground(1.0, gameId);
+  syncTheaterWorld(gameId);
+}
+
 export function syncTheaterWorld(gameId: GameId): void {
   activeGameId = gameId;
   const worldOrbitar = document.getElementById('world-orbitar');
   const worldImpostor = document.getElementById('world-impostor');
-  const ambientGlow = document.getElementById('games-ambient-glow');
-  const canvas = document.getElementById('orbitar-space-canvas');
-  const heroSky = document.getElementById('hero-orbitar-sky');
+
+  // Update fixed global background for the chosen game world
+  updateGlobalBackground(1.0, gameId);
+  updatePortalCardsUI(gameId);
 
   if (gameId === 'orbitar') {
-    if (ambientGlow) {
-      ambientGlow.style.background = 'radial-gradient(ellipse at 50% 30%, rgba(72,202,228,0.18) 0%, rgba(11,16,25,0.92) 65%, transparent 100%)';
-    }
-    if (canvas) canvas.style.opacity = '1';
     if (worldOrbitar) worldOrbitar.classList.remove('hidden');
     if (worldImpostor) worldImpostor.classList.add('hidden');
+    spaceCanvasWakeup?.();
     setupInitialOrbitarPosition();
   } else {
-    if (ambientGlow) {
-      ambientGlow.style.background = 'radial-gradient(ellipse at 50% 50%, rgba(197,120,203,0.15) 0%, rgba(10,15,26,0.90) 65%, transparent 100%)';
-    }
-    if (canvas) canvas.style.opacity = '0';
-    if (heroSky) heroSky.style.opacity = '0';
     if (worldOrbitar) worldOrbitar.classList.add('hidden');
     if (worldImpostor) worldImpostor.classList.remove('hidden');
+    spaceCanvasSleep?.();
     setupInitialImpostorPosition();
   }
 
@@ -372,28 +420,23 @@ export function syncTheaterWorld(gameId: GameId): void {
 export function updateShowcase(gameId: GameId): void {
   const scOrbitar = document.getElementById('showcase-orbitar');
   const scImpostor = document.getElementById('showcase-impostor');
-  const scGlow = document.getElementById('showcase-ambient-glow');
 
   if (gameId === 'orbitar') {
     if (scOrbitar) scOrbitar.classList.remove('hidden');
     if (scImpostor) scImpostor.classList.add('hidden');
-    if (scGlow) scGlow.style.background = 'radial-gradient(circle 500px at 50% 50%, rgba(72,202,228,0.18) 0%, transparent 70%)';
   } else {
     if (scOrbitar) scOrbitar.classList.add('hidden');
     if (scImpostor) scImpostor.classList.remove('hidden');
-    if (scGlow) scGlow.style.background = 'radial-gradient(circle 500px at 50% 50%, rgba(197,120,203,0.15) 0%, transparent 70%)';
   }
 }
 
 // Launch Game from Adventure Cards
 export function launchGame(gameId: GameId): void {
-  activeGameId = gameId;
+  selectGame(gameId);
   const clickedCard = document.getElementById(`portal-${gameId}`);
   if (clickedCard) {
     clickedCard.classList.add('portal-card-expanding');
   }
-
-  syncTheaterWorld(gameId);
 
   const theaterScene = document.getElementById('games-theater-scene');
   if (theaterScene) {
@@ -846,18 +889,29 @@ function initSpaceCanvas(canvasId: string, isVisibleFn: () => boolean): void {
   window.addEventListener('resize', resize);
   resize();
 
+  spaceCanvasWakeup = () => {
+    if (isVisibleFn() && !isRunning) {
+      isRunning = true;
+      render();
+    }
+  };
+
+  spaceCanvasSleep = () => {
+    isRunning = false;
+    if (animId) {
+      cancelAnimationFrame(animId);
+      animId = null;
+    }
+  };
+
   const section = canvas.closest('section') || canvas.parentElement;
   if (section) {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting && isVisibleFn()) {
-          if (!isRunning) {
-            isRunning = true;
-            render();
-          }
+          spaceCanvasWakeup?.();
         } else {
-          isRunning = false;
-          if (animId) cancelAnimationFrame(animId);
+          spaceCanvasSleep?.();
         }
       });
     }, { threshold: 0.05 });
@@ -927,8 +981,7 @@ document.getElementById('contact-btn')?.addEventListener('click', (e) => {
 // ---------------------------------------------------------------------------
 function initApp(): void {
   initTheaterScrollytelling();
-  initSpaceCanvas('orbitar-space-canvas', () => activeGameId === 'orbitar');
-  initSpaceCanvas('hero-space-canvas', () => activeGameId === 'orbitar');
+  initSpaceCanvas('global-space-canvas', () => activeGameId === 'orbitar');
   refreshIcons();
 }
 
