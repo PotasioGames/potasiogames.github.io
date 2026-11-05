@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Mecha: Casco Cíber Mecha Militar - Blindaje de titanio, sensores ópticos HUD y aleta táctica -->
+  <g stroke-linejoin="round" stroke-linecap="round">
+    <!-- Módulos de Blindaje Lateral Angular -->
+    <polygon points="6,28 12,25 13,44 7,45" fill="#141D2C" stroke="#2D3B4E" stroke-width="1" />
+    <polygon points="58,28 52,25 51,44 57,45" fill="#141D2C" stroke="#2D3B4E" stroke-width="1" />
+    <circle cx="9.5" cy="35" r="1.4" fill="#10B981" />
+    <circle cx="54.5" cy="35" r="1.4" fill="#10B981" />
+
+    <!-- Casco - Sombra Profunda de Titanio -->
+    <circle cx="32" cy="36" r="24.5" fill="#0C131D" />
+
+    <!-- Casco - Cuerpo Principal Titanio Blindado -->
+    <circle cx="32" cy="36" r="23.5" fill="#1A2433" stroke="#2F3E54" stroke-width="1.5" />
+
+    <!-- Bisel Superior Cibernético -->
+    <ellipse cx="32" cy="15.5" rx="12" ry="4" fill="#38BDF8" opacity="0.25" />
+
+    <!-- Ceja Táctica Hexagonal Reforzada -->
+    <polygon points="18,25 24,21 40,21 46,25 42,28 22,28" fill="#131B26" stroke="#2F3E54" stroke-width="1" />
+    <line x1="28" y1="24" x2="36" y2="24" stroke="#10B981" stroke-width="1.2" />
+
+    <!-- Visor Angular Táctico con HUD -->
+    <ellipse cx="32" cy="36" rx="18" ry="15" fill="#040810" stroke="#1E2B3C" stroke-width="1.4" />
+
+    <!-- Línea de Telemetría HUD en el Visor -->
+    <line x1="16" y1="36" x2="20" y2="36" stroke="#10B981" stroke-width="1" opacity="0.6" />
+    <line x1="44" y1="36" x2="48" y2="36" stroke="#10B981" stroke-width="1" opacity="0.6" />
+
+    <!-- Reflejos Tecnológicos en el Visor -->
+    <ellipse cx="24" cy="25" rx="7" ry="4" fill="#38BDF8" opacity="0.35"
+      transform="rotate(-28, 24, 25)" />
+    <ellipse cx="22" cy="23.5" rx="3.2" ry="1.6" fill="#E0F2FE" opacity="0.8"
+      transform="rotate(-28, 22, 23.5)" />
+
+    <!-- Sensores Ópticos Ciber-Digitales (Ojos Rectangulares Tecnológicos) -->
+    <!-- Sensor Izquierdo -->
+    <rect x="21" y="32.5" width="8.5" height="6.5" rx="1.8" fill="#0C2E24" stroke="#10B981" stroke-width="1" />
+    <rect x="23" y="34.5" width="4.5" height="2.5" rx="0.8" fill="#10B981" />
+    <circle cx="26" cy="35" r="0.7" fill="#FFFFFF" />
+
+    <!-- Sensor Derecho -->
+    <rect x="34.5" y="32.5" width="8.5" height="6.5" rx="1.8" fill="#0C2E24" stroke="#10B981" stroke-width="1" />
+    <rect x="36.5" y="34.5" width="4.5" height="2.5" rx="0.8" fill="#10B981" />
+    <circle cx="39.5" cy="35" r="0.7" fill="#FFFFFF" />
+
+    <!-- Anillo Exterior Táctico -->
+    <circle cx="32" cy="36" r="24.5" fill="none" stroke="#334155" stroke-width="1.2" opacity="0.8" />
+
+    <!-- Aleta Táctica / Antena Blade de Telecomunicaciones -->
+    <polygon points="30.5,14 33.5,14 34,4 30,5" fill="#202C3D" stroke="#37475E" stroke-width="0.8" />
+    <circle cx="32" cy="4" r="1.4" fill="#10B981" />
+    <circle cx="32" cy="3.7" r="0.6" fill="#FFFFFF" />
+  </g>
+</svg>

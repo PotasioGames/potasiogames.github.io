@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Personaje Astronauta: Expresión de Seriedad y Alerta ante el Temblor -->
+  <g stroke-linejoin="round" stroke-linecap="round">
+
+    <!-- Casco - Capa Sombra Profunda -->
+    <circle cx="32" cy="36" r="24.5" fill="#0A3A52" />
+
+    <!-- Casco - Cuerpo Principal con Bisel de Iluminación -->
+    <circle cx="32" cy="36" r="23.5" fill="#0F5070" stroke="#1A7090" stroke-width="1.5" />
+
+    <!-- Bisel de Luz Superior en el Casco -->
+    <ellipse cx="32" cy="15.5" rx="12" ry="4" fill="#48CAE4" opacity="0.35" />
+
+    <!-- Visor Oscuro Amplio -->
+    <ellipse cx="32" cy="36" rx="18" ry="15" fill="#040E1A" stroke="#0A4060" stroke-width="1.4" />
+
+    <!-- Reflejos de Luz en el Visor -->
+    <ellipse cx="24" cy="25" rx="7" ry="4" fill="#48CAE4" opacity="0.45"
+      transform="rotate(-28, 24, 25)" />
+    <ellipse cx="22" cy="23.5" rx="3.2" ry="1.6" fill="#C0F8FF" opacity="0.85"
+      transform="rotate(-28, 22, 23.5)" />
+
+    <!-- Ceño / Líneas de Tensión y Concentración Inclinadas -->
+    <line x1="20.5" y1="31" x2="29.5" y2="33" stroke="#1A7090" stroke-width="2.0" stroke-linecap="round" />
+    <line x1="43.5" y1="31" x2="34.5" y2="33" stroke="#1A7090" stroke-width="2.0" stroke-linecap="round" />
+
+    <!-- Ojos Alertas Concentrados Mirando a la Distancia -->
+    <!-- Ojo Izquierdo -->
+    <circle cx="25.5" cy="36.5" r="4.4" fill="#48CAE4" opacity="0.9" />
+    <circle cx="24.6" cy="36.2" r="2.2" fill="#050C14" />
+    <circle cx="23.6" cy="35.2" r="0.9" fill="#FFFFFF" />
+
+    <!-- Ojo Derecho -->
+    <circle cx="38.5" cy="36.5" r="4.4" fill="#48CAE4" opacity="0.9" />
+    <circle cx="37.6" cy="36.2" r="2.2" fill="#050C14" />
+    <circle cx="36.6" cy="35.2" r="0.9" fill="#FFFFFF" />
+
+    <!-- Boca Firme y Preocupada (Línea recta tensa) -->
+    <line x1="29" y1="43.5" x2="35" y2="43.5" stroke="#48CAE4" stroke-width="1.6" stroke-linecap="round" opacity="0.85" />
+
+    <!-- Borde Exterior Tecnológico / Anillo de Blindaje -->
+    <circle cx="32" cy="36" r="24.5" fill="none" stroke="#48CAE4" stroke-width="1.2" opacity="0.75" />
+
+    <!-- Antena Superior / Baliza de Señal -->
+    <line x1="32" y1="14" x2="32" y2="5" stroke="#1A7090" stroke-width="1.8" />
+    <circle cx="32" cy="5" r="2.5" fill="#48CAE4" stroke="#80E4F8" stroke-width="0.8" />
+    <circle cx="32" cy="4.5" r="1" fill="#FFFFFF" opacity="0.9" />
+  </g>
+</svg>

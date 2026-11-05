@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Potasio Games - We Make Fun</title>
     <meta name="description"
-        content="Estudio de desarrollo de videojuegos indie. Creadores de Impostor y experiencias sociales únicas.">
+        content="Estudio de desarrollo de videojuegos indie. Creadores de Impostor y Orbitar — experiencias únicas para reuniones y adrenalina espacial en tu celular.">
     <meta name="keywords"
-        content="videojuegos indie, potasio games, impostor, juego de rol, juegos de cartas, deducción social, party game, juegos de mesa para celular">
+        content="videojuegos indie, potasio games, impostor, orbitar, juego arcade, gravedad, espacio, juego de rol, juegos de cartas, deducción social, party game, juegos para celular, android">
     <meta name="robots" content="index, follow">
     <meta name="theme-color" content="#f4ee5a">
 
@@ -20,7 +20,7 @@
     <meta property="og:type" content="website">
     <meta property="og:title" content="Potasio Games - We Make Fun">
     <meta property="og:description"
-        content="Estudio de desarrollo de videojuegos indie. Creadores de Impostor y experiencias sociales únicas.">
+        content="Estudio de desarrollo de videojuegos indie. Creadores de Impostor y Orbitar — experiencias únicas para reuniones y adrenalina espacial en tu celular.">
     <!-- NOTA: Reemplaza 'potasio-games-web.vercel.app' con tu dominio final para que las redes sociales puedan cargar la imagen -->
     <meta property="og:image" content="https://potasio-games-web.vercel.app/logo-share.png">
 
@@ -28,7 +28,7 @@
     <meta property="twitter:card" content="summary">
     <meta property="twitter:title" content="Potasio Games - We Make Fun">
     <meta property="twitter:description"
-        content="Estudio de desarrollo de videojuegos indie. Creadores de Impostor y experiencias sociales únicas.">
+        content="Estudio de desarrollo de videojuegos indie. Creadores de Impostor y Orbitar — experiencias únicas para reuniones y adrenalina espacial en tu celular.">
     <meta property="twitter:image" content="https://potasio-games-web.vercel.app/logo-share.png">
 
     <!-- Tailwind CSS (CDN) -->
@@ -41,6 +41,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollToPlugin.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/MotionPathPlugin.min.js"></script>
 
     <!-- Custom Styles -->
     <link rel="stylesheet" href="assets/css/style.css">
@@ -75,7 +76,9 @@
                         }
                     },
                     fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
+                        sans: ['Outfit', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
                     }
                 }
             }
@@ -83,38 +86,13 @@
     </script>
 </head>
 
-<body class="bg-dark-900 text-slate-100 font-sans antialiased overflow-x-hidden overflow-hidden">
+<body class="bg-dark-900 text-slate-100 font-sans antialiased overflow-x-hidden">
 
-    <!-- Navigation -->
-    <nav id="navbar" class="fixed w-full z-50 bg-dark-900/80 backdrop-blur-md border-b border-white/5 opacity-0 pointer-events-none">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-20">
-                <div class="flex items-center gap-3">
-                    <img src="assets/img/logo-potasiogames.png" alt="Potasio Games Logo"
-                        class="w-10 h-10 object-cover rounded-xl">
-                    <span class="text-2xl font-bold tracking-tight text-white select-none">Potasio<span
-                            class="text-potasio-secondary">Games</span></span>
-                </div>
-                <div class="hidden md:block">
-                    <div class="ml-10 flex items-baseline space-x-8">
-                        <a href="#games"
-                            class="hover:text-potasio-primary transition-colors px-3 py-2 rounded-md text-sm font-medium select-none">Juegos</a>
-                        <a href="#about"
-                            class="hover:text-potasio-primary transition-colors px-3 py-2 rounded-md text-sm font-medium select-none">Nosotros</a>
-                        <a href="#contact"
-                            class="bg-white/10 hover:bg-white/20 px-4 py-2 rounded-full text-sm font-medium transition-all select-none">Contacto</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </nav>
+    <!-- Hero Section with Scrollytelling Transition to Adventure Selection -->
+    <section id="hero-trigger" class="relative w-full h-screen overflow-hidden flex items-center justify-center select-none">
 
-    <!-- Hero Section (GSAP Container) -->
-    <!-- h-screen: The section takes exactly one viewport. GSAP will add the scroll space. -->
-    <section id="hero-trigger" class="relative overflow-hidden">
-
-        <!-- Layer 1: Background (CSS gradient, no image) -->
-        <div id="hero-bg" class="absolute inset-0 z-0" style="
+        <!-- Layer 1: Cosmic Background -->
+        <div id="hero-bg" class="absolute inset-0 z-0 bg-dark-900" style="
             background-color: #030612;
             background-image: radial-gradient(ellipse at 50% 50%, rgba(55, 40, 100, 0.25) 0%, transparent 65%);
         "></div>
@@ -126,26 +104,22 @@
             background: radial-gradient(circle 350px at var(--mouse-x) var(--mouse-y), rgba(244, 238, 90, 0.08) 0%, rgba(197, 120, 203, 0.08) 50%, transparent 100%);
         "></div>
 
-        <!-- Layer 2: Logo images (Stacked, centered) -->
+        <!-- Layer 2: Central 3D Logo Layer (Splash Screen) -->
         <div id="hero-logo-layer" class="relative z-10 w-full h-full flex flex-col items-center justify-center" style="
             perspective: 1000px;
             transform-style: preserve-3d;
         ">
-
-            <!-- Logo + GAMES STUDIOS wrapper (relative container for overlay) -->
+            <!-- Logo + GAMES STUDIOS wrapper -->
             <div id="hero-logo-wrapper" class="relative w-full px-4 md:px-32 lg:px-48 xl:px-72 2xl:px-[24rem]" style="
                 max-width: 1728px;
                 transform-style: preserve-3d;
             ">
-
                 <!-- Full logo: [icon] POTASIO -->
                 <img
                     src="assets/img/full-logo-potasio.png"
                     alt="Potasio"
                     class="w-full object-contain logo-glow-pulse"
-                    style="
-                        transform: translateZ(10px);
-                    "
+                    style="transform: translateZ(10px);"
                 >
 
                 <!-- GAMES STUDIOS text: overlapping, bottom-right of logo -->
@@ -158,7 +132,6 @@
                         max-width: 1252px;
                     "
                 >
-
             </div>
 
             <!-- Scroll Indicator (UX Cue) -->
@@ -170,160 +143,482 @@
                     <div class="w-1 h-2 bg-potasio-primary rounded-full animate-[bounce_1.5s_infinite]"></div>
                 </div>
             </div>
-
         </div>
 
-        <!-- Layer 3: Text Content (Starts Invisible, shown after transition) -->
-        <div id="hero-content-layer" class="absolute inset-x-0 top-0 z-10 w-full flex flex-col items-center justify-center">
-            <div id="hero-content" class="text-center opacity-0 translate-y-20 px-4 max-w-5xl">
-                <h1
-                    class="text-5xl md:text-8xl font-extrabold tracking-tight mb-8 text-white drop-shadow-2xl select-none">
-                    Desarrollando <br>
-                    <span
-                        class="bg-clip-text text-transparent bg-gradient-to-r from-potasio-primary to-potasio-secondary">Diversión
-                        Pura</span>
-                </h1>
-                <p class="mb-12 text-xl md:text-2xl text-slate-300 font-light max-w-3xl mx-auto leading-relaxed">
-                    Creamos mundos donde la estrategia social y la adrenalina se encuentran.
-                </p>
-
-                <div class="flex justify-center gap-6">
-                    <a href="#games"
-                        class="group relative px-10 py-5 bg-potasio-primary text-dark-900 font-bold text-lg rounded-full overflow-hidden transition-all hover:scale-110 hover:shadow-[0_0_40px_rgba(244,238,90,0.5)]">
-                        <span class="relative z-10">Ver Juegos</span>
-                    </a>
+        <!-- Layer 3: Elegí tu Próxima Aventura (Shown on Scrollytelling transition) -->
+        <div id="adventure-layer" class="absolute inset-0 z-10 w-full h-full flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 opacity-0 pointer-events-none translate-y-8 select-none">
+            
+            <div class="max-w-5xl w-full mx-auto flex flex-col items-center">
+                <!-- Section Header (Clean, bold) -->
+                <div class="text-center mb-6 sm:mb-10">
+                    <h2 class="text-3xl sm:text-5xl font-extrabold text-white font-display tracking-tight">
+                        Elegí tu Próxima Aventura
+                    </h2>
                 </div>
-            </div>
-        </div>
-    </section>
 
-
-    <!-- Games Section -->
-    <section id="games" class="py-20 bg-dark-800/50 relative z-20">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16 select-none">
-                <h2 class="text-3xl font-bold text-white mb-4">Nuestros Juegos</h2>
-                <div class="w-20 h-1 bg-potasio-secondary mx-auto rounded-full"></div>
-            </div>
-
-            <!-- Game Card: Impostor -->
-            <div
-                class="bg-dark-700/50 rounded-3xl overflow-hidden border border-white/5 hover:border-potasio-primary/50 transition-all duration-300 shadow-2xl group max-w-4xl mx-auto">
-                <div class="grid md:grid-cols-2 gap-0">
-                    <div
-                        class="h-64 md:h-auto bg-gradient-to-br from-indigo-900 to-purple-900 relative overflow-hidden flex items-center justify-center p-8">
-                        <!-- Placeholder for Game Screenshot/Art -->
-                        <div
-                            class="absolute inset-0 opacity-40 bg-[url('assets/img/splash.png')] sm:bg-[url('assets/img/splash-big.png')] bg-cover bg-center group-hover:scale-110 transition-transform duration-700">
+                <!-- Two Interactive Cards (Touch card directly to enter) -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 w-full max-w-4xl">
+                    
+                    <!-- TARJETA 1: ORBITAR -->
+                    <div id="portal-orbitar" onclick="launchGame('orbitar')"
+                        class="portal-card active relative rounded-3xl p-6 sm:p-8 bg-gradient-to-b from-dark-800/90 to-dark-900/90 border-2 border-cyan-400/80 shadow-[0_0_35px_rgba(34,211,238,0.25)] flex flex-col justify-between transition-all duration-300 cursor-pointer group hover:border-cyan-400 hover:shadow-[0_0_45px_rgba(34,211,238,0.4)]">
+                        
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="px-2.5 py-0.5 rounded-full bg-cyan-400/20 text-cyan-300 text-[10px] font-mono font-bold uppercase border border-cyan-400/40">
+                                Arcade Gravitatorio
+                            </span>
+                            <span class="text-[10px] font-mono text-slate-400">1 Jugador • 2D</span>
                         </div>
-                        <i data-lucide="users" class="w-32 h-32 text-white/20 absolute"></i>
-                        <div
-                            class="relative z-10 w-full max-w-[200px] aspect-square bg-dark-900/80 rounded-2xl backdrop-blur-sm border border-white/10 flex items-center justify-center shadow-2xl transform group-hover:scale-105 transition-transform duration-500">
-                            <!-- Game Icon Actual -->
-                            <div class="text-center p-4">
-                                <img src="assets/img/icon.png" alt="Impostor Icon"
-                                    class="w-20 h-20 rounded-2xl shadow-lg mx-auto mb-2">
-                                <p class="text-xs font-bold uppercase tracking-widest text-potasio-primary select-none">
-                                    Impostor ¿Sabes
-                                    mentir?
-                                </p>
+
+                        <!-- Visual Centerpiece: Bot Preview with Floating Halo -->
+                        <div class="relative py-4 flex items-center justify-center my-auto">
+                            <div class="w-28 h-28 sm:w-32 sm:h-32 rounded-full border border-cyan-400/20 flex items-center justify-center relative">
+                                <div class="absolute inset-0 rounded-full border border-dashed border-cyan-400/40 orbit-dashed-ring"></div>
+                                <img id="portal-bot-img" src="assets/img/player-astronaut.svg" alt="Orbitar"
+                                    class="w-16 h-16 sm:w-20 sm:h-20 drop-shadow-[0_0_20px_rgba(34,211,238,0.7)] group-hover:scale-110 transition-transform duration-300">
+                            </div>
+                        </div>
+
+                        <!-- Info and Skin Selector -->
+                        <div>
+                            <h3 class="text-2xl sm:text-3xl font-extrabold text-white font-display mb-1 flex items-center gap-2">
+                                Orbitar
+                            </h3>
+                            <p class="text-xs sm:text-sm text-slate-300 font-light mb-4 leading-relaxed">
+                                Conquistá planetas calculando inercia orbital y soltándote en tirachinas para esquivar satélites patrulla.
+                            </p>
+
+                            <!-- Skin Selector Pills inside Card -->
+                            <div class="bg-dark-900/80 p-2 rounded-2xl border border-white/10">
+                                <span class="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider block mb-1.5 px-1">
+                                    Traje Espacial:
+                                </span>
+                                <div class="grid grid-cols-3 gap-1.5">
+                                    <button type="button" onclick="event.stopPropagation(); selectSkin('astronaut')" id="portal-skin-astronaut"
+                                        class="portal-skin-btn flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-xl bg-cyan-400/20 border-2 border-cyan-400 text-white text-xs font-mono font-bold transition-all">
+                                        <img src="assets/img/player-astronaut.svg" class="w-4 h-4"> Astro
+                                    </button>
+                                    <button type="button" onclick="event.stopPropagation(); selectSkin('pilot')" id="portal-skin-pilot"
+                                        class="portal-skin-btn flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-xl bg-dark-800 border border-white/10 text-slate-400 hover:text-white text-xs font-mono transition-all">
+                                        <img src="assets/img/suit-pilot.svg" class="w-4 h-4"> Piloto
+                                    </button>
+                                    <button type="button" onclick="event.stopPropagation(); selectSkin('mecha')" id="portal-skin-mecha"
+                                        class="portal-skin-btn flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-xl bg-dark-800 border border-white/10 text-slate-400 hover:text-white text-xs font-mono transition-all">
+                                        <img src="assets/img/suit-mecha.svg" class="w-4 h-4"> Mecha
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="p-8 md:p-12 flex flex-col justify-center">
-                        <div class="flex items-center gap-3 mb-4">
-                            <span
-                                class="px-3 py-1 bg-potasio-primary/10 text-potasio-primary text-xs font-bold rounded-full uppercase tracking-wider">Social
-                                Deduction</span>
-                            <span
-                                class="px-3 py-1 bg-purple-500/10 text-purple-400 text-xs font-bold rounded-full uppercase tracking-wider">Party
-                                Game</span>
+                    <!-- TARJETA 2: IMPOSTOR -->
+                    <div id="portal-impostor" onclick="launchGame('impostor')"
+                        class="portal-card relative rounded-3xl p-6 sm:p-8 bg-gradient-to-b from-dark-800/90 to-dark-900/90 border border-white/10 hover:border-potasio-primary/70 shadow-xl hover:shadow-[0_0_35px_rgba(244,238,90,0.3)] flex flex-col justify-between transition-all duration-300 cursor-pointer group">
+                        
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="px-2.5 py-0.5 rounded-full bg-potasio-primary/20 text-potasio-primary text-[10px] font-mono font-bold uppercase border border-potasio-primary/40">
+                                Party Game
+                            </span>
+                            <span class="text-[10px] font-mono text-slate-400">3 a 20+ Jugadores</span>
                         </div>
-                        <h3 class="text-3xl font-bold text-white mb-4 select-none">Impostor ¿Sabes mentir?</h3>
-                        <p class="text-slate-400 mb-8 leading-relaxed">
-                            El juego definitivo para tus reuniones. Disfruta del modo clásico donde un jugador debe
-                            engañar a todos, o explora nuestros nuevos modos de juego que llevarán la tensión y las
-                            risas al siguiente nivel. ¡Descubre quién miente usando palabras secretas e ingenio social!
+
+                        <!-- Visual Centerpiece: 3 Cards Preview & Floating Magnifier -->
+                        <div class="relative py-4 flex items-center justify-center my-auto">
+                            <div class="relative w-36 h-28 flex items-center justify-center">
+                                <!-- Card 1: Augusto -->
+                                <div class="absolute w-14 h-20 rounded-xl bg-gradient-to-br from-slate-800 to-slate-900 border border-white/20 -rotate-12 -translate-x-8 shadow-md flex flex-col justify-between p-1.5">
+                                    <span class="text-[8px] font-mono text-purple-300 font-bold">Augusto</span>
+                                    <span class="text-[9px] font-mono text-slate-500 text-center">••••</span>
+                                    <span class="text-[7px] font-mono text-slate-500 text-center">🔒</span>
+                                </div>
+                                <!-- Card 2: Paloma -->
+                                <div class="absolute w-14 h-20 rounded-xl bg-gradient-to-br from-slate-800 to-slate-900 border border-white/20 rotate-0 shadow-lg flex flex-col justify-between p-1.5 z-10">
+                                    <span class="text-[8px] font-mono text-purple-300 font-bold">Paloma</span>
+                                    <span class="text-[9px] font-mono text-slate-500 text-center">••••</span>
+                                    <span class="text-[7px] font-mono text-slate-500 text-center">🔒</span>
+                                </div>
+                                <!-- Card 3: Juan -->
+                                <div class="absolute w-14 h-20 rounded-xl bg-gradient-to-br from-slate-800 to-slate-900 border border-white/20 rotate-12 translate-x-8 shadow-md flex flex-col justify-between p-1.5">
+                                    <span class="text-[8px] font-mono text-purple-300 font-bold">Juan</span>
+                                    <span class="text-[9px] font-mono text-slate-500 text-center">••••</span>
+                                    <span class="text-[7px] font-mono text-slate-500 text-center">🔒</span>
+                                </div>
+                                <!-- Magnifier Vector -->
+                                <div class="absolute -top-2 right-1 drop-shadow-[0_0_15px_rgba(244,238,90,0.5)] group-hover:scale-110 transition-transform z-20">
+                                    <svg class="w-10 h-10" viewBox="0 0 64 64" fill="none">
+                                        <circle cx="26" cy="26" r="18" fill="rgba(244, 238, 90, 0.2)" stroke="#f4ee5a" stroke-width="4"/>
+                                        <line x1="39" y1="39" x2="56" y2="56" stroke="#f4ee5a" stroke-width="5" stroke-linecap="round"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Info and Action -->
+                        <div>
+                            <h3 class="text-2xl sm:text-3xl font-extrabold text-white font-display mb-1 flex items-center gap-2">
+                                Impostor
+                            </h3>
+                            <p class="text-xs sm:text-sm text-slate-300 font-light mb-4 leading-relaxed">
+                                1 solo celular en la ronda. Todos leen la misma palabra clave... excepto el impostor, que debe mentir y fingir que la conoce.
+                            </p>
+
+                            <!-- Highlights -->
+                            <div class="bg-dark-900/80 p-3 rounded-2xl border border-white/10 flex items-center justify-around text-center">
+                                <div>
+                                    <span class="block text-xs font-bold text-potasio-primary font-mono">1 Teléfono</span>
+                                    <span class="text-[10px] text-slate-400">Pasa y juega</span>
+                                </div>
+                                <div class="w-px h-6 bg-white/10"></div>
+                                <div>
+                                    <span class="block text-xs font-bold text-potasio-primary font-mono">3 a 20+</span>
+                                    <span class="text-[10px] text-slate-400">Para tus previas</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Games Section: Immersive Cinematic Theater (100% pure visual scene, zero HUD) -->
+    <section id="games-theater" class="relative z-20 overflow-hidden transition-colors duration-700 bg-dark-900 w-full h-screen select-none">
+        
+        <!-- Background Ambient Glow -->
+        <div id="games-ambient-glow" class="absolute inset-0 pointer-events-none transition-all duration-700 opacity-60"
+            style="background: radial-gradient(ellipse at 50% 30%, rgba(34,211,238,0.12) 0%, rgba(3,10,26,0.85) 60%, transparent 100%);">
+        </div>
+
+        <!-- Canvas Espacial de Orbitar (Estrellas titilantes y cometas) -->
+        <canvas id="orbitar-space-canvas" class="absolute inset-0 w-full h-full pointer-events-none z-0 transition-opacity duration-700"></canvas>
+
+        <!-- ============================================== -->
+        <!-- MUNDO 1: ORBITAR (La Odisea Gravitatoria)      -->
+        <!-- ============================================== -->
+        <div id="world-orbitar" class="relative w-full h-full inset-0 z-10 overflow-hidden">
+            
+            <!-- Planeta 1 (Origen: Planeta Alfa) -->
+            <div id="planet-1-container" class="absolute left-[8%] bottom-[14%] sm:bottom-[16%] flex flex-col items-center pointer-events-none z-10">
+                <div class="relative flex items-center justify-center">
+                    <!-- Concentric Orbit Ring -->
+                    <div id="planet-1-ring" class="absolute w-44 h-44 sm:w-56 sm:h-56 rounded-full border-2 border-cyan-400/30 orbit-dashed-ring pointer-events-none"></div>
+                    <!-- Planet Body SVG -->
+                    <div class="w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-gradient-to-tr from-cyan-950 via-cyan-800 to-teal-400 shadow-[0_0_50px_rgba(34,211,238,0.5)] border-2 border-cyan-300/40 relative overflow-hidden flex items-center justify-center">
+                        <div class="w-8 h-8 rounded-full bg-cyan-900/60 absolute top-4 left-4 border border-cyan-500/20"></div>
+                        <div class="w-5 h-5 rounded-full bg-cyan-950/60 absolute bottom-5 right-6 border border-cyan-500/20"></div>
+                        <div class="w-3 h-3 rounded-full bg-teal-300/30 absolute top-8 right-5"></div>
+                    </div>
+                </div>
+                <span class="mt-3 text-[11px] font-mono font-bold text-cyan-300/80 bg-dark-900/80 px-2.5 py-0.5 rounded-full border border-cyan-400/30 tracking-wider">
+                    Planeta Alfa (Base)
+                </span>
+            </div>
+
+            <!-- Peligro Cósmico Central (Satélite Alfa + Campo de Asteroides) -->
+            <div id="hazard-container" class="absolute left-1/2 top-[46%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center pointer-events-none z-10">
+                <div class="relative flex items-center justify-center">
+                    <!-- Sensor Laser Ring -->
+                    <div class="absolute w-28 h-28 sm:w-36 sm:h-36 rounded-full border border-red-500/30 animate-ping pointer-events-none"></div>
+                    <!-- Satellite Body -->
+                    <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-950 border-2 border-red-500/70 shadow-[0_0_30px_rgba(239,68,68,0.6)] hazard-pulse flex items-center justify-center rotate-12">
+                        <div class="w-3 h-3 rounded-full bg-red-500 animate-pulse"></div>
+                        <div class="absolute -top-3 w-1 h-3 bg-red-400 rounded-full"></div>
+                        <div class="absolute -left-3 w-3 h-1 bg-slate-600 rounded-full"></div>
+                        <div class="absolute -right-3 w-3 h-1 bg-slate-600 rounded-full"></div>
+                    </div>
+                </div>
+                <span class="mt-2 text-[10px] font-mono font-bold text-red-400/90 bg-dark-900/90 px-2 py-0.5 rounded-full border border-red-500/40 tracking-wider">
+                    ⚠️ Satélite Patrulla
+                </span>
+            </div>
+
+            <!-- Planeta 2 (Destino: Planeta Beta) -->
+            <div id="planet-2-container" class="absolute right-[8%] top-[16%] sm:top-[18%] flex flex-col items-center pointer-events-none z-10">
+                <div class="relative flex items-center justify-center">
+                    <!-- Gravity Capture Ring -->
+                    <div id="planet-2-ring" class="absolute w-48 h-48 sm:w-60 sm:h-60 rounded-full border-2 border-purple-400/30 orbit-dashed-ring pointer-events-none"></div>
+                    <!-- Planet Body SVG -->
+                    <div class="w-28 h-28 sm:w-36 sm:h-36 rounded-full bg-gradient-to-tr from-indigo-950 via-purple-900 to-cyan-300 shadow-[0_0_60px_rgba(197,120,203,0.5)] border-2 border-purple-400/40 relative overflow-hidden flex items-center justify-center">
+                        <div class="w-10 h-10 rounded-full bg-purple-950/70 absolute bottom-4 left-5 border border-purple-400/20"></div>
+                        <div class="w-6 h-6 rounded-full bg-indigo-900/60 absolute top-6 right-7 border border-purple-400/20"></div>
+                        <div class="w-4 h-4 rounded-full bg-cyan-300/40 absolute bottom-8 right-6"></div>
+                    </div>
+                </div>
+                <span class="mt-3 text-[11px] font-mono font-bold text-purple-300/80 bg-dark-900/80 px-2.5 py-0.5 rounded-full border border-purple-400/30 tracking-wider">
+                    Planeta Beta (Objetivo)
+                </span>
+            </div>
+
+            <!-- ============================================== -->
+            <!-- ACTOR PRINCIPAL: EL BOT VIAJERO                -->
+            <!-- ============================================== -->
+            <div id="scrolly-bot" class="absolute z-30 pointer-events-none transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center will-change-transform">
+                <div class="relative flex items-center justify-center">
+                    <!-- Bot Image SVG -->
+                    <img id="orbitar-bot-img" src="assets/img/player-astronaut.svg" alt="Orbitar Robot"
+                        class="w-16 h-16 sm:w-20 sm:h-20 drop-shadow-[0_0_24px_rgba(34,211,238,0.8)] transition-all duration-150">
+                    
+                    <!-- Thruster Blast (fuego propulsión) -->
+                    <div id="bot-thruster" class="absolute -bottom-4 inset-x-0 flex justify-center opacity-0 transition-opacity duration-200 pointer-events-none">
+                        <div class="w-3 h-6 bg-gradient-to-b from-cyan-300 via-cyan-500 to-transparent rounded-full blur-[1px] animate-pulse"></div>
+                    </div>
+
+                    <!-- Shield Bubble (escudo de energía) -->
+                    <div id="bot-shield" class="absolute -inset-2 rounded-full border-2 border-cyan-300 bg-cyan-400/10 shadow-[0_0_20px_rgba(34,211,238,0.7)] opacity-0 transition-opacity duration-200 pointer-events-none"></div>
+                </div>
+            </div>
+
+            <!-- Diálogo Reactivo / Píldora (Desacoplada de la rotación, siempre horizontal y dibujada por encima con z-50) -->
+            <div id="orbitar-speech-container" class="absolute z-50 pointer-events-none transform -translate-x-1/2 -translate-y-full will-change-transform">
+                <span id="bot-speech" class="opacity-0 transition-opacity duration-200 text-[10px] font-mono font-bold text-cyan-300 bg-dark-900/95 px-3 py-1 rounded-full border border-cyan-400/60 shadow-[0_0_20px_rgba(34,211,238,0.5)] whitespace-nowrap block mb-4">
+                    Calculando inercia... 🎯
+                </span>
+            </div>
+
+            <!-- ============================================== -->
+            <!-- HITOS NARRATIVOS (Sutiles fases de vuelo)      -->
+            <!-- ============================================== -->
+            <!-- Hito 1: Órbita Inicial -->
+            <div id="orbitar-m1" class="absolute left-6 sm:left-14 top-20 sm:top-24 max-w-xs p-4 sm:p-5 rounded-2xl bg-dark-800/90 border border-cyan-400/40 backdrop-blur-xl shadow-2xl pointer-events-none opacity-0 translate-y-4 transition-all">
+                <span class="text-[10px] font-mono text-cyan-400 uppercase font-bold tracking-widest block mb-1">Fase 01</span>
+                <h4 class="font-display font-bold text-lg text-white mb-1">Enganchate a la Gravedad</h4>
+                <p class="text-xs text-slate-300 font-light leading-relaxed">
+                    Girá en la órbita del Planeta Alfa. Mantené la concentración y preparate para el lanzamiento.
+                </p>
+            </div>
+
+            <!-- Hito 2: Tirachinas Slingshot -->
+            <div id="orbitar-m2" class="absolute left-6 sm:left-1/4 bottom-20 sm:bottom-24 max-w-xs p-4 sm:p-5 rounded-2xl bg-dark-800/90 border border-cyan-400/40 backdrop-blur-xl shadow-2xl pointer-events-none opacity-0 translate-y-4 transition-all">
+                <span class="text-[10px] font-mono text-cyan-400 uppercase font-bold tracking-widest block mb-1">Fase 02</span>
+                <h4 class="font-display font-bold text-lg text-white mb-1">Tirachinas Gravitatorio</h4>
+                <p class="text-xs text-slate-300 font-light leading-relaxed">
+                    Desacople en el ángulo tangencial exacto para catapultarse a toda velocidad a través del vacío.
+                </p>
+            </div>
+
+            <!-- Hito 3: Esquivar Satélite -->
+            <div id="orbitar-m3" class="absolute right-6 sm:right-1/4 top-20 sm:top-24 max-w-xs p-4 sm:p-5 rounded-2xl bg-dark-800/90 border border-red-500/50 backdrop-blur-xl shadow-2xl pointer-events-none opacity-0 translate-y-4 transition-all">
+                <span class="text-[10px] font-mono text-red-400 uppercase font-bold tracking-widest block mb-1">Fase 03</span>
+                <h4 class="font-display font-bold text-lg text-white mb-1">Esquivá las Patrullas</h4>
+                <p class="text-xs text-slate-300 font-light leading-relaxed">
+                    El Satélite Alfa vigila el espacio abierto. Un error de cálculo y salís despedido al vacío.
+                </p>
+            </div>
+
+        </div>
+
+        <!-- ============================================== -->
+        <!-- MUNDO 2: IMPOSTOR (La Ronda Secreta 3D)        -->
+        <!-- ============================================== -->
+        <div id="world-impostor" class="hidden relative w-full h-full inset-0 z-10 flex flex-col items-center justify-center overflow-hidden">
+            
+            <!-- Mesa Circular de Cartas 3D -->
+            <div class="relative w-full max-w-[700px] h-[340px] sm:h-[400px] flex items-center justify-center perspective-1000 select-none">
+                
+                <!-- Lupa Vectorial que Viaja en la Cinemática -->
+                <div id="impostor-magnifier" class="pointer-events-none filter drop-shadow-[0_0_20px_rgba(244,238,90,0.6)] will-change-transform">
+                    <svg class="w-16 h-16 sm:w-20 sm:h-20" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="26" cy="26" r="18" fill="rgba(244, 238, 90, 0.15)" stroke="#f4ee5a" stroke-width="3.5" />
+                        <circle cx="26" cy="26" r="14" stroke="rgba(255, 255, 255, 0.35)" stroke-width="1.5" stroke-dasharray="4 2" />
+                        <path d="M18 18 A 12 12 0 0 1 34 18" stroke="rgba(255, 255, 255, 0.7)" stroke-width="2" stroke-linecap="round" />
+                        <line x1="39" y1="39" x2="56" y2="56" stroke="#f4ee5a" stroke-width="5" stroke-linecap="round" />
+                        <line x1="43" y1="43" x2="55" y2="55" stroke="#c578cb" stroke-width="2" stroke-linecap="round" />
+                    </svg>
+                </div>
+
+                <!-- 3 Cartas de Jugadores (Reducido a 3 para un ritmo dinámico y ágil) -->
+                <!-- Carta 1: Augusto -->
+                <div id="impostor-card-1" class="impostor-card w-24 h-36 sm:w-28 sm:h-42 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 border border-white/20 shadow-2xl p-3 flex flex-col justify-between transform-style-3d will-change-transform transition-all">
+                    <div class="h-full flex flex-col justify-between">
+                        <span class="text-[11px] font-mono text-purple-300 font-bold tracking-wide">Augusto</span>
+                        <div id="card-1-word" class="text-center font-display font-bold text-xs sm:text-sm text-slate-500 transition-colors duration-300">
+                            ••••••
+                        </div>
+                        <span id="card-1-status" class="text-[9px] font-mono text-slate-500 text-center">🔒 En secreto</span>
+                    </div>
+                </div>
+
+                <!-- Carta 2: Paloma -->
+                <div id="impostor-card-2" class="impostor-card w-24 h-36 sm:w-28 sm:h-42 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 border border-white/20 shadow-2xl p-3 flex flex-col justify-between transform-style-3d will-change-transform transition-all">
+                    <div class="h-full flex flex-col justify-between">
+                        <span class="text-[11px] font-mono text-purple-300 font-bold tracking-wide">Paloma</span>
+                        <div id="card-2-word" class="text-center font-display font-bold text-xs sm:text-sm text-slate-500 transition-colors duration-300">
+                            ••••••
+                        </div>
+                        <span id="card-2-status" class="text-[9px] font-mono text-slate-500 text-center">🔒 En secreto</span>
+                    </div>
+                </div>
+
+                <!-- Carta 3: Juan (El Impostor) -->
+                <div id="impostor-card-3" class="impostor-card w-24 h-36 sm:w-28 sm:h-42 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 border border-white/20 shadow-2xl p-3 flex flex-col justify-between transform-style-3d will-change-transform transition-all z-30">
+                    <div id="card-3-front" class="h-full flex flex-col justify-between">
+                        <span class="text-[11px] font-mono text-purple-300 font-bold tracking-wide">Juan</span>
+                        <div id="card-3-word" class="text-center font-display font-bold text-xs sm:text-sm text-slate-500 transition-colors duration-300">
+                            ••••••
+                        </div>
+                        <span id="card-3-status" class="text-[9px] font-mono text-slate-500 text-center">🔒 En secreto</span>
+                    </div>
+                    <div id="card-3-back" class="hidden h-full flex flex-col items-center justify-center">
+                        <span class="text-[11px] font-mono text-red-400 font-bold tracking-wide mb-1">Juan</span>
+                        <div class="impostor-stamp px-2 py-1 font-bold text-xs sm:text-sm uppercase text-center animate-bounce">
+                            IMPOSTOR
+                        </div>
+                        <span class="text-[9px] font-mono text-red-400 mt-2 font-bold tracking-wider">¡ATRAPADO!</span>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- ============================================== -->
+    <!-- TRAMO INFERIOR: FICHA Y CONTACTO (IN-PLACE)    -->
+    <!-- ============================================== -->
+    <section id="bottom-trigger" class="relative z-20 w-full h-screen overflow-hidden flex items-center justify-center select-none bg-dark-900">
+        
+        <!-- Ambient Radial Glows -->
+        <div id="showcase-ambient-glow" class="absolute inset-0 pointer-events-none transition-all duration-700 opacity-60"
+            style="background: radial-gradient(circle 500px at 50% 50%, rgba(34,211,238,0.15) 0%, transparent 70%);">
+        </div>
+
+        <!-- Capa 1: Ficha de Juego y Descarga Oficial -->
+        <div id="showcase-layer" class="absolute inset-0 z-10 w-full h-full flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 select-none transition-all">
+            <div class="max-w-4xl w-full mx-auto relative z-10">
+                <!-- Ficha de Orbitar -->
+                <div id="showcase-orbitar" class="bg-gradient-to-b from-dark-800/90 to-dark-900/90 rounded-3xl p-6 sm:p-10 border border-cyan-400/30 shadow-[0_0_50px_rgba(34,211,238,0.15)] flex flex-col md:flex-row items-center gap-6 md:gap-10 transition-all">
+                    <!-- Icono Grande y Destacado -->
+                    <div class="flex-shrink-0 flex flex-col items-center">
+                        <div class="w-28 h-28 sm:w-36 sm:h-36 rounded-3xl overflow-hidden border-2 border-cyan-400/40 shadow-[0_0_30px_rgba(34,211,238,0.3)] p-1 bg-dark-950 flex items-center justify-center">
+                            <img src="assets/img/icon-orbitar.png" alt="Orbitar" class="w-full h-full object-cover rounded-2xl">
+                        </div>
+                    </div>
+
+                    <!-- Información y Botón de Descarga Oficial -->
+                    <div class="flex-1 text-center md:text-left">
+                        <div class="flex flex-wrap items-center justify-center md:justify-start gap-2 mb-2 sm:mb-3">
+                            <span class="px-3 py-1 rounded-full bg-cyan-400/15 text-cyan-300 text-xs font-mono font-bold uppercase border border-cyan-400/30">
+                                Arcade Gravitatorio • 2D
+                            </span>
+                            <span class="text-xs font-mono text-slate-400">Android • 1 Jugador • Offline</span>
+                        </div>
+
+                        <h3 class="text-3xl sm:text-4xl font-extrabold text-white font-display tracking-tight mb-3">
+                            Orbitar
+                        </h3>
+
+                        <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-6 font-light">
+                            Tocás la pantalla para soltarte de la órbita de un planeta y saltar al siguiente usando su gravedad. Si calculás mal el ángulo o el momento, te estrella un satélite patrulla o chocás contra un cinturón de asteroides. En niveles más profundos, el Jefe Alfa te espera con miras láser.
                         </p>
 
-                        <div class="flex flex-col sm:flex-row gap-4">
-                            <a href="https://play.google.com/store/apps/details?id=com.augustodelisio.impostor"
-                                target="_blank"
-                                class="flex items-center justify-center gap-3 bg-white text-dark-900 px-6 py-3 rounded-xl font-bold hover:bg-gray-100 transition-colors">
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg"
-                                    alt="Get it on Google Play" class="h-8">
+                        <div class="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-4">
+                            <a href="https://play.google.com/store/apps/details?id=com.potasiogames.orbitar" target="_blank"
+                                class="inline-flex items-center gap-3 bg-white text-dark-900 px-7 py-3 rounded-2xl font-bold hover:bg-slate-100 transition-all shadow-xl hover:scale-105 active:scale-95 text-sm">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Google Play" class="h-6 sm:h-7">
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ficha de Impostor -->
+                <div id="showcase-impostor" class="hidden bg-gradient-to-b from-dark-800/90 to-dark-900/90 rounded-3xl p-6 sm:p-10 border border-purple-500/30 shadow-[0_0_50px_rgba(197,120,203,0.15)] flex flex-col md:flex-row items-center gap-6 md:gap-10 transition-all">
+                    <!-- Icono Grande y Destacado -->
+                    <div class="flex-shrink-0 flex flex-col items-center">
+                        <div class="w-28 h-28 sm:w-36 sm:h-36 rounded-3xl overflow-hidden border-2 border-potasio-primary/40 shadow-[0_0_30px_rgba(244,238,90,0.3)] p-1 bg-dark-950 flex items-center justify-center">
+                            <img src="assets/img/icon.png" alt="Impostor" class="w-full h-full object-cover rounded-2xl">
+                        </div>
+                    </div>
+
+                    <!-- Información y Botón de Descarga Oficial -->
+                    <div class="flex-1 text-center md:text-left">
+                        <div class="flex flex-wrap items-center justify-center md:justify-start gap-2 mb-2 sm:mb-3">
+                            <span class="px-3 py-1 rounded-full bg-potasio-primary/15 text-potasio-primary text-xs font-mono font-bold uppercase border border-potasio-primary/30">
+                                Party Game / Deducción Social
+                            </span>
+                            <span class="text-xs font-mono text-slate-400">1 Solo Celular • 3 a 20+ Jugadores</span>
+                        </div>
+
+                        <h3 class="text-3xl sm:text-4xl font-extrabold text-white font-display tracking-tight mb-3">
+                            Impostor <span class="text-potasio-primary">¿Sabes mentir?</span>
+                        </h3>
+
+                        <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-6 font-light">
+                            El juego definitivo para tus reuniones. Todos en la mesa reciben una palabra secreta, menos uno que es el impostor. Hablan por turnos diciendo pistas sin regalar la palabra; el grupo tiene que descubrir quién miente y el impostor debe camuflarse con cara de póker antes de que lo voten.
+                        </p>
+
+                        <div class="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-4">
+                            <a href="https://play.google.com/store/apps/details?id=com.augustodelisio.impostor" target="_blank"
+                                class="inline-flex items-center gap-3 bg-white text-dark-900 px-7 py-3 rounded-2xl font-bold hover:bg-slate-100 transition-all shadow-xl hover:scale-105 active:scale-95 text-sm">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Google Play" class="h-6 sm:h-7">
                             </a>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
 
-    <!-- About Section -->
-    <section id="about" class="py-20 relative overflow-hidden">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10 select-none">
-            <h2 class="text-3xl font-bold text-white mb-8">Sobre Potasio Games</h2>
-            <p class="text-xl text-slate-300 leading-relaxed">
-                Somos un pequeño estudio indie apasionado por conectar personas a través de juegos simples pero
-                profundos. Creemos que las mejores experiencias ocurren cara a cara, riendo y jugando con amigos.
-            </p>
-        </div>
-    </section>
-
-    <!-- Contact Section -->
-    <section id="contact" class="py-20 relative">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <div
-                class="bg-gradient-to-b from-dark-800 to-dark-900 rounded-3xl p-10 border border-white/5 shadow-2xl relative overflow-hidden group">
-                <!-- Decorative background elements -->
-                <div
-                    class="absolute top-0 right-0 w-64 h-64 bg-potasio-secondary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:bg-potasio-secondary/10 transition-all duration-700">
-                </div>
-
-                <div class="relative z-10">
-                    <div
-                        class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-potasio-secondary/10 text-potasio-secondary mb-6 group-hover:scale-110 transition-transform duration-300">
-                        <i data-lucide="mail" class="w-8 h-8"></i>
-                    </div>
-
-                    <h2 class="text-3xl font-bold text-white mb-4 select-none">¿Hablamos?</h2>
-                    <p class="text-slate-400 mb-8 max-w-lg mx-auto text-lg">
-                        ¿Tienes alguna sugerencia, encontraste un bug o simplemente quieres saludar?
-                        Estamos siempre atentos a nuestra comunidad.
-                    </p>
-
-                    <a href="#" id="contact-btn"
-                        class="inline-flex items-center gap-3 px-8 py-4 bg-potasio-primary text-dark-900 font-bold rounded-xl hover:bg-yellow-300 transition-all duration-300 hover:shadow-[0_0_20px_rgba(244,238,90,0.3)] hover:-translate-y-0.5 active:translate-y-0 group-hover:-translate-y-1 cursor-pointer">
-                        <i data-lucide="mail" class="w-5 h-5"></i>
-                        <span>Escríbenos un Correo</span>
-                        <i data-lucide="arrow-right" class="w-5 h-5 transition-transform group-hover:translate-x-1"></i>
-                    </a>
-                </div>
+            <!-- Scroll Cue to Contact Stage -->
+            <div id="showcase-scroll-cue" onclick="goToStage(4)"
+                class="absolute bottom-5 sm:bottom-7 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-1.5 text-slate-400 hover:text-white transition-colors cursor-pointer select-none">
+                <span class="text-[10px] uppercase font-mono tracking-widest">Sobre el Estudio & Contacto</span>
+                <i data-lucide="chevron-down" class="w-4 h-4 animate-bounce text-potasio-primary"></i>
             </div>
         </div>
-    </section>
 
-    <!-- Footer -->
-    <footer class="bg-dark-900 border-t border-white/5 py-12">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex flex-col md:flex-row justify-between items-center gap-8">
-                <div class="flex items-center gap-2 select-none">
-                    <span class="text-xl font-bold text-white">Potasio<span
-                            class="text-potasio-secondary">Games</span></span>
+        <!-- Capa 2: Sobre Potasio & Contacto (Entra in-place al hacer scroll abajo) -->
+        <div id="contact-layer" class="absolute inset-0 z-10 w-full h-full flex flex-col justify-between items-center px-4 sm:px-6 lg:px-8 py-8 sm:py-10 opacity-0 pointer-events-none translate-y-8 select-none transition-all">
+            
+            <div class="my-auto max-w-3xl w-full mx-auto flex flex-col items-center gap-6 sm:gap-8">
+                <!-- Sobre Potasio Games -->
+                <div class="text-center max-w-xl">
+                    <h2 class="text-2xl sm:text-4xl font-extrabold text-white font-display mb-3">Sobre Potasio Games</h2>
+                    <p class="text-xs sm:text-sm text-slate-300 leading-relaxed font-light">
+                        Somos un pequeño estudio indie apasionado por conectar personas a través de juegos simples pero
+                        profundos. Creemos que las mejores experiencias ocurren cara a cara, riendo y jugando con amigos.
+                    </p>
                 </div>
 
-                <div class="flex gap-8 text-sm text-slate-400">
+                <!-- Contact Card -->
+                <div class="w-full max-w-lg bg-gradient-to-b from-dark-800 to-dark-900 rounded-3xl p-6 sm:p-8 border border-white/10 shadow-2xl relative overflow-hidden group text-center">
+                    <div class="absolute top-0 right-0 w-48 h-48 bg-potasio-secondary/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+
+                    <div class="relative z-10">
+                        <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-potasio-secondary/15 text-potasio-secondary mb-3 group-hover:scale-110 transition-transform">
+                            <i data-lucide="mail" class="w-6 h-6"></i>
+                        </div>
+
+                        <h3 class="text-xl sm:text-2xl font-bold text-white mb-2">¿Hablamos?</h3>
+                        <p class="text-slate-400 text-xs sm:text-sm mb-5 max-w-sm mx-auto">
+                            ¿Tienes alguna sugerencia, encontraste un bug o simplemente quieres saludar? Estamos siempre atentos a nuestra comunidad.
+                        </p>
+
+                        <a href="#" id="contact-btn"
+                            class="inline-flex items-center gap-2.5 px-7 py-3 bg-potasio-primary text-dark-900 font-bold rounded-xl hover:bg-yellow-300 transition-all shadow-lg hover:scale-105 active:scale-95 text-xs sm:text-sm cursor-pointer">
+                            <i data-lucide="mail" class="w-4 h-4"></i>
+                            <span>Escríbenos un Correo</span>
+                            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer Bar -->
+            <footer class="w-full max-w-4xl border-t border-white/10 pt-4 flex flex-col sm:flex-row justify-between items-center gap-3 text-xs text-slate-500">
+                <div class="flex items-center gap-2">
+                    <span class="font-bold text-white">Potasio<span class="text-potasio-secondary">Games</span></span>
+                </div>
+                <div>
                     <a href="privacy.html" class="hover:text-white transition-colors">Política de Privacidad</a>
                 </div>
-
-                <div class="text-sm text-slate-500">
+                <div>
                     &copy; 2026 Potasio Games. All rights reserved.
                 </div>
-            </div>
+            </footer>
         </div>
-    </footer>
+
+    </section>
 
     <!-- Redemption Modal (Hidden by default) -->
     <div id="redeem-modal"
@@ -358,74 +653,237 @@
         </div>
     </div>
 
-    <!-- Main Logic -->
+    <!-- Main Logic: Scrollytelling Engine & Interactive Worlds -->
     <script>
         // Initialize Icons
         lucide.createIcons();
 
         // Register GSAP Plugins
         gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
+        ScrollTrigger.config({ ignoreMobileResize: true });
 
-        // State control
-        let textVisible = false;
-        let animating = false;
+        // =========================================================
+        // 1. STATE-DRIVEN FULL-STAGE ENGINE (ANTI-HALFWAY SCROLL)
+        // =========================================================
+        // Stages: 0: Splash, 1: Adventure, 2: Theater, 3: Showcase, 4: Contact
+        let currentStage = 0;
+        let isTransitioning = false;
+        let activeGameId = 'orbitar';
+        let currentSkin = 'astronaut';
+        let orbitarTimeline = null;
+        let impostorTimeline = null;
 
-        // Timeline Setup
-        const tl = gsap.timeline({ paused: true });
+        // Timeline 1: Splash (Stage 0) <-> Adventure (Stage 1) in-place
+        const heroTl = gsap.timeline({ paused: true });
+        heroTl
+            .to("#scroll-indicator", { opacity: 0, scale: 0.5, duration: 0.3, ease: "power1.out" })
+            .to("#hero-logo-layer", { opacity: 0, scale: 1.05, duration: 0.7, ease: "power2.inOut" }, 0)
+            .to("#hero-spotlight", { opacity: 0, duration: 0.5 }, 0)
+            .to("#adventure-layer", { opacity: 1, y: 0, pointerEvents: "auto", duration: 0.7, ease: "power2.out" }, "-=0.4");
 
-        // Build Animation (Splash -> Text)
-        tl.to("#scroll-indicator", { opacity: 0, scale: 0.5, duration: 0.3, ease: "power1.out" })
-            .to("#hero-bg", { opacity: 0, duration: 0.8, ease: "power2.inOut" }, 0)
-            .to("#hero-spotlight", { opacity: 0, duration: 0.8, ease: "power2.inOut" }, 0)
-            .to("#hero-logo-layer", { opacity: 0, scale: 1.05, duration: 1.0, ease: "power2.inOut" }, 0)
-            .to("#hero-content", { opacity: 1, y: 0, duration: 1, ease: "power2.out" }, "-=0.8")
-            .to("#navbar", { 
-                opacity: 1, 
-                pointerEvents: "auto", 
-                backgroundColor: "rgba(10, 15, 26, 0.95)", 
-                backdropFilter: "blur(12px)", 
-                borderBottom: "1px solid rgba(255, 255, 255, 0.05)", 
-                duration: 0.8, 
-                ease: "power2.out" 
-            }, "-=0.8");
+        // Timeline 2: Showcase (Stage 3) <-> Contact (Stage 4) in-place
+        const bottomTl = gsap.timeline({ paused: true });
+        bottomTl
+            .to("#showcase-layer", { opacity: 0, scale: 1.04, pointerEvents: "none", duration: 0.7, ease: "power2.inOut" })
+            .to("#contact-layer", { opacity: 1, y: 0, pointerEvents: "auto", duration: 0.7, ease: "power2.out" }, "-=0.4");
 
-        // Helper Functions
-        function animateToText() {
-            animating = true;
-            const hw = document.getElementById('hero-logo-wrapper');
-            if (hw) {
-                gsap.to(hw, { rotateX: 0, rotateY: 0, duration: 0.5 });
+        function goToStage(targetStage) {
+            if (isTransitioning) return;
+            if (targetStage < 0 || targetStage > 4) return;
+            if (targetStage === currentStage) return;
+
+            isTransitioning = true;
+            const prev = currentStage;
+            currentStage = targetStage;
+
+            // 0 -> 1 (Splash to Adventure)
+            if (prev === 0 && targetStage === 1) {
+                window.scrollTo(0, 0);
+                heroTl.play().then(() => { isTransitioning = false; });
+                return;
             }
-            tl.play().then(() => {
-                animating = false;
-                textVisible = true;
-                document.body.classList.remove('overflow-hidden');
-            });
+
+            // 1 -> 0 (Adventure to Splash)
+            if (prev === 1 && targetStage === 0) {
+                window.scrollTo(0, 0);
+                heroTl.reverse().then(() => { isTransitioning = false; });
+                return;
+            }
+
+            // 1 -> 2 (Adventure to Theater)
+            if (prev === 1 && targetStage === 2) {
+                launchGame(activeGameId);
+                return;
+            }
+
+            // 2 -> 1 (Theater back to Adventure)
+            if (prev === 2 && targetStage === 1) {
+                if (orbitarTimeline) orbitarTimeline.kill();
+                if (impostorTimeline) impostorTimeline.kill();
+                gsap.to(window, {
+                    scrollTo: 0,
+                    duration: 0.85,
+                    ease: "power2.inOut",
+                    onComplete: () => { isTransitioning = false; }
+                });
+                return;
+            }
+
+            // 2 -> 3 (Theater to Showcase)
+            if (prev === 2 && targetStage === 3) {
+                updateShowcase(activeGameId);
+                bottomTl.pause(0);
+                gsap.to(window, {
+                    scrollTo: "#bottom-trigger",
+                    duration: 0.85,
+                    ease: "power2.inOut",
+                    onComplete: () => { isTransitioning = false; }
+                });
+                return;
+            }
+
+            // 3 -> 2 (Showcase back to Theater)
+            if (prev === 3 && targetStage === 2) {
+                gsap.to(window, {
+                    scrollTo: "#games-theater",
+                    duration: 0.85,
+                    ease: "power2.inOut",
+                    onComplete: () => {
+                        isTransitioning = false;
+                        playCurrentCinematic();
+                    }
+                });
+                return;
+            }
+
+            // 3 -> 4 (Showcase to Contact in-place)
+            if (prev === 3 && targetStage === 4) {
+                bottomTl.play().then(() => { isTransitioning = false; });
+                return;
+            }
+
+            // 4 -> 3 (Contact back to Showcase in-place)
+            if (prev === 4 && targetStage === 3) {
+                bottomTl.reverse().then(() => { isTransitioning = false; });
+                return;
+            }
+
+            // Multi-stage jumps
+            if (targetStage === 4) {
+                heroTl.progress(1);
+                bottomTl.progress(1);
+                gsap.to(window, {
+                    scrollTo: "#bottom-trigger",
+                    duration: 0.85,
+                    ease: "power2.inOut",
+                    onComplete: () => { isTransitioning = false; }
+                });
+            } else if (targetStage === 3) {
+                heroTl.progress(1);
+                bottomTl.progress(0);
+                updateShowcase(activeGameId);
+                gsap.to(window, {
+                    scrollTo: "#bottom-trigger",
+                    duration: 0.85,
+                    ease: "power2.inOut",
+                    onComplete: () => { isTransitioning = false; }
+                });
+            } else if (targetStage === 0) {
+                heroTl.reverse();
+                gsap.to(window, {
+                    scrollTo: 0,
+                    duration: 0.85,
+                    ease: "power2.inOut",
+                    onComplete: () => { isTransitioning = false; }
+                });
+            } else {
+                isTransitioning = false;
+            }
         }
 
-        function animateToSplash() {
-            animating = true;
-            document.body.classList.add('overflow-hidden');
-            window.scrollTo(0, 0); // Ensure window is at top when returning to splash
-            tl.reverse().then(() => {
-                animating = false;
-                textVisible = false;
-            });
-        }
+        // Scroll indicator click cue on Splash
+        document.getElementById('scroll-indicator')?.addEventListener('click', () => {
+            if (currentStage === 0) goToStage(1);
+        });
 
-        // --- Interactive 3D Tilt & Mouse Spotlight Logic ---
+        // Wheel event listener for discrete section-by-section navigation
+        let lastWheelTime = 0;
+        window.addEventListener("wheel", (e) => {
+            e.preventDefault();
+            if (isTransitioning) return;
+            const now = Date.now();
+            if (now - lastWheelTime < 450) return; // Prevent continuous delta flood
+
+            if (e.deltaY > 18) {
+                lastWheelTime = now;
+                goToStage(currentStage + 1);
+            } else if (e.deltaY < -18) {
+                lastWheelTime = now;
+                goToStage(currentStage - 1);
+            }
+        }, { passive: false });
+
+        // Touch swipe listeners for mobile discrete navigation
+        let touchStartY = 0;
+        window.addEventListener("touchstart", (e) => {
+            touchStartY = e.touches[0].clientY;
+        }, { passive: true });
+
+        window.addEventListener("touchmove", (e) => {
+            e.preventDefault();
+            if (isTransitioning) return;
+
+            const currentY = e.touches[0].clientY;
+            const deltaY = touchStartY - currentY;
+
+            if (Math.abs(deltaY) > 35) {
+                if (deltaY > 0) {
+                    goToStage(currentStage + 1);
+                } else {
+                    goToStage(currentStage - 1);
+                }
+                touchStartY = currentY;
+            }
+        }, { passive: false });
+
+        // Keyboard navigation (Arrow keys / Page keys)
+        window.addEventListener("keydown", (e) => {
+            if (isTransitioning) return;
+            if (e.key === "ArrowDown" || e.key === "PageDown" || e.key === " ") {
+                e.preventDefault();
+                goToStage(currentStage + 1);
+            } else if (e.key === "ArrowUp" || e.key === "PageUp") {
+                e.preventDefault();
+                goToStage(currentStage - 1);
+            }
+        });
+
+        // Smooth Scrolling for Internal Anchor Links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                const targetId = this.getAttribute('href');
+                if (targetId === '#contact' || targetId === '#about') {
+                    e.preventDefault();
+                    goToStage(4);
+                } else if (targetId === '#games-theater' || targetId === '#games') {
+                    e.preventDefault();
+                    goToStage(2);
+                }
+            });
+        });
+
+        // Interactive 3D Tilt on Hero Logo & Mouse Spotlight
         const heroTrigger = document.getElementById('hero-trigger');
         const heroWrapper = document.getElementById('hero-logo-wrapper');
         const heroSpotlight = document.getElementById('hero-spotlight');
 
         if (heroTrigger && heroWrapper && heroSpotlight) {
             heroTrigger.addEventListener('mousemove', (e) => {
-                if (textVisible) return;
+                if (currentStage !== 0) return;
 
                 const rect = heroTrigger.getBoundingClientRect();
                 const normX = (e.clientX - rect.left) / rect.width - 0.5;
                 const normY = (e.clientY - rect.top) / rect.height - 0.5;
-
                 const pctX = ((e.clientX - rect.left) / rect.width) * 100;
                 const pctY = ((e.clientY - rect.top) / rect.height) * 100;
 
@@ -447,8 +905,9 @@
             });
 
             heroTrigger.addEventListener('mouseenter', () => {
-                if (textVisible) return;
-                gsap.to(heroSpotlight, { opacity: 1, duration: 0.5 });
+                if (currentStage === 0) {
+                    gsap.to(heroSpotlight, { opacity: 1, duration: 0.5 });
+                }
             });
 
             heroTrigger.addEventListener('mouseleave', () => {
@@ -463,64 +922,726 @@
             });
         }
 
-        // --- Scroll Indicator Click Logic ---
-        const scrollIndicator = document.getElementById('scroll-indicator');
-        if (scrollIndicator) {
-            scrollIndicator.addEventListener('click', () => {
-                if (!textVisible && !animating) {
-                    animateToText();
+        // =========================================================
+        // 2. ORBITAR SPACE CANVAS (TWINKLING STARS & COMETS)
+        // =========================================================
+        let isCanvasRunning = false;
+        let canvasAnimId = null;
+
+        function initOrbitarCanvas() {
+            const canvas = document.getElementById('orbitar-space-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            if (!ctx) return;
+
+            let width = 0;
+            let height = 0;
+            let stars = [];
+            let comets = [];
+            const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+            function resize() {
+                const parent = canvas.parentElement;
+                width = parent ? parent.offsetWidth : window.innerWidth;
+                height = parent ? parent.offsetHeight : window.innerHeight;
+                canvas.width = width * dpr;
+                canvas.height = height * dpr;
+                ctx.setTransform(1, 0, 0, 1, 0, 0);
+                ctx.scale(dpr, dpr);
+                initStars();
+            }
+
+            function initStars() {
+                stars = [];
+                const count = Math.min(Math.floor((width * height) / 7500), 130);
+                for (let i = 0; i < count; i++) {
+                    stars.push({
+                        x: Math.random() * width,
+                        y: Math.random() * height,
+                        radius: Math.random() * 1.4 + 0.4,
+                        baseAlpha: Math.random() * 0.7 + 0.2,
+                        phase: Math.random() * Math.PI * 2,
+                        speed: Math.random() * 0.02 + 0.008,
+                        colorType: Math.random() < 0.25 ? 'cyan' : 'white'
+                    });
+                }
+            }
+
+            function spawnComet() {
+                if (comets.length >= 2) return;
+                const startX = Math.random() * (width * 0.75);
+                const startY = Math.random() * (height * 0.35);
+                const angle = (Math.PI / 4) + (Math.random() * 0.2 - 0.1);
+                const speed = Math.random() * 4.5 + 3.5;
+                const length = Math.random() * 80 + 70;
+                comets.push({
+                    x: startX,
+                    y: startY,
+                    dx: Math.cos(angle) * speed,
+                    dy: Math.sin(angle) * speed,
+                    length: length,
+                    opacity: 1,
+                    decay: 0.012
+                });
+            }
+
+            let lastComet = Date.now();
+
+            function render() {
+                if (!isCanvasRunning) return;
+                ctx.clearRect(0, 0, width, height);
+
+                // Render Twinkling Stars
+                for (const star of stars) {
+                    star.phase += star.speed;
+                    const alpha = star.baseAlpha * (0.6 + 0.4 * Math.sin(star.phase));
+                    ctx.beginPath();
+                    ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = star.colorType === 'cyan' 
+                        ? `rgba(103, 232, 249, ${alpha})` 
+                        : `rgba(255, 255, 255, ${alpha})`;
+                    ctx.fill();
+                }
+
+                // Spawn Comets periodically
+                const now = Date.now();
+                if (now - lastComet > 4500 + Math.random() * 3500) {
+                    spawnComet();
+                    lastComet = now;
+                }
+
+                // Render Comets
+                for (let i = comets.length - 1; i >= 0; i--) {
+                    const c = comets[i];
+                    c.x += c.dx;
+                    c.y += c.dy;
+                    c.opacity -= c.decay;
+
+                    if (c.opacity <= 0 || c.x > width + 100 || c.y > height + 100) {
+                        comets.splice(i, 1);
+                        continue;
+                    }
+
+                    const tailX = c.x - (c.dx / Math.hypot(c.dx, c.dy)) * c.length;
+                    const tailY = c.y - (c.dy / Math.hypot(c.dx, c.dy)) * c.length;
+
+                    const grad = ctx.createLinearGradient(tailX, tailY, c.x, c.y);
+                    grad.addColorStop(0, 'rgba(34, 211, 238, 0)');
+                    grad.addColorStop(0.7, `rgba(34, 211, 238, ${c.opacity * 0.6})`);
+                    grad.addColorStop(1, `rgba(255, 255, 255, ${c.opacity})`);
+
+                    ctx.beginPath();
+                    ctx.moveTo(tailX, tailY);
+                    ctx.lineTo(c.x, c.y);
+                    ctx.strokeStyle = grad;
+                    ctx.lineWidth = 1.6;
+                    ctx.stroke();
+
+                    // Bright Comet Head
+                    ctx.beginPath();
+                    ctx.arc(c.x, c.y, 2, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(255, 255, 255, ${c.opacity})`;
+                    ctx.shadowColor = '#22d3ee';
+                    ctx.shadowBlur = 8;
+                    ctx.fill();
+                    ctx.shadowBlur = 0;
+                }
+
+                canvasAnimId = requestAnimationFrame(render);
+            }
+
+            window.addEventListener('resize', resize);
+            resize();
+
+            // Observe visibility to save GPU
+            const theaterSection = document.getElementById('games-theater');
+            if (theaterSection) {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting && activeGameId === 'orbitar') {
+                            if (!isCanvasRunning) {
+                                isCanvasRunning = true;
+                                render();
+                            }
+                        } else {
+                            isCanvasRunning = false;
+                            if (canvasAnimId) cancelAnimationFrame(canvasAnimId);
+                        }
+                    });
+                }, { threshold: 0.05 });
+                observer.observe(theaterSection);
+            }
+
+            isCanvasRunning = true;
+            render();
+        }
+
+        initOrbitarCanvas();
+
+        // =========================================================
+        // 3. GAME STATE, SKIN SELECTION & MORPHOLOGICAL LAUNCH
+        // =========================================================
+        const SKIN_CONFIG = {
+            astronaut: {
+                normal: 'assets/img/player-astronaut.svg',
+                alert: 'assets/img/player-astronaut-alert.svg',
+                relaxed: 'assets/img/player-astronaut-relaxed.svg',
+                name: 'Astronauta'
+            },
+            pilot: {
+                normal: 'assets/img/suit-pilot.svg',
+                alert: 'assets/img/suit-pilot.svg',
+                relaxed: 'assets/img/suit-pilot.svg',
+                name: 'Piloto'
+            },
+            mecha: {
+                normal: 'assets/img/suit-mecha.svg',
+                alert: 'assets/img/suit-mecha.svg',
+                relaxed: 'assets/img/suit-mecha.svg',
+                name: 'Mecha'
+            }
+        };
+
+        function selectSkin(skinId) {
+            if (!SKIN_CONFIG[skinId]) return;
+            currentSkin = skinId;
+
+            // Update skin pills in adventure layer card
+            ['astronaut', 'pilot', 'mecha'].forEach(id => {
+                const portalBtn = document.getElementById(`portal-skin-${id}`);
+                if (portalBtn) {
+                    if (id === skinId) {
+                        portalBtn.className = 'portal-skin-btn flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-xl bg-cyan-400/20 border-2 border-cyan-400 text-white text-xs font-mono font-bold transition-all';
+                    } else {
+                        portalBtn.className = 'portal-skin-btn flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-xl bg-dark-800 border border-white/10 text-slate-400 hover:text-white text-xs font-mono transition-all';
+                    }
+                }
+            });
+
+            const portalBotImg = document.getElementById('portal-bot-img');
+            if (portalBotImg) portalBotImg.src = SKIN_CONFIG[skinId].normal;
+
+            const botImg = document.getElementById('orbitar-bot-img');
+            if (botImg) {
+                botImg.src = SKIN_CONFIG[skinId].normal;
+                gsap.fromTo(botImg, 
+                    { scale: 0.75, rotation: -35 }, 
+                    { scale: 1, rotation: 0, duration: 0.35, ease: "back.out(1.5)" }
+                );
+            }
+        }
+
+        // Morphological Transition: Expands card borders and smoothly glides hero object into scene
+        function launchGame(gameId) {
+            if (isTransitioning) return;
+            activeGameId = gameId;
+            isTransitioning = true;
+            currentStage = 2;
+
+            const clickedCard = document.getElementById(`portal-${gameId}`);
+            if (clickedCard) {
+                clickedCard.classList.add('portal-card-expanding');
+            }
+
+            syncTheaterWorld(gameId);
+            updateShowcase(gameId);
+
+            if (gameId === 'orbitar') {
+                const bot = document.getElementById('scrolly-bot');
+                const geom = getOrbitarGeometry();
+                if (geom && bot) {
+                    const targetX = geom.p1.x + Math.cos(0) * geom.p1.r;
+                    const targetY = geom.p1.y + Math.sin(0) * geom.p1.r;
+
+                    // Glide bot seamlessly into starting orbit
+                    gsap.set(bot, {
+                        x: targetX - 50,
+                        y: targetY - 110,
+                        scale: 1.35,
+                        opacity: 0.7,
+                        rotation: -20
+                    });
+
+                    gsap.to(bot, {
+                        x: targetX,
+                        y: targetY,
+                        scale: 1,
+                        opacity: 1,
+                        rotation: 90,
+                        duration: 0.85,
+                        ease: "power2.out",
+                        delay: 0.1
+                    });
+
+                    const speech = document.getElementById('orbitar-speech-container');
+                    if (speech) gsap.set(speech, { x: targetX, y: targetY - 35, rotation: 0 });
+                }
+            } else {
+                // Impostor 3 cards fan entrance
+                const cards = [
+                    document.getElementById('impostor-card-1'),
+                    document.getElementById('impostor-card-2'),
+                    document.getElementById('impostor-card-3')
+                ];
+                cards.forEach((card, i) => {
+                    if (card) {
+                        gsap.fromTo(card, 
+                            { scale: 0.6, opacity: 0, y: 40 },
+                            { scale: 1, opacity: 1, y: Math.abs(i - 1) * 6, duration: 0.6, delay: 0.15 + i * 0.08, ease: "back.out(1.4)" }
+                        );
+                    }
+                });
+            }
+
+            gsap.to(window, {
+                scrollTo: "#games-theater",
+                duration: 0.85,
+                ease: "power2.inOut",
+                onComplete: () => {
+                    if (clickedCard) clickedCard.classList.remove('portal-card-expanding');
+                    isTransitioning = false;
+                    playCurrentCinematic();
                 }
             });
         }
 
-        // --- Custom Observer Logic for "Scroll-Jacking" ---
-        window.addEventListener("wheel", (e) => {
-            if (animating) {
-                e.preventDefault();
-                return;
-            }
+        function syncTheaterWorld(gameId) {
+            const worldOrbitar = document.getElementById('world-orbitar');
+            const worldImpostor = document.getElementById('world-impostor');
+            const ambientGlow = document.getElementById('games-ambient-glow');
+            const canvas = document.getElementById('orbitar-space-canvas');
 
-            if (!textVisible) {
-                e.preventDefault();
-                if (e.deltaY > 0) {
-                    animateToText();
+            if (gameId === 'orbitar') {
+                if (ambientGlow) {
+                    ambientGlow.style.background = 'radial-gradient(ellipse at 50% 30%, rgba(34,211,238,0.12) 0%, rgba(3,10,26,0.85) 60%, transparent 100%)';
+                }
+                if (canvas) canvas.style.opacity = '1';
+
+                if (worldImpostor && worldOrbitar) {
+                    worldImpostor.classList.add('hidden');
+                    worldOrbitar.classList.remove('hidden');
+                    gsap.fromTo(worldOrbitar, { opacity: 0 }, { opacity: 1, duration: 0.3 });
                 }
             } else {
-                if (window.scrollY <= 0 && e.deltaY < 0) {
-                    e.preventDefault();
-                    animateToSplash();
+                if (ambientGlow) {
+                    ambientGlow.style.background = 'radial-gradient(ellipse at 50% 30%, rgba(197, 120, 203, 0.16) 0%, rgba(20,5,30,0.9) 60%, transparent 100%)';
+                }
+                if (canvas) canvas.style.opacity = '0.1';
+
+                if (worldOrbitar && worldImpostor) {
+                    worldOrbitar.classList.add('hidden');
+                    worldImpostor.classList.remove('hidden');
+                    gsap.fromTo(worldImpostor, { opacity: 0 }, { opacity: 1, duration: 0.3 });
                 }
             }
-        }, { passive: false });
+        }
 
-        let touchStartY = 0;
-        window.addEventListener("touchstart", (e) => {
-            touchStartY = e.touches[0].clientY;
-        }, { passive: false });
+        function updateShowcase(gameId) {
+            const scOrbitar = document.getElementById('showcase-orbitar');
+            const scImpostor = document.getElementById('showcase-impostor');
+            const scGlow = document.getElementById('showcase-ambient-glow');
 
-        window.addEventListener("touchmove", (e) => {
-            if (animating) {
-                e.preventDefault();
-                return;
-            }
-
-            const currentY = e.touches[0].clientY;
-            const deltaY = touchStartY - currentY;
-
-            if (!textVisible) {
-                e.preventDefault();
-                if (deltaY > 5) {
-                    animateToText();
-                }
+            if (gameId === 'orbitar') {
+                if (scOrbitar) scOrbitar.classList.remove('hidden');
+                if (scImpostor) scImpostor.classList.add('hidden');
+                if (scGlow) scGlow.style.background = 'radial-gradient(circle 500px at 50% 50%, rgba(34,211,238,0.15) 0%, transparent 70%)';
             } else {
-                if (window.scrollY <= 0 && deltaY < -5) {
-                    e.preventDefault();
-                    animateToSplash();
+                if (scOrbitar) scOrbitar.classList.add('hidden');
+                if (scImpostor) scImpostor.classList.remove('hidden');
+                if (scGlow) scGlow.style.background = 'radial-gradient(circle 500px at 50% 50%, rgba(197,120,203,0.15) 0%, transparent 70%)';
+            }
+        }
+
+        // =========================================================
+        // 4. AUTONOMOUS CINEMATICS (60 FPS GSAP TIMELINES)
+        // =========================================================
+        function getOrbitarGeometry() {
+            const world = document.getElementById('world-orbitar');
+            const ring1 = document.getElementById('planet-1-ring');
+            const ring2 = document.getElementById('planet-2-ring');
+            const hazard = document.getElementById('hazard-container');
+
+            if (!world || !ring1 || !ring2 || !hazard) {
+                return null;
+            }
+
+            const wRect = world.getBoundingClientRect();
+            const r1Rect = ring1.getBoundingClientRect();
+            const r2Rect = ring2.getBoundingClientRect();
+            const hRect = hazard.getBoundingClientRect();
+
+            return {
+                p1: {
+                    x: r1Rect.left - wRect.left + r1Rect.width / 2,
+                    y: r1Rect.top - wRect.top + r1Rect.height / 2,
+                    r: r1Rect.width / 2
+                },
+                p2: {
+                    x: r2Rect.left - wRect.left + r2Rect.width / 2,
+                    y: r2Rect.top - wRect.top + r2Rect.height / 2,
+                    r: r2Rect.width / 2
+                },
+                hazard: {
+                    x: hRect.left - wRect.left + hRect.width / 2,
+                    y: hRect.top - wRect.top + hRect.height / 2
+                }
+            };
+        }
+
+        function setupInitialOrbitarPosition() {
+            const geom = getOrbitarGeometry();
+            const bot = document.getElementById('scrolly-bot');
+            const speech = document.getElementById('orbitar-speech-container');
+            if (!geom || !bot) return;
+
+            // Park bot on Planeta Alfa's ring at 0 rad
+            const initAngle = 0;
+            const x = geom.p1.x + Math.cos(initAngle) * geom.p1.r;
+            const y = geom.p1.y + Math.sin(initAngle) * geom.p1.r;
+            const rot = (initAngle * 180 / Math.PI) + 90;
+
+            gsap.set(bot, {
+                left: 0,
+                top: 0,
+                x: x,
+                y: y,
+                rotation: rot
+            });
+
+            if (speech) {
+                gsap.set(speech, {
+                    left: 0,
+                    top: 0,
+                    x: x,
+                    y: y - 35,
+                    rotation: 0
+                });
+            }
+        }
+
+        function playOrbitarCinematic() {
+            if (orbitarTimeline) orbitarTimeline.kill();
+
+            const bot = document.getElementById('scrolly-bot');
+            const botImg = document.getElementById('orbitar-bot-img');
+            const botThruster = document.getElementById('bot-thruster');
+            const botShield = document.getElementById('bot-shield');
+            const botSpeech = document.getElementById('bot-speech');
+            const m1 = document.getElementById('orbitar-m1');
+            const m2 = document.getElementById('orbitar-m2');
+            const m3 = document.getElementById('orbitar-m3');
+
+            if (!bot || !botImg) return;
+
+            const geom = getOrbitarGeometry();
+            if (!geom) return;
+
+            // Reset UI states
+            gsap.set([m1, m2, m3], { opacity: 0, y: 15 });
+            gsap.set(botThruster, { opacity: 0 });
+            gsap.set(botShield, { opacity: 0 });
+            botImg.src = SKIN_CONFIG[currentSkin].normal;
+            if (botSpeech) {
+                botSpeech.style.opacity = '1';
+                botSpeech.textContent = 'Calculando inercia... 🎯';
+            }
+
+            const orbitState = { angle: 0 };
+            const p1 = geom.p1;
+            const p2 = geom.p2;
+            const hazard = geom.hazard;
+
+            orbitarTimeline = gsap.timeline({
+                onComplete: () => {
+                    // Transition smoothly to discrete Stage 3 (Showcase)
+                    setTimeout(() => {
+                        if (currentStage === 2 && activeGameId === 'orbitar') {
+                            goToStage(3);
+                        }
+                    }, 800);
+                }
+            });
+
+            // Phase 1: 1.5 concentric orbits around Planeta Alfa aligned with ring
+            orbitarTimeline
+                .to(m1, { opacity: 1, y: 0, duration: 0.5 }, 0.2)
+                .to(orbitState, {
+                    angle: Math.PI * 3,
+                    duration: 2.6,
+                    ease: "power1.inOut",
+                    onUpdate: () => {
+                        const x = p1.x + Math.cos(orbitState.angle) * p1.r;
+                        const y = p1.y + Math.sin(orbitState.angle) * p1.r;
+                        const rot = (orbitState.angle * 180 / Math.PI) + 90;
+                        gsap.set(bot, { x: x, y: y, rotation: rot });
+                        // Decoupled speech container stays strictly horizontal (rotation: 0) and elevated
+                        gsap.set('#orbitar-speech-container', { x: x, y: y - 35, rotation: 0 });
+                    }
+                }, 0)
+                .to(m1, { opacity: 0, y: -10, duration: 0.4 }, 2.4);
+
+            // Phase 2: Slingshot release with thruster boost
+            orbitarTimeline
+                .call(() => {
+                    if (botSpeech) botSpeech.textContent = '¡Despegue Slingshot! 🚀';
+                    gsap.to(botThruster, { opacity: 1, duration: 0.2 });
+                }, null, 2.6)
+                .to(m2, { opacity: 1, y: 0, duration: 0.4 }, 2.6)
+                .to(bot, {
+                    x: hazard.x - 35,
+                    y: hazard.y + 20,
+                    rotation: 28,
+                    duration: 1.6,
+                    ease: "power2.in",
+                    onUpdate: () => {
+                        const bx = gsap.getProperty(bot, "x");
+                        const by = gsap.getProperty(bot, "y");
+                        gsap.set('#orbitar-speech-container', { x: bx, y: by - 35, rotation: 0 });
+                    }
+                }, 2.6)
+                .to(m2, { opacity: 0, y: -10, duration: 0.3 }, 4.0);
+
+            // Phase 3: Hazard evasion with reactive skin effects
+            orbitarTimeline
+                .call(() => {
+                    if (botSpeech) botSpeech.textContent = '¡Cuidado con la patrulla! ⚠️';
+                    if (currentSkin === 'astronaut') {
+                        botImg.src = SKIN_CONFIG.astronaut.alert;
+                    } else if (currentSkin === 'mecha') {
+                        gsap.to(botShield, { opacity: 1, duration: 0.2 });
+                    } else if (currentSkin === 'pilot') {
+                        gsap.to(botThruster, { scale: 1.4, duration: 0.2 });
+                    }
+                }, null, 4.2)
+                .to(m3, { opacity: 1, y: 0, duration: 0.4 }, 4.2)
+                .to(bot, {
+                    x: hazard.x + 45,
+                    y: hazard.y - 45,
+                    rotation: 32,
+                    duration: 1.2,
+                    ease: "power1.out",
+                    onUpdate: () => {
+                        const bx = gsap.getProperty(bot, "x");
+                        const by = gsap.getProperty(bot, "y");
+                        gsap.set('#orbitar-speech-container', { x: bx, y: by - 35, rotation: 0 });
+                    }
+                }, 4.2)
+                .to(bot, {
+                    rotation: "+=8",
+                    yoyo: true,
+                    repeat: 3,
+                    duration: 0.15
+                }, 4.4)
+                .to(m3, { opacity: 0, y: -10, duration: 0.3 }, 5.2);
+
+            // Phase 4: Capture into Planeta Beta orbit
+            const betaOrbit = { angle: Math.PI };
+            orbitarTimeline
+                .call(() => {
+                    if (botSpeech) botSpeech.textContent = '¡Planeta Beta Asegurado! ✨';
+                    if (currentSkin === 'astronaut') {
+                        botImg.src = SKIN_CONFIG.astronaut.relaxed;
+                    }
+                    gsap.to(botThruster, { opacity: 0, duration: 0.3 });
+                    gsap.to(botShield, { opacity: 0, duration: 0.3 });
+                }, null, 5.4)
+                .to(betaOrbit, {
+                    angle: Math.PI * 3,
+                    duration: 2.2,
+                    ease: "power2.out",
+                    onUpdate: () => {
+                        const x = p2.x + Math.cos(betaOrbit.angle) * p2.r;
+                        const y = p2.y + Math.sin(betaOrbit.angle) * p2.r;
+                        const rot = (betaOrbit.angle * 180 / Math.PI) + 90;
+                        gsap.set(bot, { x: x, y: y, rotation: rot });
+                        gsap.set('#orbitar-speech-container', { x: x, y: y - 35, rotation: 0 });
+                    }
+                }, 5.4);
+        }
+
+        function setupInitialImpostorPosition() {
+            const cards = [
+                document.getElementById('impostor-card-1'),
+                document.getElementById('impostor-card-2'),
+                document.getElementById('impostor-card-3')
+            ];
+            const magnifier = document.getElementById('impostor-magnifier');
+            const isMobile = window.innerWidth < 640;
+            const spread = isMobile ? 65 : 125;
+
+            cards.forEach((card, idx) => {
+                if (!card) return;
+                const offset = idx - 1; // -1, 0, 1
+                gsap.set(card, {
+                    x: offset * spread,
+                    y: Math.abs(offset) * 6,
+                    rotation: offset * 7,
+                    opacity: 1,
+                    scale: 1
+                });
+            });
+
+            if (magnifier) {
+                gsap.set(magnifier, { x: -1.8 * spread, y: -65, opacity: 0, scale: 0.8, rotation: 0 });
+            }
+        }
+
+        function playImpostorCinematic() {
+            if (impostorTimeline) impostorTimeline.kill();
+
+            const magnifier = document.getElementById('impostor-magnifier');
+            const cards = [
+                document.getElementById('impostor-card-1'),
+                document.getElementById('impostor-card-2'),
+                document.getElementById('impostor-card-3')
+            ];
+            const card3Front = document.getElementById('card-3-front');
+            const card3Back = document.getElementById('card-3-back');
+
+            // Reset all 3 cards to identical mysterious state
+            for (let i = 1; i <= 3; i++) {
+                const w = document.getElementById(`card-${i}-word`);
+                const s = document.getElementById(`card-${i}-status`);
+                if (w) {
+                    w.textContent = '••••••';
+                    w.className = 'text-center font-display font-bold text-xs sm:text-sm text-slate-500 transition-colors duration-300';
+                }
+                if (s) {
+                    s.textContent = '🔒 En secreto';
+                    s.className = 'text-[9px] font-mono text-slate-500 text-center';
                 }
             }
-        }, { passive: false });
 
-        // --- Code Redemption Deep Link Logic ---
+            cards.forEach(card => {
+                if (card) {
+                    card.className = 'impostor-card w-24 h-36 sm:w-28 sm:h-42 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 border border-white/20 shadow-2xl p-3 flex flex-col justify-between transform-style-3d will-change-transform transition-all';
+                }
+            });
+
+            if (card3Front) card3Front.classList.remove('hidden');
+            if (card3Back) card3Back.classList.add('hidden');
+
+            const isMobile = window.innerWidth < 640;
+            const spread = isMobile ? 65 : 125;
+
+            // Position cards in clean 3-card fan
+            cards.forEach((card, idx) => {
+                if (!card) return;
+                const offset = idx - 1;
+                gsap.set(card, {
+                    x: offset * spread,
+                    y: Math.abs(offset) * 6,
+                    rotation: offset * 7,
+                    opacity: 1,
+                    scale: 1
+                });
+            });
+
+            // Reset magnifier
+            gsap.set(magnifier, { x: -1.8 * spread, y: -65, opacity: 0, scale: 0.8, rotation: 0 });
+
+            impostorTimeline = gsap.timeline({
+                onComplete: () => {
+                    // Auto-advance to discrete Stage 3 (Showcase)
+                    setTimeout(() => {
+                        if (currentStage === 2 && activeGameId === 'impostor') {
+                            goToStage(3);
+                        }
+                    }, 800);
+                }
+            });
+
+            // Step 0: Magnifier enters
+            impostorTimeline
+                .to(magnifier, { opacity: 1, scale: 1.1, x: -spread - 10, y: -25, duration: 0.6, ease: "power2.out" }, 0.2);
+
+            // Step 1: Scan Augusto (Card 1)
+            impostorTimeline
+                .call(() => {
+                    const w = document.getElementById('card-1-word');
+                    const s = document.getElementById('card-1-status');
+                    if (w) { w.textContent = 'CALCULADORA'; w.className = 'text-center font-display font-bold text-xs sm:text-sm text-purple-300 drop-shadow-[0_0_8px_rgba(197,120,203,0.8)]'; }
+                    if (s) { s.textContent = '✓ Palabra clave'; s.className = 'text-[9px] font-mono text-purple-300 text-center font-bold'; }
+                    if (cards[0]) cards[0].classList.add('border-purple-400/60');
+                }, null, 0.8)
+                .to(cards[0], { scale: 1.08, duration: 0.2, yoyo: true, repeat: 1 }, 0.8);
+
+            // Step 2: Scan Paloma (Card 2)
+            impostorTimeline
+                .to(magnifier, { x: -10, y: -30, duration: 0.6, ease: "power1.inOut" }, 1.3)
+                .call(() => {
+                    const w = document.getElementById('card-2-word');
+                    const s = document.getElementById('card-2-status');
+                    if (w) { w.textContent = 'CALCULADORA'; w.className = 'text-center font-display font-bold text-xs sm:text-sm text-purple-300 drop-shadow-[0_0_8px_rgba(197,120,203,0.8)]'; }
+                    if (s) { s.textContent = '✓ Palabra clave'; s.className = 'text-[9px] font-mono text-purple-300 text-center font-bold'; }
+                    if (cards[1]) cards[1].classList.add('border-purple-400/60');
+                }, null, 1.9)
+                .to(cards[1], { scale: 1.08, duration: 0.2, yoyo: true, repeat: 1 }, 1.9);
+
+            // Step 3: Scan Juan (Card 3) - Suspense, shake, slam IMPOSTOR!
+            impostorTimeline
+                .to(magnifier, { x: spread - 10, y: -25, scale: 1.25, duration: 0.7, ease: "power2.out" }, 2.3)
+                .call(() => {
+                    const w = document.getElementById('card-3-word');
+                    const s = document.getElementById('card-3-status');
+                    if (w) { w.textContent = '¿Sospechoso?'; w.className = 'text-center font-display font-bold text-xs sm:text-sm text-potasio-primary animate-pulse'; }
+                    if (s) { s.textContent = '⚠️ Pistas dudosas'; s.className = 'text-[9px] font-mono text-potasio-primary text-center font-bold'; }
+                }, null, 3.0)
+                // Tension vibration
+                .to(cards[2], { x: "+=4", yoyo: true, repeat: 7, duration: 0.08 }, 3.1)
+                // Slam reveal
+                .call(() => {
+                    if (card3Front) card3Front.classList.add('hidden');
+                    if (card3Back) card3Back.classList.remove('hidden');
+                    if (cards[2]) {
+                        cards[2].className = 'impostor-card w-24 h-36 sm:w-28 sm:h-42 rounded-2xl bg-gradient-to-br from-slate-900 to-red-950 border-2 border-red-500 shadow-[0_0_40px_rgba(239,68,68,0.8)] p-3 flex flex-col justify-between transform-style-3d will-change-transform transition-all z-30 scale-110';
+                    }
+                }, null, 3.8)
+                .to(cards[2], { scale: 1.15, duration: 0.2, yoyo: true, repeat: 1 }, 3.8)
+                // Step 4: MOVE MAGNIFIER ASIDE SO IT DOES NOT TAP/BLOCK THE CARD
+                .to(magnifier, {
+                    x: spread * 1.55,
+                    y: -75,
+                    rotation: 20,
+                    scale: 0.95,
+                    duration: 0.5,
+                    ease: "power2.out"
+                }, 4.2);
+        }
+
+        function playCurrentCinematic() {
+            if (activeGameId === 'orbitar') {
+                playOrbitarCinematic();
+            } else {
+                playImpostorCinematic();
+            }
+        }
+
+        // Initialize positions as soon as DOM is ready
+        function initScenePositions() {
+            setupInitialOrbitarPosition();
+            setupInitialImpostorPosition();
+        }
+
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
+            setTimeout(initScenePositions, 60);
+        } else {
+            document.addEventListener('DOMContentLoaded', initScenePositions);
+        }
+        window.addEventListener('load', initScenePositions);
+
+        window.addEventListener('resize', () => {
+            if (!orbitarTimeline || !orbitarTimeline.isActive()) {
+                setupInitialOrbitarPosition();
+            }
+            if (!impostorTimeline || !impostorTimeline.isActive()) {
+                setupInitialImpostorPosition();
+            }
+        });
+
+        // =========================================================
+        // 7. CODE REDEMPTION DEEP LINK & CONTACT FORM OBFUSCATION
+        // =========================================================
         (function () {
             const urlParams = new URLSearchParams(window.location.search);
             const code = urlParams.get('code');
@@ -539,8 +1660,6 @@
 
                 modal.classList.remove('hidden');
                 if (openBtn) openBtn.href = appUrl;
-
-                // Re-initialize icons just for the modal
                 lucide.createIcons();
 
                 setTimeout(() => {
@@ -563,7 +1682,7 @@
             }
         })();
 
-        // Abre el cliente de correo predeterminado del usuario sin exponer el correo en texto plano en el HTML
+        // Abre el cliente de correo sin exponer dirección en texto plano en el HTML (Security rule)
         document.getElementById('contact-btn')?.addEventListener('click', (e) => {
             e.preventDefault();
             const user = "potasiogames";

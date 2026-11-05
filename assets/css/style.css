@@ -1,9 +1,16 @@
 /* Custom Styles & Overrides */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700;800&display=swap');
 
 body {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Outfit', sans-serif;
+}
+
+.font-display {
+    font-family: 'Space Grotesk', sans-serif;
+}
+
+.font-mono-tag {
+    font-family: 'JetBrains Mono', monospace;
 }
 
 /* Smooth Scrolling & Layout Stability */
@@ -51,13 +58,157 @@ html {
 }
 
 /* Fix mobile browser address bar cut-off and prevent layout shifts on scroll */
-#hero-trigger {
+#hero-trigger,
+#bottom-trigger {
     height: 100vh; /* Stable full height, never changes on scroll */
+    height: 100svh;
 }
 
 #hero-logo-layer,
-#hero-content-layer {
+#hero-content-layer,
+#adventure-layer,
+#showcase-layer,
+#contact-layer {
     height: 100%; /* Fallback for older browsers */
     height: 100svh; /* Matches visible viewport height on load, stable on scroll */
 }
 
+/* Morphological Card Expansion Styles */
+.portal-card-expanding {
+    z-index: 50 !important;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease, border-color 0.4s ease !important;
+    transform: scale(1.04) !important;
+}
+
+/* Robot Gentle Float Animation */
+.animate-bot-float {
+    animation: botFloat 4s ease-in-out infinite;
+}
+
+@keyframes botFloat {
+    0%, 100% {
+        transform: translateY(0px) rotate(0deg);
+    }
+    50% {
+        transform: translateY(-8px) rotate(3deg);
+    }
+}
+
+/* Impostor Card Flip & Stamp Styles */
+.perspective-1000 {
+    perspective: 1000px;
+}
+
+.transform-style-3d {
+    transform-style: preserve-3d;
+}
+
+.backface-hidden {
+    backface-visibility: hidden;
+}
+
+.rotate-y-180 {
+    transform: rotateY(180deg);
+}
+
+.impostor-card {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-left: -48px;
+    margin-top: -72px;
+    user-select: none;
+    transform-origin: center center;
+}
+
+@media (min-width: 640px) {
+    .impostor-card {
+        margin-left: -56px;
+        margin-top: -84px;
+    }
+}
+
+#impostor-magnifier {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-left: -32px;
+    margin-top: -32px;
+    pointer-events: none;
+    user-select: none;
+    z-index: 40;
+    transform-origin: 26px 26px; /* Center of the glass lens */
+}
+
+@media (min-width: 640px) {
+    #impostor-magnifier {
+        margin-left: -40px;
+        margin-top: -40px;
+        transform-origin: 32px 32px;
+    }
+}
+
+.impostor-stamp {
+    font-family: 'Space Grotesk', sans-serif;
+    letter-spacing: 0.15em;
+    border: 3px solid #ef4444;
+    color: #ef4444;
+    text-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.4), inset 0 0 15px rgba(239, 68, 68, 0.3);
+    transform: rotate(-12deg);
+}
+
+/* Glassmorphism Card Hover */
+.glass-card {
+    background: rgba(17, 24, 39, 0.75);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Scrollytelling Theater Styles */
+#games-theater,
+#games {
+    height: 100vh;
+    height: 100svh;
+}
+
+.orbit-dashed-ring {
+    stroke-dasharray: 6 6;
+    animation: orbitSpin 30s linear infinite;
+    transform-origin: center;
+}
+
+@keyframes orbitSpin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.hazard-pulse {
+    animation: hazardPulse 2s ease-in-out infinite alternate;
+}
+
+@keyframes hazardPulse {
+    0% { filter: drop-shadow(0 0 6px rgba(239, 68, 68, 0.4)); }
+    100% { filter: drop-shadow(0 0 16px rgba(239, 68, 68, 0.8)); }
+}
+
+.thruster-glow {
+    filter: drop-shadow(0 0 12px rgba(34, 211, 238, 0.9));
+}
+
+.shield-glow {
+    filter: drop-shadow(0 0 15px rgba(244, 114, 182, 0.8));
+}
+
+/* Portal Card Enhancements */
+.portal-card {
+    will-change: transform, box-shadow, border-color;
+}
+
+.portal-card.active {
+    transform: translateY(-4px);
+}
+
+.portal-card:hover {
+    transform: translateY(-6px);
+}
