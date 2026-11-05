@@ -39,11 +39,11 @@ ScrollTrigger.config({ ignoreMobileResize: true });
 if ('scrollRestoration' in history) {
   history.scrollRestoration = 'manual';
 }
+ScrollTrigger.clearScrollMemory('manual');
+window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
 
-window.addEventListener('pageshow', (event) => {
-  if (event.persisted) {
-    window.scrollTo(0, 0);
-  }
+window.addEventListener('beforeunload', () => {
+  window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
 });
 
 // ---------------------------------------------------------------------------
@@ -79,6 +79,47 @@ const SKIN_CONFIG: Record<SkinKey, { normal: string; alert: string; relaxed: str
 
 let spaceCanvasWakeup: (() => void) | null = null;
 let spaceCanvasSleep: (() => void) | null = null;
+let addStarParallax: ((dx: number, dy: number) => void) | null = null;
+
+let lastBotX: number | null = null;
+let lastBotY: number | null = null;
+let plasmaWavePhase = 0;
+
+function updatePlasmaWave(phase: number): void {
+  const outer = document.getElementById('plasma-filament-outer');
+  const core = document.getElementById('plasma-filament-core');
+  if (!outer && !core) return;
+
+  const w1 = Math.sin(phase) * 12;
+  const w2 = Math.cos(phase * 1.3) * 12;
+
+  const dOuter = `M 30,60 C ${80 + w1 * 0.5},${40 + w1} ${180 - w2 * 0.5},${80 - w2} 230,60`;
+  const dCore = `M 30,60 C ${90 - w2 * 0.4},${48 - w2 * 0.7} ${170 + w1 * 0.4},${72 + w1 * 0.7} 230,60`;
+
+  if (outer) outer.setAttribute('d', dOuter);
+  if (core) core.setAttribute('d', dCore);
+}
+
+function updateBotMotionEffects(currentX: number, currentY: number): void {
+  if (lastBotX !== null && lastBotY !== null) {
+    const dx = currentX - lastBotX;
+    const dy = currentY - lastBotY;
+    if (Math.abs(dx) > 0.05 || Math.abs(dy) > 0.05) {
+      addStarParallax?.(-dx * 0.25, -dy * 0.25);
+      plasmaWavePhase += Math.hypot(dx, dy) * 0.04;
+      updatePlasmaWave(plasmaWavePhase);
+    }
+  }
+  lastBotX = currentX;
+  lastBotY = currentY;
+}
+
+function lerpColor(r1: number, g1: number, b1: number, r2: number, g2: number, b2: number, t: number): string {
+  const r = Math.round(r1 + (r2 - r1) * t);
+  const g = Math.round(g1 + (g2 - g1) * t);
+  const b = Math.round(b1 + (b2 - b1) * t);
+  return `rgb(${r}, ${g}, ${b})`;
+}
 
 // ---------------------------------------------------------------------------
 // 3. Persistent Fixed Background System & Hero Transition
@@ -90,8 +131,9 @@ export function updateGlobalBackground(progress: number, gameId: GameId): void {
   const impGlow = document.getElementById('global-impostor-glow');
   const spaceCanvas = document.getElementById('global-space-canvas');
 
-  // Hero Splash Screen (progress <= 0.35)
-  if (progress <= 0.35) {
+  // Hero Splash Screen and initial view of "Elegí tu Próxima Aventura"
+  // Remains 100% identical to the first screen until user scrolls past 0.55
+  if (progress <= 0.55) {
     if (bgBase) bgBase.style.backgroundColor = '#030612';
     if (heroGlow) heroGlow.style.opacity = '1';
     if (orbGlow) orbGlow.style.opacity = '0';
@@ -101,8 +143,8 @@ export function updateGlobalBackground(progress: number, gameId: GameId): void {
     return;
   }
 
-  // Smooth blending as user scrolls through "Elegí tu Próxima Aventura" (0.35 -> 0.85)
-  const blend = Math.min(Math.max((progress - 0.35) / 0.50, 0), 1);
+  // Smooth gradual blending as user continues scrolling down (0.55 -> 0.95)
+  const blend = Math.min(Math.max((progress - 0.55) / 0.38, 0), 1);
 
   if (heroGlow) heroGlow.style.opacity = (1 - blend).toString();
 
@@ -110,14 +152,16 @@ export function updateGlobalBackground(progress: number, gameId: GameId): void {
     if (orbGlow) orbGlow.style.opacity = blend.toString();
     if (impGlow) impGlow.style.opacity = '0';
     if (spaceCanvas) spaceCanvas.style.opacity = blend.toString();
-    if (bgBase) bgBase.style.backgroundColor = blend > 0.4 ? '#0B1019' : '#030612';
+    // Continuous RGB transition from #030612 (3,6,18) to #0B1019 (11,16,25)
+    if (bgBase) bgBase.style.backgroundColor = lerpColor(3, 6, 18, 11, 16, 25, blend);
     if (blend > 0) spaceCanvasWakeup?.();
   } else {
     // Impostor
     if (impGlow) impGlow.style.opacity = blend.toString();
     if (orbGlow) orbGlow.style.opacity = '0';
     if (spaceCanvas) spaceCanvas.style.opacity = '0';
-    if (bgBase) bgBase.style.backgroundColor = blend > 0.4 ? '#0a0f1a' : '#030612';
+    // Continuous RGB transition from #030612 (3,6,18) to #0a0f1a (10,15,26)
+    if (bgBase) bgBase.style.backgroundColor = lerpColor(3, 6, 18, 10, 15, 26, blend);
     spaceCanvasSleep?.();
   }
 }
@@ -142,10 +186,11 @@ export function updatePortalCardsUI(gameId: GameId): void {
 
 const heroTl = gsap.timeline({ paused: true });
 heroTl
-  .to("#scroll-indicator", { opacity: 0, scale: 0.5, duration: 0.3, ease: "power1.out" })
-  .to("#hero-logo-layer", { opacity: 0, scale: 1.05, duration: 0.7, ease: "power2.inOut" }, 0)
-  .to("#hero-spotlight", { opacity: 0, duration: 0.5 }, 0)
-  .to("#adventure-layer", { opacity: 1, y: 0, pointerEvents: "auto", duration: 0.7, ease: "power2.out" }, "-=0.4");
+  .to("#scroll-indicator", { opacity: 0, scale: 0.5, duration: 0.25, ease: "power1.out" })
+  .to("#hero-logo-layer", { opacity: 0, scale: 1.05, duration: 0.55, ease: "power2.inOut" }, 0)
+  .to("#hero-spotlight", { opacity: 0, duration: 0.4 }, 0)
+  .to("#adventure-layer", { opacity: 1, y: 0, pointerEvents: "auto", duration: 0.55, ease: "power2.out" }, "-=0.3")
+  .to({}, { duration: 0.4 }); // Hold adventure layer steady while background stays original splash
 
 ScrollTrigger.create({
   trigger: "#hero-scene",
@@ -328,7 +373,6 @@ function getOrbitarGeometry(): OrbitarGeometry | null {
 function setupInitialOrbitarPosition(): void {
   const geom = getOrbitarGeometry();
   const bot = document.getElementById('scrolly-bot');
-  const speech = document.getElementById('orbitar-speech-container');
   if (!geom || !bot) return;
 
   // Ubicado inicialmente sobre la superficie del Planeta de Inicio en ángulo 0:
@@ -344,16 +388,6 @@ function setupInitialOrbitarPosition(): void {
     y: y,
     rotation: rot
   });
-
-  if (speech) {
-    gsap.set(speech, {
-      left: 0,
-      top: 0,
-      x: x,
-      y: y - 35,
-      rotation: 0
-    });
-  }
 }
 
 function setupInitialImpostorPosition(): void {
@@ -465,7 +499,6 @@ function buildOrbitarTimeline(): gsap.core.Timeline {
   const bot = document.getElementById('scrolly-bot');
   const botImg = document.getElementById('orbitar-bot-img') as HTMLImageElement | null;
   const botThruster = document.getElementById('bot-thruster');
-  const botSpeech = document.getElementById('bot-speech');
   const m1 = document.getElementById('orbitar-m1');
   const m2 = document.getElementById('orbitar-m2');
   const m3 = document.getElementById('orbitar-m3');
@@ -493,9 +526,9 @@ function buildOrbitarTimeline(): gsap.core.Timeline {
       onUpdate: () => {
         const x = p1.x + Math.cos(orbit1.angle) * p1.r;
         const y = p1.y + Math.sin(orbit1.angle) * p1.r;
-        const rot = (orbit1.angle * 180 / Math.PI) + 90;
+        const rot = (orbit1.angle * 180 / Math.PI) + 90; // inicia en 90° y termina en 810° (90° mod 360)
         gsap.set(bot, { x: x, y: y, rotation: rot });
-        gsap.set('#orbitar-speech-container', { x: x, y: y - 35, rotation: 0 });
+        updateBotMotionEffects(x, y);
       }
     }, 0)
     .to(m1, { opacity: 0, y: -10, duration: 0.4 }, 2.6);
@@ -504,23 +537,19 @@ function buildOrbitarTimeline(): gsap.core.Timeline {
   // FASE 2: Salto desde ángulo 0° hacia Planeta Intermedio (horizontal)
   // -------------------------------------------------------------------------
   tl.call(() => {
-      if (botSpeech) {
-        botSpeech.style.opacity = '1';
-        botSpeech.textContent = '¡Despegue a 0°! 🚀';
-      }
       gsap.to(botThruster, { opacity: 1, duration: 0.2 });
     }, [], 3.0)
     .to(m2, { opacity: 1, y: 0, duration: 0.5 }, 3.0)
     .to(bot, {
       x: pMid.x - pMid.r,
       y: pMid.y,
-      rotation: 90, // Orientado horizontalmente hacia la derecha
+      rotation: 810, // Cabeza apunta a la derecha, propulsor a los pies impulsando a la derecha
       duration: 2.0,
       ease: "power2.inOut",
       onUpdate: () => {
         const bx = gsap.getProperty(bot, "x") as number;
         const by = gsap.getProperty(bot, "y") as number;
-        gsap.set('#orbitar-speech-container', { x: bx, y: by - 35, rotation: 0 });
+        updateBotMotionEffects(bx, by);
       }
     }, 3.0)
     .to(m2, { opacity: 0, y: -10, duration: 0.4 }, 4.7);
@@ -529,22 +558,21 @@ function buildOrbitarTimeline(): gsap.core.Timeline {
   // FASE 3: Órbita en Planeta Intermedio y preparación de salida a 90° (arriba)
   // -------------------------------------------------------------------------
   tl.call(() => {
-      if (botSpeech) {
-        botSpeech.textContent = 'Enganchado al Intermedio 🛰️';
-      }
       gsap.to(botThruster, { opacity: 0, duration: 0.2 });
     }, [], 5.0)
     .to(orbitMid, {
-      // De Math.PI (lado izquierdo) gira 1.25 vueltas hasta 3.5*PI (vértice superior = -90° / 270° en pantalla)
+      // De Math.PI (lado izquierdo) gira 1.25 vueltas hasta 3.5*PI (vértice superior = hacia arriba)
       angle: Math.PI + Math.PI * 2.5,
       duration: 2.2,
       ease: "power1.inOut",
       onUpdate: () => {
         const x = pMid.x + Math.cos(orbitMid.angle) * pMid.r;
         const y = pMid.y + Math.sin(orbitMid.angle) * pMid.r;
-        const rot = (orbitMid.angle * 180 / Math.PI) + 90;
+        // Rotación continua sin desenrollarse: transiciona de 810° a 720° (0° mod 360, cabeza hacia arriba)
+        const t = (orbitMid.angle - Math.PI) / (Math.PI * 2.5);
+        const rot = 810 - t * 90;
         gsap.set(bot, { x: x, y: y, rotation: rot });
-        gsap.set('#orbitar-speech-container', { x: x, y: y - 35, rotation: 0 });
+        updateBotMotionEffects(x, y);
       }
     }, 5.0);
 
@@ -552,22 +580,19 @@ function buildOrbitarTimeline(): gsap.core.Timeline {
   // FASE 4: Salto a 90° (vertical hacia arriba) esquivando la Barrera de Plasma
   // -------------------------------------------------------------------------
   tl.call(() => {
-      if (botSpeech) {
-        botSpeech.textContent = '¡Rumbo al Objetivo a 90°! 🚀';
-      }
       gsap.to(botThruster, { opacity: 1, duration: 0.2 });
     }, [], 7.2)
     .to(m3, { opacity: 1, y: 0, duration: 0.5 }, 7.2)
     .to(bot, {
       x: p2.x,
       y: p2.y + p2.r,
-      rotation: 0, // Orientado verticalmente hacia arriba
+      rotation: 720, // Cabeza apunta hacia ARRIBA (hacia el objetivo), propulsor a los pies impulsando abajo
       duration: 2.0,
       ease: "power2.inOut",
       onUpdate: () => {
         const bx = gsap.getProperty(bot, "x") as number;
         const by = gsap.getProperty(bot, "y") as number;
-        gsap.set('#orbitar-speech-container', { x: bx, y: by - 35, rotation: 0 });
+        updateBotMotionEffects(bx, by);
       }
     }, 7.2)
     .to(m3, { opacity: 0, y: -10, duration: 0.4 }, 8.9);
@@ -576,9 +601,6 @@ function buildOrbitarTimeline(): gsap.core.Timeline {
   // FASE 5: Captura y Órbita en Planeta Objetivo
   // -------------------------------------------------------------------------
   tl.call(() => {
-      if (botSpeech) {
-        botSpeech.textContent = '¡Planeta Objetivo Asegurado! ✨';
-      }
       gsap.to(botThruster, { opacity: 0, duration: 0.3 });
       if (botImg && currentSkin === 'astronaut') {
         botImg.src = SKIN_CONFIG.astronaut.relaxed;
@@ -591,9 +613,9 @@ function buildOrbitarTimeline(): gsap.core.Timeline {
       onUpdate: () => {
         const x = p2.x + Math.cos(orbitGoal.angle) * p2.r;
         const y = p2.y + Math.sin(orbitGoal.angle) * p2.r;
-        const rot = (orbitGoal.angle * 180 / Math.PI) + 90;
+        const rot = (orbitGoal.angle * 180 / Math.PI) + 90 + 540;
         gsap.set(bot, { x: x, y: y, rotation: rot });
-        gsap.set('#orbitar-speech-container', { x: x, y: y - 35, rotation: 0 });
+        updateBotMotionEffects(x, y);
       }
     }, 9.2);
 
@@ -724,8 +746,57 @@ ScrollTrigger.create({
   start: "top top",
   end: "bottom bottom",
   scrub: 0.6,
+  snap: {
+    snapTo: [0, 1],
+    duration: { min: 0.7, max: 1.1 },
+    delay: 0,
+    ease: "power2.inOut"
+  },
   animation: bottomTl
 });
+
+// Single wheel motion trigger to glide through superposition without stopping midway
+let isBottomAutoScrolling = false;
+const bottomSceneEl = document.getElementById('bottom-scene');
+
+if (bottomSceneEl) {
+  bottomSceneEl.addEventListener('wheel', (e) => {
+    if (isBottomAutoScrolling) return;
+
+    const rect = bottomSceneEl.getBoundingClientRect();
+    if (rect.top <= 10 && rect.bottom >= window.innerHeight - 10) {
+      const maxScroll = rect.height - window.innerHeight;
+      const currentScroll = -rect.top;
+      const progress = maxScroll > 0 ? currentScroll / maxScroll : 0;
+
+      if (e.deltaY > 15 && progress < 0.4) {
+        e.preventDefault();
+        isBottomAutoScrolling = true;
+        const targetY = bottomSceneEl.offsetTop + maxScroll;
+        gsap.to(window, {
+          scrollTo: targetY,
+          duration: 1.1,
+          ease: "power2.inOut",
+          onComplete: () => {
+            setTimeout(() => { isBottomAutoScrolling = false; }, 200);
+          }
+        });
+      } else if (e.deltaY < -15 && progress > 0.6) {
+        e.preventDefault();
+        isBottomAutoScrolling = true;
+        const targetY = bottomSceneEl.offsetTop;
+        gsap.to(window, {
+          scrollTo: targetY,
+          duration: 1.1,
+          ease: "power2.inOut",
+          onComplete: () => {
+            setTimeout(() => { isBottomAutoScrolling = false; }, 200);
+          }
+        });
+      }
+    }
+  }, { passive: false });
+}
 
 // Scroll Cue inside Showcase to view Contact
 document.getElementById('showcase-scroll-cue')?.addEventListener('click', () => {
@@ -904,6 +975,15 @@ function initSpaceCanvas(canvasId: string, isVisibleFn: () => boolean): void {
     }
   };
 
+  addStarParallax = (dx: number, dy: number) => {
+    if (!width || !height) return;
+    for (let i = 0; i < stars.length; i++) {
+      const s = stars[i];
+      s.x = (s.x + dx + width) % width;
+      s.y = (s.y + dy + height) % height;
+    }
+  };
+
   const section = canvas.closest('section') || canvas.parentElement;
   if (section) {
     const observer = new IntersectionObserver((entries) => {
@@ -979,11 +1059,37 @@ document.getElementById('contact-btn')?.addEventListener('click', (e) => {
 // ---------------------------------------------------------------------------
 // 12. Lifecycle & Resize Bindings
 // ---------------------------------------------------------------------------
+export function resetAllStates(): void {
+  window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  activeGameId = 'orbitar';
+  currentSkin = 'astronaut';
+  isHeroSplash = true;
+  lastBotX = null;
+  lastBotY = null;
+
+  heroTl.progress(0);
+  bottomTl.progress(0);
+  if (orbitarTimeline) orbitarTimeline.progress(0);
+  if (impostorTimeline) impostorTimeline.progress(0);
+
+  updateGlobalBackground(0, 'orbitar');
+  updatePortalCardsUI('orbitar');
+  setupInitialOrbitarPosition();
+  setupInitialImpostorPosition();
+
+  ScrollTrigger.refresh(true);
+}
+
 function initApp(): void {
   initTheaterScrollytelling();
   initSpaceCanvas('global-space-canvas', () => activeGameId === 'orbitar');
   refreshIcons();
+  resetAllStates();
 }
+
+window.addEventListener('pageshow', () => {
+  resetAllStates();
+});
 
 if (document.readyState === 'complete' || document.readyState === 'interactive') {
   setTimeout(initApp, 60);
