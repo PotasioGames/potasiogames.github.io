@@ -101,10 +101,18 @@
         <section id="hero-trigger" class="scrolly-sticky-viewport flex items-center justify-center select-none">
 
             <!-- Layer 1: Cosmic Background -->
-            <div id="hero-bg" class="absolute inset-0 z-0 bg-dark-900" style="
+            <div id="hero-bg" class="absolute inset-0 z-0 bg-dark-900 transition-colors duration-700" style="
                 background-color: #030612;
                 background-image: radial-gradient(ellipse at 50% 50%, rgba(55, 40, 100, 0.25) 0%, transparent 65%);
             "></div>
+
+            <!-- Layer 1.5: Orbitar Sky Transition Layer (estrellas y ambient glow progresivo) -->
+            <div id="hero-orbitar-sky" class="absolute inset-0 z-0 pointer-events-none opacity-0 transition-opacity duration-300">
+                <div class="absolute inset-0 opacity-60"
+                    style="background: radial-gradient(ellipse at 50% 30%, rgba(72,202,228,0.18) 0%, rgba(11,16,25,0.92) 65%, transparent 100%);">
+                </div>
+                <canvas id="hero-space-canvas" class="absolute inset-0 w-full h-full pointer-events-none"></canvas>
+            </div>
 
             <!-- Interactive Spotlight (follows cursor on Splash) -->
             <div id="hero-spotlight" class="absolute inset-0 pointer-events-none z-0 opacity-0 transition-opacity duration-700" style="
@@ -313,13 +321,13 @@
             <!-- ============================================== -->
             <div id="world-orbitar" class="relative w-full h-full inset-0 z-10 overflow-hidden">
                 
-                <!-- Planeta 1 (Origen: Planeta Alfa - Start/Attract de Colors.ts) -->
-                <div id="planet-1-container" class="absolute left-[8%] bottom-[14%] sm:bottom-[16%] flex flex-col items-center pointer-events-none z-10">
+                <!-- Planeta 1 (Origen: Planeta de Inicio) -->
+                <div id="planet-1-container" class="absolute left-[8%] bottom-[14%] sm:bottom-[16%] flex flex-col items-center pointer-events-none z-10 w-32 sm:w-40">
                     <div class="relative flex items-center justify-center">
                         <!-- Anillo Límite Exterior (#5B96D6 al 40%) -->
                         <div id="planet-1-ring" class="absolute w-44 h-44 sm:w-56 sm:h-56 rounded-full border-2 border-[#5B96D6]/40 orbit-dashed-ring pointer-events-none"></div>
-                        <!-- Planeta Alfa SVG con sombreado esférico 3D exacto -->
-                        <div class="w-24 h-24 sm:w-32 sm:h-32 relative flex items-center justify-center">
+                        <!-- Planeta Inicio SVG con sombreado esférico 3D exacto -->
+                        <div id="planet-1-body" class="w-24 h-24 sm:w-32 sm:h-32 relative flex items-center justify-center">
                             <svg class="w-full h-full drop-shadow-[0_0_35px_rgba(74,133,190,0.5)]" viewBox="0 0 100 100" fill="none">
                                 <!-- Campo gravitatorio (#1B344D al 15%) -->
                                 <circle cx="50" cy="50" r="48" fill="rgba(27, 52, 77, 0.15)" />
@@ -337,38 +345,61 @@
                         </div>
                     </div>
                     <span class="mt-3 text-[11px] font-mono font-bold text-cyan-300/90 bg-dark-900/90 px-2.5 py-0.5 rounded-full border border-cyan-400/40 tracking-wider">
-                        Planeta Alfa (Base)
+                        Planeta de Inicio
                     </span>
                 </div>
 
-                <!-- Barrera de Plasma Solar (Reemplaza Satélite Patrulla según regla de Orbitar) -->
-                <div id="hazard-container" class="absolute left-1/2 top-[46%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center pointer-events-none z-10 w-48 sm:w-60 h-32 sm:h-36">
-                    <div class="relative w-full h-full flex items-center justify-center">
-                        <!-- SVG Puente de Plasma con Micro-planetas y Filamentos de Marea -->
-                        <svg class="w-full h-full overflow-visible plasma-pulse" viewBox="0 0 200 120" fill="none">
+                <!-- Planeta Intermedio (Paso obligado: X=Objetivo, Y=Inicio) -->
+                <div id="planet-mid-container" class="absolute right-[8%] bottom-[14%] sm:bottom-[16%] flex flex-col items-center pointer-events-none z-10 w-32 sm:w-40">
+                    <div class="relative flex items-center justify-center">
+                        <!-- Anillo Límite Exterior (#5B96D6 al 40%) -->
+                        <div id="planet-mid-ring" class="absolute w-44 h-44 sm:w-56 sm:h-56 rounded-full border-2 border-[#5B96D6]/40 orbit-dashed-ring pointer-events-none"></div>
+                        <!-- Planeta Intermedio SVG con sombreado esférico 3D exacto -->
+                        <div id="planet-mid-body" class="w-24 h-24 sm:w-32 sm:h-32 relative flex items-center justify-center">
+                            <svg class="w-full h-full drop-shadow-[0_0_35px_rgba(74,133,190,0.5)]" viewBox="0 0 100 100" fill="none">
+                                <circle cx="50" cy="50" r="48" fill="rgba(27, 52, 77, 0.15)" />
+                                <circle cx="50" cy="50" r="42" fill="#25527E" stroke="#4A85BE" stroke-width="2.5" />
+                                <circle cx="55" cy="55" r="37" fill="rgba(0, 0, 0, 0.22)" />
+                                <circle cx="36.6" cy="36.6" r="11" fill="rgba(255, 255, 255, 0.30)" />
+                                <circle cx="44" cy="62" r="5" fill="#1B344D" opacity="0.6" />
+                                <circle cx="62" cy="42" r="3.5" fill="#1B344D" opacity="0.6" />
+                                <circle cx="38" cy="48" r="2.5" fill="#1B344D" opacity="0.5" />
+                            </svg>
+                        </div>
+                    </div>
+                    <span class="mt-3 text-[11px] font-mono font-bold text-cyan-300/90 bg-dark-900/90 px-2.5 py-0.5 rounded-full border border-cyan-400/40 tracking-wider">
+                        Planeta Intermedio
+                    </span>
+                </div>
+
+                <!-- Barrera de Plasma Solar (Rotada 45° y 30% más larga) -->
+                <div id="hazard-container" class="absolute left-1/2 top-[46%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center pointer-events-none z-10 w-64 sm:w-80 h-36 sm:h-44">
+                    <div class="relative w-full h-full flex items-center justify-center transform rotate-45">
+                        <!-- SVG Puente de Plasma con Micro-planetas y Filamentos de Marea (+30% longitud) -->
+                        <svg class="w-full h-full overflow-visible plasma-pulse" viewBox="0 0 260 120" fill="none">
                             <!-- Lóbulo de Marea Solar (Cuerpo Ancho Translúcido #D96B27 24% y bordes #FFA042) -->
-                            <path d="M 30,60 Q 100,18 170,60 Q 100,102 30,60 Z"
+                            <path d="M 30,60 Q 130,12 230,60 Q 130,108 30,60 Z"
                                   fill="rgba(217, 107, 39, 0.24)" stroke="rgba(255, 160, 66, 0.50)" stroke-width="1.5" />
                             <!-- Filamento Ondulante de Calor Solar (#FFA94D) -->
-                            <path class="filament-wave" d="M 30,60 C 70,35 130,85 170,60"
+                            <path class="filament-wave" d="M 30,60 C 80,30 180,90 230,60"
                                   stroke="#FFA94D" stroke-width="4" stroke-linecap="round" fill="none" opacity="0.85" />
                             <!-- Filamento Central Incandescente Hitbox (#FFF3BF) -->
-                            <path d="M 30,60 C 80,45 120,75 170,60"
+                            <path d="M 30,60 C 90,42 170,78 230,60"
                                   stroke="#FFF3BF" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.95" />
 
-                            <!-- Micro-Planeta Extremo Izquierdo (Radio ~12px) -->
+                            <!-- Micro-Planeta Extremo Izquierdo -->
                             <circle cx="30" cy="60" r="17" fill="rgba(255, 160, 66, 0.16)" />
                             <circle cx="30" cy="60" r="12" fill="#D96B27" stroke="#FFA042" stroke-width="1.5" />
                             <circle cx="31.7" cy="61.7" r="10.3" fill="rgba(90, 24, 6, 0.45)" />
                             <circle cx="26.6" cy="56.6" r="3.8" fill="rgba(255, 160, 66, 0.45)" />
                             <circle cx="26.4" cy="56.4" r="1.9" fill="rgba(255, 255, 255, 0.75)" />
 
-                            <!-- Micro-Planeta Extremo Derecho (Radio ~12px) -->
-                            <circle cx="170" cy="60" r="17" fill="rgba(255, 160, 66, 0.16)" />
-                            <circle cx="170" cy="60" r="12" fill="#D96B27" stroke="#FFA042" stroke-width="1.5" />
-                            <circle cx="171.7" cy="61.7" r="10.3" fill="rgba(90, 24, 6, 0.45)" />
-                            <circle cx="166.6" cy="56.6" r="3.8" fill="rgba(255, 160, 66, 0.45)" />
-                            <circle cx="166.4" cy="56.4" r="1.9" fill="rgba(255, 255, 255, 0.75)" />
+                            <!-- Micro-Planeta Extremo Derecho -->
+                            <circle cx="230" cy="60" r="17" fill="rgba(255, 160, 66, 0.16)" />
+                            <circle cx="230" cy="60" r="12" fill="#D96B27" stroke="#FFA042" stroke-width="1.5" />
+                            <circle cx="231.7" cy="61.7" r="10.3" fill="rgba(90, 24, 6, 0.45)" />
+                            <circle cx="226.6" cy="56.6" r="3.8" fill="rgba(255, 160, 66, 0.45)" />
+                            <circle cx="226.4" cy="56.4" r="1.9" fill="rgba(255, 255, 255, 0.75)" />
                         </svg>
                     </div>
                     <span class="mt-1 text-[10px] font-mono font-bold text-amber-300 bg-dark-900/90 px-2.5 py-0.5 rounded-full border border-amber-500/40 tracking-wider">
@@ -376,13 +407,13 @@
                     </span>
                 </div>
 
-                <!-- Planeta 2 (Destino: Planeta Beta - Goal Verde Esmeralda de Colors.ts) -->
-                <div id="planet-2-container" class="absolute right-[8%] top-[16%] sm:top-[18%] flex flex-col items-center pointer-events-none z-10">
+                <!-- Planeta 2 (Destino: Planeta Objetivo) -->
+                <div id="planet-2-container" class="absolute right-[8%] top-[16%] sm:top-[18%] flex flex-col items-center pointer-events-none z-10 w-32 sm:w-40">
                     <div class="relative flex items-center justify-center">
                         <!-- Límite de Captura Exterior (#38B27C al 40%) -->
                         <div id="planet-2-ring" class="absolute w-48 h-48 sm:w-60 sm:h-60 rounded-full border-2 border-[#38B27C]/40 orbit-dashed-ring pointer-events-none"></div>
-                        <!-- Planeta Beta SVG con sombreado esférico 3D exacto -->
-                        <div class="w-28 h-28 sm:w-36 sm:h-36 relative flex items-center justify-center">
+                        <!-- Planeta Objetivo SVG con sombreado esférico 3D exacto -->
+                        <div id="planet-2-body" class="w-28 h-28 sm:w-36 sm:h-36 relative flex items-center justify-center">
                             <svg class="w-full h-full drop-shadow-[0_0_40px_rgba(56,178,124,0.55)]" viewBox="0 0 100 100" fill="none">
                                 <!-- Campo gravitatorio (#1B344D al 15%) -->
                                 <circle cx="50" cy="50" r="48" fill="rgba(27, 52, 77, 0.15)" />
@@ -399,7 +430,7 @@
                         </div>
                     </div>
                     <span class="mt-3 text-[11px] font-mono font-bold text-emerald-300/90 bg-dark-900/90 px-2.5 py-0.5 rounded-full border border-emerald-400/40 tracking-wider">
-                        Planeta Beta (Objetivo)
+                        Planeta Objetivo
                     </span>
                 </div>
 
@@ -437,25 +468,25 @@
                     <span class="text-[10px] font-mono text-cyan-400 uppercase font-bold tracking-widest block mb-1">Fase 01</span>
                     <h4 class="font-display font-bold text-lg text-white mb-1">Enganchate a la Gravedad</h4>
                     <p class="text-xs text-slate-300 font-light leading-relaxed">
-                        Girá en la órbita del Planeta Alfa. Mantené la concentración y preparate para el lanzamiento.
+                        Girá en la órbita del Planeta de Inicio. Mantené la concentración y preparate para el lanzamiento.
                     </p>
                 </div>
 
-                <!-- Hito 2: Tirachinas Slingshot -->
-                <div id="orbitar-m2" class="absolute left-6 sm:left-1/4 bottom-20 sm:bottom-24 max-w-xs p-4 sm:p-5 rounded-2xl bg-dark-800/90 border border-cyan-400/40 backdrop-blur-xl shadow-2xl pointer-events-none opacity-0 translate-y-4 transition-all">
+                <!-- Hito 2: Tirachinas al Planeta Intermedio -->
+                <div id="orbitar-m2" class="absolute left-6 sm:left-14 bottom-28 sm:bottom-32 max-w-xs p-4 sm:p-5 rounded-2xl bg-dark-800/90 border border-cyan-400/40 backdrop-blur-xl shadow-2xl pointer-events-none opacity-0 translate-y-4 transition-all">
                     <span class="text-[10px] font-mono text-cyan-400 uppercase font-bold tracking-widest block mb-1">Fase 02</span>
-                    <h4 class="font-display font-bold text-lg text-white mb-1">Tirachinas Gravitatorio</h4>
+                    <h4 class="font-display font-bold text-lg text-white mb-1">Tirachinas al Planeta Intermedio</h4>
                     <p class="text-xs text-slate-300 font-light leading-relaxed">
-                        Desacople en el ángulo tangencial exacto para catapultarse a toda velocidad a través del vacío.
+                        Desacople tangencial a 0° para catapultarse a toda velocidad hacia el planeta de paso intermedio.
                     </p>
                 </div>
 
-                <!-- Hito 3: Barrera de Plasma -->
-                <div id="orbitar-m3" class="absolute right-6 sm:right-1/4 top-20 sm:top-24 max-w-xs p-4 sm:p-5 rounded-2xl bg-dark-800/90 border border-amber-500/50 backdrop-blur-xl shadow-2xl pointer-events-none opacity-0 translate-y-4 transition-all">
+                <!-- Hito 3: Esquivá la Barrera de Plasma -->
+                <div id="orbitar-m3" class="absolute right-6 sm:right-1/4 top-16 sm:top-20 max-w-xs p-4 sm:p-5 rounded-2xl bg-dark-800/90 border border-amber-500/50 backdrop-blur-xl shadow-2xl pointer-events-none opacity-0 translate-y-4 transition-all">
                     <span class="text-[10px] font-mono text-amber-400 uppercase font-bold tracking-widest block mb-1">Fase 03</span>
-                    <h4 class="font-display font-bold text-lg text-white mb-1">Barrera de Plasma</h4>
+                    <h4 class="font-display font-bold text-lg text-white mb-1">Esquivá la Barrera de Plasma</h4>
                     <p class="text-xs text-slate-300 font-light leading-relaxed">
-                        Filamentos solares y marea hiperbólica. Activá los escudos de plasma para atravesar la corriente sin desintegrarte.
+                        Girá en el Planeta Intermedio y salí a 90° hacia el Planeta Objetivo, esquivando el campo de plasma solar.
                     </p>
                 </div>
 

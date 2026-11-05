@@ -78,7 +78,7 @@ const SKIN_CONFIG: Record<SkinKey, { normal: string; alert: string; relaxed: str
 };
 
 // ---------------------------------------------------------------------------
-// 3. Scene 1: Hero Transition (Splash -> Adventure) [PRESERVED IDENTICAL]
+// 3. Scene 1: Hero Transition (Splash -> Adventure) & Sky Blending
 // ---------------------------------------------------------------------------
 const heroTl = gsap.timeline({ paused: true });
 heroTl
@@ -98,6 +98,21 @@ ScrollTrigger.create({
     const spotlight = document.getElementById('hero-spotlight');
     if (spotlight && !isHeroSplash) {
       spotlight.style.opacity = '0';
+    }
+
+    // Sky transition as we continue scrolling down in "Elegí tu Próxima Aventura"
+    const heroSky = document.getElementById('hero-orbitar-sky');
+    const heroBg = document.getElementById('hero-bg');
+    if (heroSky && heroBg) {
+      if (activeGameId === 'orbitar' && self.progress > 0.45) {
+        // Ramp opacity smoothly from 0 at progress=0.45 to 1.0 at progress=0.92
+        const skyProgress = Math.min(Math.max((self.progress - 0.45) / 0.47, 0), 1);
+        heroSky.style.opacity = skyProgress.toString();
+        heroBg.style.backgroundColor = skyProgress > 0.5 ? '#0B1019' : '#030612';
+      } else {
+        heroSky.style.opacity = '0';
+        heroBg.style.backgroundColor = '#030612';
+      }
     }
   }
 });
@@ -203,7 +218,7 @@ document.getElementById('portal-skin-mecha')?.addEventListener('click', (e) => {
 });
 
 // ---------------------------------------------------------------------------
-// 5. Orbitar Geometry & Positioning
+// 5. Orbitar Geometry & Positioning (Planeta Inicio, Intermedio, Objetivo)
 // ---------------------------------------------------------------------------
 interface GeometryPoint {
   x: number;
@@ -213,33 +228,48 @@ interface GeometryPoint {
 
 interface OrbitarGeometry {
   p1: GeometryPoint;
+  pMid: GeometryPoint;
   p2: GeometryPoint;
   hazard: { x: number; y: number };
 }
 
 function getOrbitarGeometry(): OrbitarGeometry | null {
   const world = document.getElementById('world-orbitar');
-  const ring1 = document.getElementById('planet-1-ring');
-  const ring2 = document.getElementById('planet-2-ring');
+  const body1 = document.getElementById('planet-1-body');
+  const bodyMid = document.getElementById('planet-mid-body');
+  const body2 = document.getElementById('planet-2-body');
   const hazard = document.getElementById('hazard-container');
 
-  if (!world || !ring1 || !ring2 || !hazard) return null;
+  if (!world || !body1 || !bodyMid || !body2 || !hazard) return null;
 
   const wRect = world.getBoundingClientRect();
-  const r1Rect = ring1.getBoundingClientRect();
-  const r2Rect = ring2.getBoundingClientRect();
+  const b1Rect = body1.getBoundingClientRect();
+  const bMidRect = bodyMid.getBoundingClientRect();
+  const b2Rect = body2.getBoundingClientRect();
   const hRect = hazard.getBoundingClientRect();
+
+  // Radio calculado sobre el cuerpo del planeta en sí (no sobre el anillo exterior)
+  // El disco sólido en SVG tiene radio 42/50 del wrapper.
+  // Sumamos offset (+14) para que el centro del sprite del bot orbite pegado a la superficie.
+  const r1 = (b1Rect.width / 2) * 0.84 + 14;
+  const rMid = (bMidRect.width / 2) * 0.84 + 14;
+  const r2 = (b2Rect.width / 2) * 0.88 + 14;
 
   return {
     p1: {
-      x: r1Rect.left - wRect.left + r1Rect.width / 2,
-      y: r1Rect.top - wRect.top + r1Rect.height / 2,
-      r: r1Rect.width / 2
+      x: b1Rect.left - wRect.left + b1Rect.width / 2,
+      y: b1Rect.top - wRect.top + b1Rect.height / 2,
+      r: r1
+    },
+    pMid: {
+      x: bMidRect.left - wRect.left + bMidRect.width / 2,
+      y: bMidRect.top - wRect.top + bMidRect.height / 2,
+      r: rMid
     },
     p2: {
-      x: r2Rect.left - wRect.left + r2Rect.width / 2,
-      y: r2Rect.top - wRect.top + r2Rect.height / 2,
-      r: r2Rect.width / 2
+      x: b2Rect.left - wRect.left + b2Rect.width / 2,
+      y: b2Rect.top - wRect.top + b2Rect.height / 2,
+      r: r2
     },
     hazard: {
       x: hRect.left - wRect.left + hRect.width / 2,
@@ -254,10 +284,11 @@ function setupInitialOrbitarPosition(): void {
   const speech = document.getElementById('orbitar-speech-container');
   if (!geom || !bot) return;
 
+  // Ubicado inicialmente sobre la superficie del Planeta de Inicio en ángulo 0:
   const initAngle = 0;
   const x = geom.p1.x + Math.cos(initAngle) * geom.p1.r;
   const y = geom.p1.y + Math.sin(initAngle) * geom.p1.r;
-  const rot = (initAngle * 180 / Math.PI) + 90;
+  const rot = 90;
 
   gsap.set(bot, {
     left: 0,
@@ -314,6 +345,7 @@ export function syncTheaterWorld(gameId: GameId): void {
   const worldImpostor = document.getElementById('world-impostor');
   const ambientGlow = document.getElementById('games-ambient-glow');
   const canvas = document.getElementById('orbitar-space-canvas');
+  const heroSky = document.getElementById('hero-orbitar-sky');
 
   if (gameId === 'orbitar') {
     if (ambientGlow) {
@@ -328,6 +360,7 @@ export function syncTheaterWorld(gameId: GameId): void {
       ambientGlow.style.background = 'radial-gradient(ellipse at 50% 50%, rgba(197,120,203,0.15) 0%, rgba(10,15,26,0.90) 65%, transparent 100%)';
     }
     if (canvas) canvas.style.opacity = '0';
+    if (heroSky) heroSky.style.opacity = '0';
     if (worldOrbitar) worldOrbitar.classList.add('hidden');
     if (worldImpostor) worldImpostor.classList.remove('hidden');
     setupInitialImpostorPosition();
@@ -389,7 +422,6 @@ function buildOrbitarTimeline(): gsap.core.Timeline {
   const bot = document.getElementById('scrolly-bot');
   const botImg = document.getElementById('orbitar-bot-img') as HTMLImageElement | null;
   const botThruster = document.getElementById('bot-thruster');
-  const botShield = document.getElementById('bot-shield');
   const botSpeech = document.getElementById('bot-speech');
   const m1 = document.getElementById('orbitar-m1');
   const m2 = document.getElementById('orbitar-m2');
@@ -399,104 +431,128 @@ function buildOrbitarTimeline(): gsap.core.Timeline {
   if (!geom || !bot || !botImg) return tl;
 
   const p1 = geom.p1;
+  const pMid = geom.pMid;
   const p2 = geom.p2;
-  const hazard = geom.hazard;
-  const orbitState = { angle: 0 };
-  const betaOrbit = { angle: Math.PI };
 
-  // Phase 1: 1.5 concentric orbits around Planeta Alfa
-  tl.to(m1, { opacity: 1, y: 0, duration: 0.6, ease: "power1.out" }, 0.1)
-    .to(orbitState, {
-      angle: Math.PI * 3,
-      duration: 3,
+  // Estados de ángulo para cada planeta
+  const orbit1 = { angle: 0 };
+  const orbitMid = { angle: Math.PI }; // llega por el lado izquierdo de pMid (180°)
+  const orbitGoal = { angle: Math.PI / 2 }; // llega por la parte inferior de p2 (90°)
+
+  // -------------------------------------------------------------------------
+  // FASE 1: Órbita en Planeta de Inicio (2 vueltas completas hasta ángulo 0)
+  // -------------------------------------------------------------------------
+  tl.to(m1, { opacity: 1, y: 0, duration: 0.5, ease: "power1.out" }, 0.1)
+    .to(orbit1, {
+      angle: Math.PI * 4, // 2 vueltas completas: termina exactamente en 4*PI = 0 rad (lado derecho)
+      duration: 3.0,
       ease: "power1.inOut",
       onUpdate: () => {
-        const x = p1.x + Math.cos(orbitState.angle) * p1.r;
-        const y = p1.y + Math.sin(orbitState.angle) * p1.r;
-        const rot = (orbitState.angle * 180 / Math.PI) + 90;
+        const x = p1.x + Math.cos(orbit1.angle) * p1.r;
+        const y = p1.y + Math.sin(orbit1.angle) * p1.r;
+        const rot = (orbit1.angle * 180 / Math.PI) + 90;
         gsap.set(bot, { x: x, y: y, rotation: rot });
         gsap.set('#orbitar-speech-container', { x: x, y: y - 35, rotation: 0 });
       }
     }, 0)
-    .to(m1, { opacity: 0, y: -10, duration: 0.5 }, 2.6);
+    .to(m1, { opacity: 0, y: -10, duration: 0.4 }, 2.6);
 
-  // Phase 2: Slingshot release with thruster boost toward Plasma Barrier
+  // -------------------------------------------------------------------------
+  // FASE 2: Salto desde ángulo 0° hacia Planeta Intermedio (horizontal)
+  // -------------------------------------------------------------------------
   tl.call(() => {
       if (botSpeech) {
         botSpeech.style.opacity = '1';
-        botSpeech.textContent = '¡Despegue Slingshot! 🚀';
+        botSpeech.textContent = '¡Despegue a 0°! 🚀';
       }
       gsap.to(botThruster, { opacity: 1, duration: 0.2 });
     }, [], 3.0)
-    .to(m2, { opacity: 1, y: 0, duration: 0.6 }, 3.0)
+    .to(m2, { opacity: 1, y: 0, duration: 0.5 }, 3.0)
     .to(bot, {
-      x: hazard.x - 45,
-      y: hazard.y + 15,
-      rotation: 28,
-      duration: 2.2,
-      ease: "power2.in",
+      x: pMid.x - pMid.r,
+      y: pMid.y,
+      rotation: 90, // Orientado horizontalmente hacia la derecha
+      duration: 2.0,
+      ease: "power2.inOut",
       onUpdate: () => {
         const bx = gsap.getProperty(bot, "x") as number;
         const by = gsap.getProperty(bot, "y") as number;
         gsap.set('#orbitar-speech-container', { x: bx, y: by - 35, rotation: 0 });
       }
     }, 3.0)
-    .to(m2, { opacity: 0, y: -10, duration: 0.4 }, 4.9);
+    .to(m2, { opacity: 0, y: -10, duration: 0.4 }, 4.7);
 
-  // Phase 3: Traversal of Plasma Barrier with cyan Shield activation
+  // -------------------------------------------------------------------------
+  // FASE 3: Órbita en Planeta Intermedio y preparación de salida a 90° (arriba)
+  // -------------------------------------------------------------------------
   tl.call(() => {
       if (botSpeech) {
-        botSpeech.textContent = '¡Escudos de plasma activos! ⚡';
+        botSpeech.textContent = 'Enganchado al Intermedio 🛰️';
       }
-      if (botShield) gsap.to(botShield, { opacity: 1, duration: 0.2 });
-      if (botImg) {
-        if (currentSkin === 'astronaut') botImg.src = SKIN_CONFIG.astronaut.alert;
+      gsap.to(botThruster, { opacity: 0, duration: 0.2 });
+    }, [], 5.0)
+    .to(orbitMid, {
+      // De Math.PI (lado izquierdo) gira 1.25 vueltas hasta 3.5*PI (vértice superior = -90° / 270° en pantalla)
+      angle: Math.PI + Math.PI * 2.5,
+      duration: 2.2,
+      ease: "power1.inOut",
+      onUpdate: () => {
+        const x = pMid.x + Math.cos(orbitMid.angle) * pMid.r;
+        const y = pMid.y + Math.sin(orbitMid.angle) * pMid.r;
+        const rot = (orbitMid.angle * 180 / Math.PI) + 90;
+        gsap.set(bot, { x: x, y: y, rotation: rot });
+        gsap.set('#orbitar-speech-container', { x: x, y: y - 35, rotation: 0 });
       }
-    }, [], 5.2)
-    .to(m3, { opacity: 1, y: 0, duration: 0.6 }, 5.2)
+    }, 5.0);
+
+  // -------------------------------------------------------------------------
+  // FASE 4: Salto a 90° (vertical hacia arriba) esquivando la Barrera de Plasma
+  // -------------------------------------------------------------------------
+  tl.call(() => {
+      if (botSpeech) {
+        botSpeech.textContent = '¡Rumbo al Objetivo a 90°! 🚀';
+      }
+      gsap.to(botThruster, { opacity: 1, duration: 0.2 });
+    }, [], 7.2)
+    .to(m3, { opacity: 1, y: 0, duration: 0.5 }, 7.2)
     .to(bot, {
-      x: hazard.x + 40,
-      y: hazard.y - 35,
-      rotation: 34,
-      duration: 1.8,
-      ease: "power1.out",
+      x: p2.x,
+      y: p2.y + p2.r,
+      rotation: 0, // Orientado verticalmente hacia arriba
+      duration: 2.0,
+      ease: "power2.inOut",
       onUpdate: () => {
         const bx = gsap.getProperty(bot, "x") as number;
         const by = gsap.getProperty(bot, "y") as number;
         gsap.set('#orbitar-speech-container', { x: bx, y: by - 35, rotation: 0 });
       }
-    }, 5.2)
-    .to(bot, {
-      rotation: "+=6",
-      yoyo: true,
-      repeat: 3,
-      duration: 0.15
-    }, 5.5)
-    .to(m3, { opacity: 0, y: -10, duration: 0.4 }, 6.8);
+    }, 7.2)
+    .to(m3, { opacity: 0, y: -10, duration: 0.4 }, 8.9);
 
-  // Phase 4: Capture into Planeta Beta (Goal) orbit!
+  // -------------------------------------------------------------------------
+  // FASE 5: Captura y Órbita en Planeta Objetivo
+  // -------------------------------------------------------------------------
   tl.call(() => {
       if (botSpeech) {
-        botSpeech.textContent = '¡Planeta Beta Asegurado! ✨';
+        botSpeech.textContent = '¡Planeta Objetivo Asegurado! ✨';
       }
-      if (botShield) gsap.to(botShield, { opacity: 0, duration: 0.3 });
-      if (botThruster) gsap.to(botThruster, { opacity: 0, duration: 0.3 });
+      gsap.to(botThruster, { opacity: 0, duration: 0.3 });
       if (botImg && currentSkin === 'astronaut') {
         botImg.src = SKIN_CONFIG.astronaut.relaxed;
       }
-    }, [], 7.0)
-    .to(betaOrbit, {
-      angle: Math.PI * 3,
+    }, [], 9.2)
+    .to(orbitGoal, {
+      angle: (Math.PI / 2) + Math.PI * 3.5,
       duration: 2.8,
       ease: "power2.out",
       onUpdate: () => {
-        const x = p2.x + Math.cos(betaOrbit.angle) * p2.r;
-        const y = p2.y + Math.sin(betaOrbit.angle) * p2.r;
-        const rot = (betaOrbit.angle * 180 / Math.PI) + 90;
+        const x = p2.x + Math.cos(orbitGoal.angle) * p2.r;
+        const y = p2.y + Math.sin(orbitGoal.angle) * p2.r;
+        const rot = (orbitGoal.angle * 180 / Math.PI) + 90;
         gsap.set(bot, { x: x, y: y, rotation: rot });
         gsap.set('#orbitar-speech-container', { x: x, y: y - 35, rotation: 0 });
       }
-    }, 7.0);
+    }, 9.2);
 
   return tl;
 }
@@ -661,13 +717,10 @@ document.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach((anchor) =>
 });
 
 // ---------------------------------------------------------------------------
-// 9. Orbitar Space Canvas (Twinkling Stars & Comets)
+// 9. Reusable Orbitar Space Canvas (Twinkling Stars & Comets)
 // ---------------------------------------------------------------------------
-let isCanvasRunning = false;
-let canvasAnimId: number | null = null;
-
-function initOrbitarCanvas(): void {
-  const canvas = document.getElementById('orbitar-space-canvas') as HTMLCanvasElement | null;
+function initSpaceCanvas(canvasId: string, isVisibleFn: () => boolean): void {
+  const canvas = document.getElementById(canvasId) as HTMLCanvasElement | null;
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
@@ -677,6 +730,9 @@ function initOrbitarCanvas(): void {
   let stars: Array<{ x: number; y: number; radius: number; baseAlpha: number; phase: number; speed: number; colorType: string }> = [];
   let comets: Array<{ x: number; y: number; dx: number; dy: number; length: number; opacity: number; decay: number }> = [];
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  let isRunning = false;
+  let animId: number | null = null;
+  let lastComet = Date.now();
 
   function resize(): void {
     if (!canvas) return;
@@ -724,13 +780,11 @@ function initOrbitarCanvas(): void {
     });
   }
 
-  let lastComet = Date.now();
-
   function render(): void {
-    if (!isCanvasRunning || !ctx) return;
+    if (!isRunning || !ctx) return;
     ctx.clearRect(0, 0, width, height);
 
-    // Stars matching Colors.ts (#8B949E & #48CAE4)
+    // Render twinkling stars
     for (const star of stars) {
       star.phase += star.speed;
       const alpha = star.baseAlpha * (0.6 + 0.4 * Math.sin(star.phase));
@@ -786,32 +840,31 @@ function initOrbitarCanvas(): void {
       ctx.shadowBlur = 0;
     }
 
-    canvasAnimId = requestAnimationFrame(render);
+    animId = requestAnimationFrame(render);
   }
 
   window.addEventListener('resize', resize);
   resize();
 
-  // Save GPU: Only render canvas when theater is in viewport
-  const theaterSection = document.getElementById('games-theater');
-  if (theaterSection) {
+  const section = canvas.closest('section') || canvas.parentElement;
+  if (section) {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
-        if (entry.isIntersecting && activeGameId === 'orbitar') {
-          if (!isCanvasRunning) {
-            isCanvasRunning = true;
+        if (entry.isIntersecting && isVisibleFn()) {
+          if (!isRunning) {
+            isRunning = true;
             render();
           }
         } else {
-          isCanvasRunning = false;
-          if (canvasAnimId) cancelAnimationFrame(canvasAnimId);
+          isRunning = false;
+          if (animId) cancelAnimationFrame(animId);
         }
       });
     }, { threshold: 0.05 });
-    observer.observe(theaterSection);
+    observer.observe(section);
   }
 
-  isCanvasRunning = true;
+  isRunning = true;
   render();
 }
 
@@ -874,7 +927,8 @@ document.getElementById('contact-btn')?.addEventListener('click', (e) => {
 // ---------------------------------------------------------------------------
 function initApp(): void {
   initTheaterScrollytelling();
-  initOrbitarCanvas();
+  initSpaceCanvas('orbitar-space-canvas', () => activeGameId === 'orbitar');
+  initSpaceCanvas('hero-space-canvas', () => activeGameId === 'orbitar');
   refreshIcons();
 }
 
