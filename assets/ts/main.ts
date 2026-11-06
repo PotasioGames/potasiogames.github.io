@@ -139,8 +139,8 @@ export function updateGlobalBackground(progress: number, gameId: GameId): void {
   const spaceCanvas = document.getElementById('global-space-canvas');
 
   // Hero Splash Screen and initial view of "Elegí tu Próxima Aventura"
-  // Remains 100% identical to the first screen until user scrolls past 0.55
-  if (progress <= 0.55) {
+  // Remains 100% identical to the first screen until user begins scrolling in Screen 2
+  if (progress <= 0.52) {
     if (bgBase) bgBase.style.backgroundColor = '#030612';
     if (heroGlow) heroGlow.style.opacity = '1';
     if (orbGlow) orbGlow.style.opacity = '0';
@@ -150,8 +150,8 @@ export function updateGlobalBackground(progress: number, gameId: GameId): void {
     return;
   }
 
-  // Smooth gradual blending as user continues scrolling down (0.55 -> 0.95)
-  const blend = Math.min(Math.max((progress - 0.55) / 0.38, 0), 1);
+  // Smooth gradual blending as user continues scrolling down in Screen 2 (0.52 -> 0.96)
+  const blend = Math.min(Math.max((progress - 0.52) / 0.44, 0), 1);
 
   if (heroGlow) heroGlow.style.opacity = (1 - blend).toString();
 
@@ -176,34 +176,424 @@ export function updateGlobalBackground(progress: number, gameId: GameId): void {
 export function updatePortalCardsUI(gameId: GameId): void {
   const portalOrb = document.getElementById('portal-orbitar');
   const portalImp = document.getElementById('portal-impostor');
-  if (!portalOrb || !portalImp) return;
+  const frameOrb = document.getElementById('portal-frame-orbitar');
+  const frameImp = document.getElementById('portal-frame-impostor');
 
-  if (gameId === 'orbitar') {
-    portalOrb.classList.add('active', 'border-2', 'border-cyan-400/80', 'shadow-[0_0_35px_rgba(34,211,238,0.25)]');
-    portalOrb.classList.remove('border-white/10');
-    portalImp.classList.remove('active', 'border-2', 'border-potasio-primary/80', 'shadow-[0_0_35px_rgba(244,238,90,0.3)]');
-    portalImp.classList.add('border-white/10');
+  if (portalOrb && portalImp) {
+    if (gameId === 'orbitar') {
+      portalOrb.classList.add('active');
+      portalImp.classList.remove('active');
+    } else {
+      portalImp.classList.add('active');
+      portalOrb.classList.remove('active');
+    }
+  }
+
+  if (frameOrb && frameImp) {
+    if (gameId === 'orbitar') {
+      frameOrb.classList.add('border-2', 'border-cyan-400/80', 'shadow-[0_0_35px_rgba(34,211,238,0.25)]');
+      frameOrb.classList.remove('border', 'border-white/10', 'shadow-xl');
+      frameImp.classList.remove('border-2', 'border-potasio-primary/80', 'shadow-[0_0_35px_rgba(244,238,90,0.3)]');
+      frameImp.classList.add('border', 'border-white/10', 'shadow-xl');
+    } else {
+      frameImp.classList.add('border-2', 'border-potasio-primary/80', 'shadow-[0_0_35px_rgba(244,238,90,0.3)]');
+      frameImp.classList.remove('border', 'border-white/10', 'shadow-xl');
+      frameOrb.classList.remove('border-2', 'border-cyan-400/80', 'shadow-[0_0_35px_rgba(34,211,238,0.25)]');
+      frameOrb.classList.add('border', 'border-white/10', 'shadow-xl');
+    }
+  }
+}
+
+export function getHeroScrollProgress(): number {
+  const heroScene = document.getElementById('hero-scene');
+  if (!heroScene) return 0;
+  const vh = window.innerHeight;
+  const heroRect = heroScene.getBoundingClientRect();
+  const heroStickyScrollable = Math.max(1, heroRect.height - vh);
+  const heroScrolled = Math.max(0, -heroRect.top);
+  return Math.min(Math.max(heroScrolled / heroStickyScrollable, 0), 1);
+}
+
+export function updateAdventureModalTransition(): void {
+  const heroScene = document.getElementById('hero-scene');
+  const theaterScene = document.getElementById('games-theater-scene');
+  const bottomScene = document.getElementById('bottom-scene');
+  const adventureHeader = document.getElementById('adventure-header');
+  const cards = document.querySelectorAll<HTMLElement>('.portal-card');
+  const travelingStage = document.getElementById('game-showcase-stage');
+  const badgeAnchor = document.getElementById('theater-badge-anchor');
+
+  if (!heroScene || !theaterScene || !bottomScene || !travelingStage || !badgeAnchor || cards.length === 0) return;
+
+  const vh = window.innerHeight;
+  const vw = window.innerWidth;
+  const heroRect = heroScene.getBoundingClientRect();
+  const theaterRect = theaterScene.getBoundingClientRect();
+  const bottomRect = bottomScene.getBoundingClientRect();
+
+  // 1. Hero Scene Scroll Progress (Screen 1 -> Screen 2 -> Centering Selected Modal)
+  const heroStickyScrollable = Math.max(1, heroRect.height - vh);
+  const heroScrolled = Math.max(0, -heroRect.top);
+  const heroProgress = Math.min(Math.max(heroScrolled / heroStickyScrollable, 0), 1);
+
+  // Phase 1: Centering selected card & fading unselected cards (heroProgress: 0.54 -> 0.92)
+  const rawCenter = Math.min(Math.max((heroProgress - 0.54) / 0.38, 0), 1);
+  const easeCenter = gsap.parseEase("power2.inOut")(rawCenter);
+
+  // Phase 2: Simultaneous shrinking (frame + inner content except title)
+  // AND descending into the top-left corner of Screen 3 as we scroll down toward Screen 3
+  const shrinkDockStartScroll = heroStickyScrollable * 0.90;
+  const shrinkDockTotalScroll = Math.max(1, heroRect.height - shrinkDockStartScroll);
+  const rawShrinkDock = Math.min(Math.max((heroScrolled - shrinkDockStartScroll) / shrinkDockTotalScroll, 0), 1);
+  const easeShrinkDock = gsap.parseEase("power2.inOut")(rawShrinkDock);
+
+  // 1. Fade out "Elegí tu Próxima Aventura" header during Phase 1
+  if (adventureHeader) {
+    gsap.set(adventureHeader, {
+      opacity: 1 - easeCenter,
+      y: -16 * easeCenter
+    });
+  }
+
+  // Target badge dimensions & position from #theater-badge-anchor in Screen 3
+  const badgeW = badgeAnchor.offsetWidth || 150;
+  const badgeH = badgeAnchor.offsetHeight || 52;
+  const dockedVpX = badgeAnchor.offsetLeft + badgeW / 2;
+  const dockedVpY = badgeAnchor.offsetTop + badgeH / 2;
+
+  // Prevent #hero-scene from blocking pointer events once Screen 3 arrives
+  const isInScreen3OrLater = theaterRect.top <= 1;
+  if (theaterRect.top <= 4) {
+    heroScene.style.pointerEvents = 'none';
   } else {
-    portalImp.classList.add('active', 'border-2', 'border-potasio-primary/80', 'shadow-[0_0_35px_rgba(244,238,90,0.3)]');
-    portalImp.classList.remove('border-white/10');
-    portalOrb.classList.remove('active', 'border-2', 'border-cyan-400/80', 'shadow-[0_0_35px_rgba(34,211,238,0.25)]');
-    portalOrb.classList.add('border-white/10');
+    heroScene.style.pointerEvents = 'auto';
+  }
+
+  cards.forEach((card) => {
+    const gameKey = card.getAttribute('data-game') as GameId | null;
+    const isSelected = gameKey === activeGameId;
+    const frameEl = card.querySelector<HTMLElement>('.portal-card-frame');
+    const titleEl = card.querySelector<HTMLElement>('.portal-card-title');
+    const extraEls = card.querySelectorAll<HTMLElement>('.portal-card-extra');
+
+    if (!isSelected) {
+      gsap.set(card, {
+        x: 0,
+        y: 0,
+        opacity: 1 - easeCenter,
+        scale: 1 - 0.05 * easeCenter,
+        pointerEvents: rawCenter > 0.15 ? 'none' : 'auto',
+        zIndex: 10
+      });
+      if (frameEl) {
+        gsap.set(frameEl, { clearProps: "width,height,left,top,borderRadius" });
+      }
+      if (titleEl) {
+        gsap.set(titleEl, { x: 0, y: 0, scale: 1 });
+      }
+      if (extraEls.length > 0) {
+        gsap.set(extraEls, { x: 0, y: 0, scale: 1, opacity: 1 });
+      }
+      return;
+    }
+
+    // Selected Card: calculate invariant untransformed center in viewport
+    const curCardX = (gsap.getProperty(card, "x") as number) || 0;
+    const curCardY = (gsap.getProperty(card, "y") as number) || 0;
+    const cardRect = card.getBoundingClientRect();
+    const cardW = cardRect.width;
+    const cardH = cardRect.height;
+    const baseCardCenterX = (cardRect.left - curCardX) + cardW / 2;
+    const baseCardCenterY = (cardRect.top - curCardY) + cardH / 2;
+
+    const vpCenterX = vw / 2;
+    const vpCenterY = vh / 2;
+
+    // Viewport target position across Phase 1 (center) and simultaneous Phase 2&3 (shrink & dock to top-left of Screen 3)
+    const centerVpX = baseCardCenterX + (vpCenterX - baseCardCenterX) * easeCenter;
+    const centerVpY = baseCardCenterY + (vpCenterY - baseCardCenterY) * easeCenter;
+
+    const targetVpX = centerVpX + (dockedVpX - centerVpX) * easeShrinkDock;
+    const targetVpY = centerVpY + (dockedVpY - centerVpY) * easeShrinkDock;
+
+    const dx = targetVpX - baseCardCenterX;
+    const dy = targetVpY - baseCardCenterY;
+
+    gsap.set(card, {
+      x: dx,
+      y: dy,
+      scale: 1,
+      opacity: isInScreen3OrLater ? 0 : 1,
+      pointerEvents: rawCenter > 0.25 ? 'none' : 'auto',
+      zIndex: 40
+    });
+
+    // Modal Frame (.portal-card-frame) dimensions at current shrink progress
+    const curFrameW = cardW + (badgeW - cardW) * easeShrinkDock;
+    const curFrameH = cardH + (badgeH - cardH) * easeShrinkDock;
+    const ratioW = cardW > 0 ? curFrameW / cardW : 1;
+    const ratioH = cardH > 0 ? curFrameH / cardH : 1;
+
+    if (frameEl) {
+      const frameLeft = (cardW - curFrameW) / 2;
+      const frameTop = (cardH - curFrameH) / 2;
+      const frameRadius = 24 - 8 * easeShrinkDock;
+
+      gsap.set(frameEl, {
+        width: curFrameW,
+        height: curFrameH,
+        left: frameLeft,
+        top: frameTop,
+        borderRadius: frameRadius
+      });
+    }
+
+    // Inner content (.portal-card-extra) shrinks together with the modal frame AND fades out
+    if (extraEls.length > 0) {
+      const extraOpacity = Math.max(0, 1 - rawShrinkDock * 1.4);
+      const extraScale = Math.min(ratioW, ratioH);
+
+      extraEls.forEach((extraEl) => {
+        const curExtraX = (gsap.getProperty(extraEl, "x") as number) || 0;
+        const curExtraY = (gsap.getProperty(extraEl, "y") as number) || 0;
+        const extraRect = extraEl.getBoundingClientRect();
+
+        // Invariant untransformed local center of extraEl inside card
+        const baseExtraLocalX = (extraRect.left - cardRect.left - curExtraX) + extraRect.width / 2;
+        const baseExtraLocalY = (extraRect.top - cardRect.top - curExtraY) + extraRect.height / 2;
+
+        const vecX = baseExtraLocalX - (cardW / 2);
+        const vecY = baseExtraLocalY - (cardH / 2);
+
+        gsap.set(extraEl, {
+          x: vecX * (ratioW - 1),
+          y: vecY * (ratioH - 1),
+          scale: extraScale,
+          opacity: extraOpacity
+        });
+      });
+    }
+
+    // Title (.portal-card-title) does NOT shrink (scale: 1), only centers inside the shrinking modal
+    if (titleEl) {
+      const curTitleX = (gsap.getProperty(titleEl, "x") as number) || 0;
+      const curTitleY = (gsap.getProperty(titleEl, "y") as number) || 0;
+      const titleRect = titleEl.getBoundingClientRect();
+      const baseTitleLocalCenterX = (titleRect.left - cardRect.left - curTitleX) + titleRect.width / 2;
+      const baseTitleLocalCenterY = (titleRect.top - cardRect.top - curTitleY) + titleRect.height / 2;
+
+      const titleTargetDx = (cardW / 2) - baseTitleLocalCenterX;
+      const titleTargetDy = (cardH / 2) - baseTitleLocalCenterY;
+
+      gsap.set(titleEl, {
+        x: titleTargetDx * easeShrinkDock,
+        y: titleTargetDy * easeShrinkDock,
+        scale: 1
+      });
+    }
+  });
+
+  // -------------------------------------------------------------------------
+  // 3. Screen 3 & Screen 4: Traveling Showcase Card (Badge in Corner -> Full Showcase Card)
+  // -------------------------------------------------------------------------
+  const travelingCard = document.getElementById(`traveling-card-${activeGameId}`);
+  const otherGameId = activeGameId === 'orbitar' ? 'impostor' : 'orbitar';
+  const otherTravelingCard = document.getElementById(`traveling-card-${otherGameId}`);
+  const showcaseAnchor = document.getElementById(`showcase-anchor-${activeGameId}`);
+  const titleAnchor = document.getElementById(`showcase-title-anchor-${activeGameId}`);
+
+  if (otherTravelingCard) {
+    otherTravelingCard.classList.add('hidden');
+    gsap.set(otherTravelingCard, { opacity: 0, pointerEvents: 'none' });
+  }
+
+  if (!travelingCard || !showcaseAnchor) return;
+  travelingCard.classList.remove('hidden');
+
+  // 1. If we haven't reached Screen 3 yet, traveling stage and cards are completely hidden
+  if (!isInScreen3OrLater) {
+    gsap.set(travelingStage, { opacity: 0, scale: 1, pointerEvents: 'none' });
+    gsap.set(travelingCard, { opacity: 0, pointerEvents: 'none' });
+    return;
+  }
+
+  // Measure target showcase dimensions from anchor
+  const anchorRect = showcaseAnchor.getBoundingClientRect();
+  const showcaseW = anchorRect.width || Math.min(vw - 32, 896);
+  const showcaseH = anchorRect.height || 360;
+
+  // Target center of showcase in viewport
+  const targetShowcaseCenterX = vw / 2;
+  const targetShowcaseCenterY = vh / 2;
+
+  // 2. Are we inside Screen 4 / transitioning to Screen 5 (bottomRect.top <= 0)?
+  const isInsideBottomScene = bottomRect.top <= 0;
+
+  if (isInsideBottomScene) {
+    // Docked at Screen 4 or transitioning to Screen 5:
+    // Dimensions, frame, content scale, and title position are locked at full showcase size.
+    // The fade out, scale up (1.04), and pointer-events into Screen 5 are governed exclusively by bottomTl!
+    // We intentionally DO NOT overwrite travelingStage opacity/scale so it smoothly dissolves and stays hidden in Screen 5.
+    const isExitingToShowcase = bottomTl.progress() > 0.05;
+
+    gsap.set(travelingCard, {
+      x: targetShowcaseCenterX - showcaseW / 2,
+      y: targetShowcaseCenterY - showcaseH / 2,
+      width: showcaseW,
+      height: showcaseH,
+      opacity: 1,
+      scale: 1,
+      pointerEvents: isExitingToShowcase ? 'none' : 'auto'
+    });
+
+    const travelingFrame = document.getElementById(`traveling-frame-${activeGameId}`);
+    if (travelingFrame) {
+      gsap.set(travelingFrame, {
+        width: showcaseW,
+        height: showcaseH,
+        borderRadius: 24
+      });
+    }
+
+    const travelingContent = document.getElementById(`traveling-content-${activeGameId}`);
+    if (travelingContent) {
+      gsap.set(travelingContent, {
+        width: showcaseW,
+        height: showcaseH,
+        left: 0,
+        top: 0,
+        scale: 1,
+        opacity: 1,
+        pointerEvents: isExitingToShowcase ? 'none' : 'auto'
+      });
+    }
+
+    const travelingTitle = document.getElementById(`traveling-title-${activeGameId}`);
+    if (travelingTitle && titleAnchor) {
+      const tAnchorRect = titleAnchor.getBoundingClientRect();
+      const targetTitleLocalX = tAnchorRect.left - anchorRect.left;
+      const targetTitleLocalY = tAnchorRect.top - anchorRect.top;
+
+      gsap.set(travelingTitle, {
+        left: 0,
+        top: 0,
+        x: targetTitleLocalX,
+        y: targetTitleLocalY,
+        scale: 1
+      });
+    }
+
+    return;
+  }
+
+  // 3. Screen 3 and Transition Screen 3 -> Screen 4 (bottomRect.top > 0)
+  // Ensure traveling stage is active and clean
+  gsap.set(travelingStage, { opacity: 1, scale: 1, pointerEvents: 'none' });
+
+  // Progress of transition from Screen 3 corner to Screen 4 center
+  // User confirmed: "Puede empezar a moverse apenas asoma la pantalla 4"
+  // When bottomRect.top is at vh, bottom scene starts entering -> progress = 0
+  // When bottomRect.top is at 0, bottom scene is fully docked -> progress = 1
+  const rawShowcaseProgress = Math.min(Math.max((vh - bottomRect.top) / vh, 0), 1);
+  const easeShowcase = gsap.parseEase("power2.inOut")(rawShowcaseProgress);
+
+  // Interpolated center of the card
+  const curCardCenterX = dockedVpX + (targetShowcaseCenterX - dockedVpX) * easeShowcase;
+  const curCardCenterY = dockedVpY + (targetShowcaseCenterY - dockedVpY) * easeShowcase;
+
+  // Interpolated dimensions of the frame
+  const curFrameW = badgeW + (showcaseW - badgeW) * easeShowcase;
+  const curFrameH = badgeH + (showcaseH - badgeH) * easeShowcase;
+  const curRadius = 16 + (24 - 16) * easeShowcase;
+
+  // Card container position (centered at curCardCenterX, curCardCenterY)
+  gsap.set(travelingCard, {
+    x: curCardCenterX - curFrameW / 2,
+    y: curCardCenterY - curFrameH / 2,
+    width: curFrameW,
+    height: curFrameH,
+    opacity: 1,
+    scale: 1,
+    pointerEvents: rawShowcaseProgress >= 0.85 ? 'auto' : 'none'
+  });
+
+  const travelingFrame = document.getElementById(`traveling-frame-${activeGameId}`);
+  if (travelingFrame) {
+    gsap.set(travelingFrame, {
+      width: curFrameW,
+      height: curFrameH,
+      borderRadius: curRadius
+    });
+  }
+
+  // Showcase Content (scales up and fades in as card expands, avoiding overflow when small)
+  const travelingContent = document.getElementById(`traveling-content-${activeGameId}`);
+  if (travelingContent) {
+    const contentOpacity = Math.min(Math.max((rawShowcaseProgress - 0.20) / 0.70, 0), 1);
+    const ratioW = showcaseW > 0 ? curFrameW / showcaseW : 1;
+    const ratioH = showcaseH > 0 ? curFrameH / showcaseH : 1;
+    const contentScale = Math.min(ratioW, ratioH);
+    const offsetX = (curFrameW - showcaseW) / 2;
+    const offsetY = (curFrameH - showcaseH) / 2;
+
+    gsap.set(travelingContent, {
+      width: showcaseW,
+      height: showcaseH,
+      left: offsetX,
+      top: offsetY,
+      scale: contentScale,
+      opacity: contentOpacity,
+      pointerEvents: rawShowcaseProgress >= 0.85 ? 'auto' : 'none'
+    });
+  }
+
+  // Game Title (NEVER disappears, NEVER scales, glides from badge center to showcase title anchor)
+  const travelingTitle = document.getElementById(`traveling-title-${activeGameId}`);
+  if (travelingTitle) {
+    const titleRect = travelingTitle.getBoundingClientRect();
+    const titleW = titleRect.width;
+    const titleH = titleRect.height;
+
+    // In badge (easeShowcase = 0): centered in frame
+    const badgeTitleLocalX = (curFrameW - titleW) / 2;
+    const badgeTitleLocalY = (curFrameH - titleH) / 2;
+
+    // In showcase (easeShowcase = 1): next to icon in right column
+    let targetTitleLocalX = badgeTitleLocalX;
+    let targetTitleLocalY = badgeTitleLocalY;
+
+    if (titleAnchor) {
+      const tAnchorRect = titleAnchor.getBoundingClientRect();
+      targetTitleLocalX = tAnchorRect.left - anchorRect.left;
+      targetTitleLocalY = tAnchorRect.top - anchorRect.top;
+    }
+
+    const curTitleX = badgeTitleLocalX + (targetTitleLocalX - badgeTitleLocalX) * easeShowcase;
+    const curTitleY = badgeTitleLocalY + (targetTitleLocalY - badgeTitleLocalY) * easeShowcase;
+
+    gsap.set(travelingTitle, {
+      left: 0,
+      top: 0,
+      x: curTitleX,
+      y: curTitleY,
+      scale: 1
+    });
   }
 }
 
 const heroTl = gsap.timeline({ paused: true });
 heroTl
   .to("#scroll-indicator", { opacity: 0, scale: 0.5, duration: 0.25, ease: "power1.out" })
-  .to("#hero-logo-layer", { opacity: 0, scale: 1.05, duration: 0.55, ease: "power2.inOut" }, 0)
-  .to("#hero-spotlight", { opacity: 0, duration: 0.4 }, 0)
-  .to("#adventure-layer", { opacity: 1, y: 0, pointerEvents: "auto", duration: 0.55, ease: "power2.out" }, "-=0.3")
-  .to({}, { duration: 0.4 }); // Hold adventure layer steady while background stays original splash
+  .to("#hero-logo-layer", { opacity: 0, scale: 1.05, duration: 0.50, ease: "power2.inOut" }, 0)
+  .to("#hero-spotlight", { opacity: 0, duration: 0.35 }, 0)
+  .to("#adventure-layer", { opacity: 1, y: 0, pointerEvents: "auto", duration: 0.50, ease: "power2.out" }, 0.15)
+  .to({}, { duration: 0.85 }); // Compact span for Screen 2 modal centering
 
 ScrollTrigger.create({
   trigger: "#hero-scene",
   start: "top top",
   end: "bottom bottom",
-  scrub: 0.6,
+  scrub: 0.5,
   animation: heroTl,
   onUpdate: (self) => {
     isHeroSplash = self.progress < 0.15;
@@ -213,14 +603,20 @@ ScrollTrigger.create({
     }
 
     updateGlobalBackground(self.progress, activeGameId);
+    updateAdventureModalTransition();
   }
 });
+
+window.addEventListener('scroll', () => {
+  updateAdventureModalTransition();
+}, { passive: true });
 
 // Scroll Indicator UX Cue Click
 document.getElementById('scroll-indicator')?.addEventListener('click', () => {
   const heroScene = document.getElementById('hero-scene');
   if (heroScene) {
-    const targetY = heroScene.offsetTop + heroScene.offsetHeight * 0.75;
+    const heroStickyScrollable = Math.max(1, heroScene.offsetHeight - window.innerHeight);
+    const targetY = heroScene.offsetTop + heroStickyScrollable * 0.50;
     gsap.to(window, { scrollTo: targetY, duration: 0.9, ease: "power2.inOut" });
   }
 });
@@ -447,8 +843,9 @@ function setupInitialImpostorPosition(): void {
 export function selectGame(gameId: GameId): void {
   activeGameId = gameId;
   updatePortalCardsUI(gameId);
-  updateGlobalBackground(1.0, gameId);
+  updateGlobalBackground(getHeroScrollProgress(), gameId);
   syncTheaterWorld(gameId);
+  updateAdventureModalTransition();
 }
 
 export function syncTheaterWorld(gameId: GameId): void {
@@ -457,13 +854,13 @@ export function syncTheaterWorld(gameId: GameId): void {
   const worldImpostor = document.getElementById('world-impostor');
 
   // Update fixed global background for the chosen game world
-  updateGlobalBackground(1.0, gameId);
+  updateGlobalBackground(getHeroScrollProgress(), gameId);
   updatePortalCardsUI(gameId);
 
   if (gameId === 'orbitar') {
     if (worldOrbitar) worldOrbitar.classList.remove('hidden');
     if (worldImpostor) worldImpostor.classList.add('hidden');
-    spaceCanvasWakeup?.();
+    if (getHeroScrollProgress() > 0.42) spaceCanvasWakeup?.();
     setupInitialOrbitarPosition();
   } else {
     if (worldOrbitar) worldOrbitar.classList.add('hidden');
@@ -476,8 +873,8 @@ export function syncTheaterWorld(gameId: GameId): void {
 }
 
 export function updateShowcase(gameId: GameId): void {
-  const scOrbitar = document.getElementById('showcase-orbitar');
-  const scImpostor = document.getElementById('showcase-impostor');
+  const scOrbitar = document.getElementById('showcase-anchor-orbitar');
+  const scImpostor = document.getElementById('showcase-anchor-impostor');
 
   if (gameId === 'orbitar') {
     if (scOrbitar) scOrbitar.classList.remove('hidden');
@@ -488,29 +885,13 @@ export function updateShowcase(gameId: GameId): void {
   }
 }
 
-// Launch Game from Adventure Cards
+// Select Game from Adventure Cards
 export function launchGame(gameId: GameId): void {
   selectGame(gameId);
-  const clickedCard = document.getElementById(`portal-${gameId}`);
-  if (clickedCard) {
-    clickedCard.classList.add('portal-card-expanding');
-  }
-
-  const theaterScene = document.getElementById('games-theater-scene');
-  if (theaterScene) {
-    gsap.to(window, {
-      scrollTo: theaterScene.offsetTop,
-      duration: 0.9,
-      ease: "power2.inOut",
-      onComplete: () => {
-        if (clickedCard) clickedCard.classList.remove('portal-card-expanding');
-      }
-    });
-  }
 }
 
-document.getElementById('portal-orbitar')?.addEventListener('click', () => launchGame('orbitar'));
-document.getElementById('portal-impostor')?.addEventListener('click', () => launchGame('impostor'));
+document.getElementById('portal-orbitar')?.addEventListener('click', () => selectGame('orbitar'));
+document.getElementById('portal-impostor')?.addEventListener('click', () => selectGame('impostor'));
 
 // ---------------------------------------------------------------------------
 // 7. Scene 2: Theater Cinematic Timelines Driven by Scrub
@@ -585,9 +966,8 @@ function buildOrbitarTimeline(): gsap.core.Timeline {
       onUpdate: () => {
         const x = pMid.x + Math.cos(orbitMid.angle) * pMid.r;
         const y = pMid.y + Math.sin(orbitMid.angle) * pMid.r;
-        // Rotación continua sin desenrollarse: transiciona de 810° a 720° (0° mod 360, cabeza hacia arriba)
-        const t = (orbitMid.angle - Math.PI) / (Math.PI * 2.5);
-        const rot = 810 - t * 90;
+        // Pies apoyados en el planeta intermedio, terminando en 1080° (0° mod 360, cabeza hacia arriba)
+        const rot = (orbitMid.angle * 180 / Math.PI) + 90 + 360;
         gsap.set(bot, { x: x, y: y, rotation: rot });
         updateBotMotionEffects(x, y, false); // En órbita: las estrellas no se mueven
       }
@@ -600,7 +980,7 @@ function buildOrbitarTimeline(): gsap.core.Timeline {
     .to(bot, {
       x: p2.x,
       y: p2.y + p2.r,
-      rotation: 720, // Cabeza apunta hacia ARRIBA (hacia el objetivo), propulsor a los pies impulsando abajo
+      rotation: 1080, // Cabeza apunta hacia ARRIBA (hacia el objetivo), propulsor a los pies impulsando abajo
       duration: 2.0,
       ease: "power2.inOut",
       onUpdate: () => {
@@ -621,7 +1001,8 @@ function buildOrbitarTimeline(): gsap.core.Timeline {
       onUpdate: () => {
         const x = p2.x + Math.cos(orbitGoal.angle) * p2.r;
         const y = p2.y + Math.sin(orbitGoal.angle) * p2.r;
-        const rot = (orbitGoal.angle * 180 / Math.PI) + 90 + 540;
+        // Pies apoyados sobre el Planeta Objetivo y cabeza apuntando hacia afuera (+720 = 0° mod 360)
+        const rot = (orbitGoal.angle * 180 / Math.PI) + 90 + 720;
         gsap.set(bot, { x: x, y: y, rotation: rot });
         updateBotMotionEffects(x, y, false); // En órbita: las estrellas no se mueven
       }
@@ -783,7 +1164,12 @@ function initTheaterScrollytelling(): void {
 // ---------------------------------------------------------------------------
 const bottomTl = gsap.timeline({ paused: true });
 bottomTl
-  .to("#showcase-layer", { opacity: 0, scale: 1.04, pointerEvents: "none", duration: 0.7, ease: "power2.inOut" })
+  .fromTo("#game-showcase-stage",
+    { opacity: 1, scale: 1, pointerEvents: "auto" },
+    { opacity: 0, scale: 1.04, pointerEvents: "none", duration: 0.7, ease: "power2.inOut" }
+  )
+  .to("#showcase-layer", { opacity: 0, pointerEvents: "none", duration: 0.7, ease: "power2.inOut" }, 0)
+  .to("#showcase-scroll-cue", { opacity: 0, duration: 0.35, ease: "power1.out" }, 0)
   .to("#contact-layer", { opacity: 1, y: 0, pointerEvents: "auto", duration: 0.7, ease: "power2.out" }, "-=0.4");
 
 ScrollTrigger.create({
@@ -805,7 +1191,7 @@ let isBottomAutoScrolling = false;
 const bottomSceneEl = document.getElementById('bottom-scene');
 
 if (bottomSceneEl) {
-  bottomSceneEl.addEventListener('wheel', (e) => {
+  window.addEventListener('wheel', (e) => {
     if (isBottomAutoScrolling) return;
 
     const rect = bottomSceneEl.getBoundingClientRect();
@@ -1119,8 +1505,10 @@ export function resetAllStates(): void {
 
   updateGlobalBackground(0, 'orbitar');
   updatePortalCardsUI('orbitar');
+  updateShowcase('orbitar');
   setupInitialOrbitarPosition();
   setupInitialImpostorPosition();
+  updateAdventureModalTransition();
 
   ScrollTrigger.refresh(true);
 }
@@ -1145,8 +1533,10 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
 ScrollTrigger.addEventListener("refreshInit", () => {
   setupInitialOrbitarPosition();
   setupInitialImpostorPosition();
+  updateAdventureModalTransition();
 });
 
 window.addEventListener('resize', () => {
+  updateAdventureModalTransition();
   ScrollTrigger.refresh();
 });

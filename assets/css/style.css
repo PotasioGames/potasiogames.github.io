@@ -113,6 +113,12 @@ html {
     height: 100svh;
 }
 
+#hero-trigger,
+#adventure-layer {
+    overflow: visible;
+    overflow-x: clip;
+}
+
 #hero-logo-layer,
 #hero-content-layer,
 #adventure-layer,
@@ -409,3 +415,21 @@ html {
 .portal-card:hover {
     transform: translateY(-6px);
 }
+
+/* Traveling Showcase Card (Screen 3 Badge -> Screen 4 Showcase) */
+.traveling-game-card {
+    will-change: transform, width, height, opacity;
+}
+
+.traveling-card-frame {
+    will-change: width, height, border-radius, box-shadow;
+}
+
+.traveling-card-title {
+    will-change: transform;
+}
+
+.traveling-card-content {
+    will-change: transform, opacity;
+}
+

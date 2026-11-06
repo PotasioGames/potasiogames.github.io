@@ -19,3 +19,8 @@ To protect the project owners and users from malicious actors (such as web scrap
 ### C. Secure Data Handling
 *   Ensure all external API requests utilize secure protocols (HTTPS).
 *   Follow the principle of least privilege and data minimization when collecting, processing, or transmitting user actions or telemetry.
+
+## 2. Git and Version Control Guidelines
+
+### A. Explicit User Confirmation for Git Operations
+*   **No Proactive Commits or Pushes:** NEVER run `git commit`, `git push`, create branches, or perform other version control writing operations proactively. Only execute git commits or pushes when the user explicitly requests it.
