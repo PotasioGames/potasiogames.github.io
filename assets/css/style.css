@@ -433,3 +433,20 @@ html {
     will-change: transform, opacity;
 }
 
+/* Hide scrollbars for Carousel */
+.scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+    display: none;
+}
+
+/* Adventure Carousel Mobile Snap */
+@media (max-width: 767px) {
+    .adventure-carousel {
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+

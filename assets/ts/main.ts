@@ -52,6 +52,10 @@ window.addEventListener('beforeunload', () => {
 export type GameId = 'orbitar' | 'impostor';
 export type SkinKey = 'astronaut' | 'pilot' | 'mecha';
 
+export function isMobileViewport(): boolean {
+  return window.innerWidth < 768;
+}
+
 let activeGameId: GameId = 'orbitar';
 let currentSkin: SkinKey = 'astronaut';
 let isHeroSplash = true;
@@ -202,6 +206,18 @@ export function updatePortalCardsUI(gameId: GameId): void {
       frameOrb.classList.add('border', 'border-white/10', 'shadow-xl');
     }
   }
+
+  const dotOrb = document.getElementById('dot-orbitar');
+  const dotImp = document.getElementById('dot-impostor');
+  if (dotOrb && dotImp) {
+    if (gameId === 'orbitar') {
+      dotOrb.className = "w-2.5 h-2.5 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.8)] transition-all scale-125";
+      dotImp.className = "w-2.5 h-2.5 rounded-full bg-slate-600 transition-all scale-100";
+    } else {
+      dotImp.className = "w-2.5 h-2.5 rounded-full bg-potasio-primary shadow-[0_0_8px_rgba(244,238,90,0.8)] transition-all scale-125";
+      dotOrb.className = "w-2.5 h-2.5 rounded-full bg-slate-600 transition-all scale-100";
+    }
+  }
 }
 
 export function getHeroScrollProgress(): number {
@@ -246,6 +262,12 @@ export function updateAdventureModalTransition(): void {
   const shrinkDockTotalScroll = Math.max(1, heroRect.height - shrinkDockStartScroll);
   const rawShrinkDock = Math.min(Math.max((heroScrolled - shrinkDockStartScroll) / shrinkDockTotalScroll, 0), 1);
   const easeShrinkDock = gsap.parseEase("power2.inOut")(rawShrinkDock);
+
+  // Allow card to travel freely out of carousel boundaries during Phase 2 shrink & dock
+  const adventureContainer = document.getElementById('adventure-cards-container');
+  if (adventureContainer) {
+    adventureContainer.style.overflow = rawShrinkDock > 0 ? 'visible' : '';
+  }
 
   // 1. Fade out "Elegí tu Próxima Aventura" header during Phase 1
   if (adventureHeader) {
@@ -470,9 +492,10 @@ export function updateAdventureModalTransition(): void {
 
     const travelingTitle = document.getElementById(`traveling-title-${activeGameId}`);
     if (travelingTitle && titleAnchor) {
-      const tAnchorRect = titleAnchor.getBoundingClientRect();
-      const targetTitleLocalX = tAnchorRect.left - anchorRect.left;
-      const targetTitleLocalY = tAnchorRect.top - anchorRect.top;
+      const tSpan = titleAnchor.querySelector('span');
+      const tSpanRect = tSpan ? tSpan.getBoundingClientRect() : titleAnchor.getBoundingClientRect();
+      const targetTitleLocalX = tSpanRect.left - anchorRect.left;
+      const targetTitleLocalY = tSpanRect.top - anchorRect.top;
 
       gsap.set(travelingTitle, {
         left: 0,
@@ -563,9 +586,10 @@ export function updateAdventureModalTransition(): void {
     let targetTitleLocalY = badgeTitleLocalY;
 
     if (titleAnchor) {
-      const tAnchorRect = titleAnchor.getBoundingClientRect();
-      targetTitleLocalX = tAnchorRect.left - anchorRect.left;
-      targetTitleLocalY = tAnchorRect.top - anchorRect.top;
+      const tSpan = titleAnchor.querySelector('span');
+      const tSpanRect = tSpan ? tSpan.getBoundingClientRect() : titleAnchor.getBoundingClientRect();
+      targetTitleLocalX = tSpanRect.left - anchorRect.left;
+      targetTitleLocalY = tSpanRect.top - anchorRect.top;
     }
 
     const curTitleX = badgeTitleLocalX + (targetTitleLocalX - badgeTitleLocalX) * easeShowcase;
@@ -620,6 +644,141 @@ document.getElementById('scroll-indicator')?.addEventListener('click', () => {
     gsap.to(window, { scrollTo: targetY, duration: 0.9, ease: "power2.inOut" });
   }
 });
+
+// ---------------------------------------------------------------------------
+// Screen 1 (Splash) <-> Screen 2 ("Elegí tu Próxima Aventura") Auto-Glide
+// ---------------------------------------------------------------------------
+let isHeroAutoScrolling = false;
+const heroSceneEl = document.getElementById('hero-scene');
+
+function triggerHeroGlide(targetY: number): void {
+  isHeroAutoScrolling = true;
+  gsap.to(window, {
+    scrollTo: targetY,
+    duration: 0.9,
+    ease: "power2.inOut",
+    onComplete: () => {
+      setTimeout(() => {
+        isHeroAutoScrolling = false;
+      }, 150);
+    }
+  });
+}
+
+if (heroSceneEl) {
+  window.addEventListener('wheel', (e) => {
+    if (isHeroAutoScrolling) return;
+
+    const rect = heroSceneEl.getBoundingClientRect();
+    if (rect.top <= 10 && rect.bottom >= window.innerHeight - 10) {
+      const heroStickyScrollable = Math.max(1, rect.height - window.innerHeight);
+      const currentScroll = -rect.top;
+      const progress = currentScroll / heroStickyScrollable;
+
+      // Downward wheel from Screen 1 (Splash) -> Glide into Screen 2 top
+      if (e.deltaY > 15 && progress < 0.35) {
+        e.preventDefault();
+        const targetY = heroSceneEl.offsetTop + heroStickyScrollable * 0.50;
+        triggerHeroGlide(targetY);
+      }
+      // Upward wheel from Screen 2 top -> Glide back up to Screen 1 (Splash)
+      else if (e.deltaY < -15 && progress >= 0.38 && progress <= 0.54) {
+        e.preventDefault();
+        triggerHeroGlide(heroSceneEl.offsetTop);
+      }
+    }
+  }, { passive: false });
+}
+
+// Consolidated Touch Glide Handling for Screen 1 <-> Screen 2 and Screen 4 <-> Screen 5
+let touchStartX = 0;
+let touchStartY = 0;
+
+window.addEventListener('touchstart', (e) => {
+  if (e.touches.length > 0) {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+  }
+}, { passive: true });
+
+window.addEventListener('touchmove', (e) => {
+  if (e.touches.length === 0) return;
+
+  const currentX = e.touches[0].clientX;
+  const currentY = e.touches[0].clientY;
+  const deltaX = touchStartX - currentX;
+  const deltaY = touchStartY - currentY; // positive = dragged up = scrolling page down
+
+  // If gesture is predominantly horizontal (e.g. mobile card carousel swipe), do not intercept
+  if (Math.abs(deltaX) > Math.abs(deltaY)) return;
+
+  // 1. Hero Scene Touch Auto-Glide (Screen 1 <-> Screen 2)
+  if (heroSceneEl) {
+    if (isHeroAutoScrolling) {
+      e.preventDefault();
+      return;
+    }
+    const rect = heroSceneEl.getBoundingClientRect();
+    if (rect.top <= 10 && rect.bottom >= window.innerHeight - 10) {
+      const heroStickyScrollable = Math.max(1, rect.height - window.innerHeight);
+      const currentScroll = -rect.top;
+      const progress = currentScroll / heroStickyScrollable;
+
+      if (deltaY > 25 && progress < 0.35) {
+        e.preventDefault();
+        const targetY = heroSceneEl.offsetTop + heroStickyScrollable * 0.50;
+        triggerHeroGlide(targetY);
+        return;
+      } else if (deltaY < -25 && progress >= 0.38 && progress <= 0.54) {
+        e.preventDefault();
+        triggerHeroGlide(heroSceneEl.offsetTop);
+        return;
+      }
+    }
+  }
+
+  // 2. Bottom Scene Touch Auto-Glide (Screen 4 <-> Screen 5)
+  if (bottomSceneEl) {
+    if (isBottomAutoScrolling) {
+      e.preventDefault();
+      return;
+    }
+    const rect = bottomSceneEl.getBoundingClientRect();
+    if (rect.top <= 10 && rect.bottom >= window.innerHeight - 10) {
+      const maxScroll = rect.height - window.innerHeight;
+      const currentScroll = -rect.top;
+      const progress = maxScroll > 0 ? currentScroll / maxScroll : 0;
+
+      if (deltaY > 25 && progress < 0.4) {
+        e.preventDefault();
+        isBottomAutoScrolling = true;
+        const targetY = bottomSceneEl.offsetTop + maxScroll;
+        gsap.to(window, {
+          scrollTo: targetY,
+          duration: 1.1,
+          ease: "power2.inOut",
+          onComplete: () => {
+            setTimeout(() => { isBottomAutoScrolling = false; }, 200);
+          }
+        });
+        return;
+      } else if (deltaY < -25 && progress > 0.6) {
+        e.preventDefault();
+        isBottomAutoScrolling = true;
+        const targetY = bottomSceneEl.offsetTop;
+        gsap.to(window, {
+          scrollTo: targetY,
+          duration: 1.1,
+          ease: "power2.inOut",
+          onComplete: () => {
+            setTimeout(() => { isBottomAutoScrolling = false; }, 200);
+          }
+        });
+        return;
+      }
+    }
+  }
+}, { passive: false });
 
 // Interactive 3D Tilt on Hero Logo & Mouse Spotlight
 const heroTrigger = document.getElementById('hero-trigger');
@@ -752,10 +911,11 @@ function getOrbitarGeometry(): OrbitarGeometry | null {
 
   // Radio calculado sobre el cuerpo del planeta en sí (no sobre el anillo exterior)
   // El disco sólido en SVG tiene radio 42/50 del wrapper.
-  // Sumamos offset (+14) para que el centro del sprite del bot orbite pegado a la superficie.
-  const r1 = (b1Rect.width / 2) * 0.84 + 14;
-  const rMid = (bMidRect.width / 2) * 0.84 + 14;
-  const r2 = (b2Rect.width / 2) * 0.88 + 14;
+  // Sumamos offset (+14 desktop / +10 mobile) para que el sprite del bot orbite pegado a la superficie.
+  const botOffset = isMobileViewport() ? 10 : 14;
+  const r1 = (b1Rect.width / 2) * 0.84 + botOffset;
+  const rMid = (bMidRect.width / 2) * 0.84 + botOffset;
+  const r2 = (b2Rect.width / 2) * 0.88 + botOffset;
 
   return {
     p1: {
@@ -817,7 +977,7 @@ function setupInitialImpostorPosition(): void {
     document.getElementById('impostor-card-3')
   ];
   const magnifier = document.getElementById('impostor-magnifier');
-  const isMobile = window.innerWidth < 640;
+  const isMobile = isMobileViewport();
   const spread = isMobile ? 65 : 125;
 
   cards.forEach((card, idx) => {
@@ -840,12 +1000,27 @@ function setupInitialImpostorPosition(): void {
 // ---------------------------------------------------------------------------
 // 6. Theater Worlds Sync & Switching
 // ---------------------------------------------------------------------------
+let isProgrammaticCarouselScroll = false;
+let carouselScrollTimeout: number | null = null;
+
 export function selectGame(gameId: GameId): void {
   activeGameId = gameId;
   updatePortalCardsUI(gameId);
   updateGlobalBackground(getHeroScrollProgress(), gameId);
   syncTheaterWorld(gameId);
   updateAdventureModalTransition();
+
+  if (isMobileViewport()) {
+    const selectedCard = document.getElementById(`portal-${gameId}`);
+    if (selectedCard) {
+      isProgrammaticCarouselScroll = true;
+      selectedCard.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+      if (carouselScrollTimeout) clearTimeout(carouselScrollTimeout);
+      carouselScrollTimeout = window.setTimeout(() => {
+        isProgrammaticCarouselScroll = false;
+      }, 450);
+    }
+  }
 }
 
 export function syncTheaterWorld(gameId: GameId): void {
@@ -892,6 +1067,33 @@ export function launchGame(gameId: GameId): void {
 
 document.getElementById('portal-orbitar')?.addEventListener('click', () => selectGame('orbitar'));
 document.getElementById('portal-impostor')?.addEventListener('click', () => selectGame('impostor'));
+document.getElementById('dot-orbitar')?.addEventListener('click', () => selectGame('orbitar'));
+document.getElementById('dot-impostor')?.addEventListener('click', () => selectGame('impostor'));
+
+// Mobile horizontal carousel scroll tracking
+const adventureCarousel = document.getElementById('adventure-cards-container');
+let carouselDebounce: number | null = null;
+
+if (adventureCarousel) {
+  adventureCarousel.addEventListener('scroll', () => {
+    if (!isMobileViewport() || isProgrammaticCarouselScroll) return;
+    if (carouselDebounce) cancelAnimationFrame(carouselDebounce);
+    carouselDebounce = requestAnimationFrame(() => {
+      const containerRect = adventureCarousel.getBoundingClientRect();
+      const cCenterX = containerRect.left + containerRect.width / 2;
+      const orbCard = document.getElementById('portal-orbitar');
+      const impCard = document.getElementById('portal-impostor');
+      if (orbCard && impCard) {
+        const orbDist = Math.abs(orbCard.getBoundingClientRect().left + orbCard.getBoundingClientRect().width / 2 - cCenterX);
+        const impDist = Math.abs(impCard.getBoundingClientRect().left + impCard.getBoundingClientRect().width / 2 - cCenterX);
+        const chosen: GameId = orbDist < impDist ? 'orbitar' : 'impostor';
+        if (chosen !== activeGameId) {
+          selectGame(chosen);
+        }
+      }
+    });
+  }, { passive: true });
+}
 
 // ---------------------------------------------------------------------------
 // 7. Scene 2: Theater Cinematic Timelines Driven by Scrub
@@ -1059,7 +1261,7 @@ function buildImpostorTimeline(): gsap.core.Timeline {
   const card3Front = document.getElementById('card-3-front');
   const card3Back = document.getElementById('card-3-back');
 
-  const isMobile = window.innerWidth < 640;
+  const isMobile = isMobileViewport();
   const spread = isMobile ? 65 : 125;
 
   // Step 0: Magnifier enters
@@ -1539,4 +1741,11 @@ ScrollTrigger.addEventListener("refreshInit", () => {
 window.addEventListener('resize', () => {
   updateAdventureModalTransition();
   ScrollTrigger.refresh();
+});
+
+window.addEventListener('orientationchange', () => {
+  setTimeout(() => {
+    updateAdventureModalTransition();
+    ScrollTrigger.refresh();
+  }, 200);
 });
