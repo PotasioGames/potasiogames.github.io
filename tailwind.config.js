@@ -2,6 +2,8 @@
 export default {
   content: [
     "./index.html",
+    "./JedRar/**/*.{html,js,ts}",
+    "./privacy.html",
     "./assets/**/*.{js,ts,jsx,tsx,html}",
   ],
   theme: {
@@ -12,9 +14,24 @@ export default {
           secondary: '#c578cb',  // Bordo/Burgundy
         },
         dark: {
+          950: '#050811',
           900: '#0a0f1a',
           800: '#111827',
           700: '#1f2937',
+        },
+        orbitar: {
+          space: '#0B1019',
+          star: '#8B949E',
+          player: '#48CAE4',
+          start: '#25527E',
+          'start-rim': '#4A85BE',
+          goal: '#1D7853',
+          'goal-rim': '#38B27C',
+          plasma: '#D96B27',
+          filament: '#FFA94D',
+          core: '#FFF3BF',
+          shield: '#00E5FF',
+          danger: '#B83826',
         }
       },
       animation: {
@@ -32,7 +49,9 @@ export default {
         }
       },
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
+        sans: ['Outfit', 'sans-serif'],
+        display: ['Space Grotesk', 'sans-serif'],
+        mono: ['JetBrains Mono', 'monospace'],
       }
     },
   },

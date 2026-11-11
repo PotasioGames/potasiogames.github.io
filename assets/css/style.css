@@ -1,14 +1,44 @@
 /* Custom Styles & Overrides */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700;800&display=swap');
 
-
-body {
-    font-family: 'Inter', sans-serif;
+:root {
+    /* Orbitar Exact Color Palette & Visuals from Colors.ts */
+    --orb-space: #0B1019;
+    --orb-star: #8B949E;
+    --orb-player: #48CAE4;
+    --orb-start: #25527E;
+    --orb-start-rim: #4A85BE;
+    --orb-field: rgba(27, 52, 77, 0.15);
+    --orb-limit: rgba(91, 150, 214, 0.40);
+    --orb-goal: #1D7853;
+    --orb-goal-rim: #38B27C;
+    --orb-goal-limit: rgba(56, 178, 124, 0.40);
+    --orb-plasma: #D96B27;
+    --orb-plasma-shade: rgba(90, 24, 6, 0.45);
+    --orb-plasma-shine: rgba(255, 160, 66, 0.45);
+    --orb-plasma-glow: rgba(255, 160, 66, 0.20);
+    --orb-filament: #FFA94D;
+    --orb-core: #FFF3BF;
+    --orb-shield: #00E5FF;
+    --orb-star-gold: #FFDE59;
+    --orb-danger: #B83826;
+    --orb-danger-glow: #E86C4E;
 }
 
-/* Smooth Scrolling & Layout Stability */
+body {
+    font-family: 'Outfit', sans-serif;
+}
+
+.font-display {
+    font-family: 'Space Grotesk', sans-serif;
+}
+
+.font-mono-tag {
+    font-family: 'JetBrains Mono', monospace;
+}
+
+/* Layout Stability */
 html {
-    scroll-behavior: smooth;
     scrollbar-gutter: stable;
 }
 
@@ -50,14 +80,363 @@ html {
     }
 }
 
+/* Native Scrollytelling Architecture (Sticky Viewport in Tall Scene) */
+.scrolly-scene {
+    position: relative;
+    width: 100%;
+}
+
+.scrolly-sticky-viewport {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    height: 100vh;
+    height: 100svh;
+    overflow: hidden;
+}
+
 /* Fix mobile browser address bar cut-off and prevent layout shifts on scroll */
-#hero-trigger {
-    height: 100vh; /* Stable full height, never changes on scroll */
+#hero-trigger,
+#games-theater,
+#bottom-trigger {
+    height: 100vh;
+    height: 100svh;
+}
+
+#hero-trigger,
+#adventure-layer {
+    overflow: visible;
+    overflow-x: clip;
 }
 
 #hero-logo-layer,
-#hero-content-layer {
-    height: 100%; /* Fallback for older browsers */
-    height: 100svh; /* Matches visible viewport height on load, stable on scroll */
+#hero-content-layer,
+#adventure-layer,
+#showcase-layer,
+#contact-layer {
+    height: 100%;
+    height: 100svh;
+}
+
+/* Morphological Card Expansion Styles */
+.portal-card-expanding {
+    z-index: 50 !important;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease, border-color 0.4s ease !important;
+    transform: scale(1.04) !important;
+}
+
+/* Robot Gentle Float Animation */
+.animate-bot-float {
+    animation: botFloat 4s ease-in-out infinite;
+}
+
+@keyframes botFloat {
+    0%, 100% {
+        transform: translateY(0px) rotate(0deg);
+    }
+    50% {
+        transform: translateY(-8px) rotate(3deg);
+    }
+}
+
+/* Impostor Card Flip & Stamp Styles */
+.perspective-1000 {
+    perspective: 1000px;
+}
+
+.transform-style-3d {
+    transform-style: preserve-3d;
+}
+
+.backface-hidden {
+    backface-visibility: hidden;
+}
+
+.rotate-y-180 {
+    transform: rotateY(180deg);
+}
+
+.impostor-card {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-left: -48px;
+    margin-top: -72px;
+    user-select: none;
+    transform-origin: center center;
+}
+
+@media (min-width: 640px) {
+    .impostor-card {
+        margin-left: -56px;
+        margin-top: -84px;
+    }
+}
+
+#impostor-magnifier {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-left: -32px;
+    margin-top: -32px;
+    pointer-events: none;
+    user-select: none;
+    z-index: 40;
+    transform-origin: 26px 26px; /* Center of the glass lens */
+}
+
+@media (min-width: 640px) {
+    #impostor-magnifier {
+        margin-left: -40px;
+        margin-top: -40px;
+        transform-origin: 32px 32px;
+    }
+}
+
+.impostor-stamp {
+    font-family: 'Space Grotesk', sans-serif;
+    letter-spacing: 0.15em;
+    border: 3px solid #ef4444;
+    color: #ef4444;
+    text-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.4), inset 0 0 15px rgba(239, 68, 68, 0.3);
+    transform: rotate(-12deg);
+}
+
+/* Glassmorphism Card Hover */
+.glass-card {
+    background: rgba(17, 24, 39, 0.75);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.orbit-dashed-ring {
+    stroke-dasharray: 6 6;
+    animation: orbitSpin 30s linear infinite;
+    transform-origin: center;
+}
+
+@keyframes orbitSpin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Plasma Barrier Visual Effects (Roche Lobe & Solar Bridge) */
+.plasma-pulse {
+    animation: plasmaPulse 2.5s ease-in-out infinite alternate;
+}
+
+@keyframes plasmaPulse {
+    0% {
+        filter: drop-shadow(0 0 8px rgba(217, 107, 39, 0.4)) drop-shadow(0 0 15px rgba(255, 160, 66, 0.2));
+    }
+    100% {
+        filter: drop-shadow(0 0 16px rgba(217, 107, 39, 0.8)) drop-shadow(0 0 28px rgba(255, 169, 77, 0.45));
+    }
+}
+
+.filament-wave {
+    animation: filamentWave 3s ease-in-out infinite alternate;
+}
+
+@keyframes filamentWave {
+    0% {
+        opacity: 0.75;
+        stroke-dashoffset: 0;
+    }
+    100% {
+        opacity: 0.95;
+        stroke-dashoffset: 12;
+    }
+}
+
+.thruster-glow {
+    filter: drop-shadow(0 0 12px rgba(72, 202, 228, 0.9));
+}
+
+.shield-glow {
+    filter: drop-shadow(0 0 18px rgba(0, 229, 255, 0.85)) drop-shadow(0 0 30px rgba(0, 229, 255, 0.4));
+}
+
+/* ========================================================================= */
+/* Bot Cosmic Aura & Dynamic Thruster Trail                                 */
+/* ========================================================================= */
+.animate-bot-aura {
+    background: radial-gradient(circle at 50% 50%, rgba(72, 202, 228, 0.45) 0%, rgba(0, 229, 255, 0.22) 50%, rgba(72, 202, 228, 0) 75%);
+    filter: blur(4px);
+    animation: botAuraBreath 3.5s ease-in-out infinite alternate;
+    will-change: transform, opacity;
+}
+
+@keyframes botAuraBreath {
+    0% {
+        transform: scale(0.92);
+        opacity: 0.50;
+        filter: blur(4px) drop-shadow(0 0 10px rgba(72, 202, 228, 0.35));
+    }
+    50% {
+        transform: scale(1.08) rotate(4deg);
+        opacity: 0.85;
+        filter: blur(6px) drop-shadow(0 0 20px rgba(0, 229, 255, 0.7));
+    }
+    100% {
+        transform: scale(1.00) rotate(-3deg);
+        opacity: 0.65;
+        filter: blur(5px) drop-shadow(0 0 14px rgba(72, 202, 228, 0.5));
+    }
+}
+
+/* Propulsor en Estado Idle (Personaje quieto o en órbita) */
+#bot-thruster {
+    opacity: 0.70;
+    transform: scale(0.75);
+    transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    will-change: transform, opacity;
+}
+
+.thruster-flame-anim {
+    animation: thrusterIdle 0.7s ease-in-out infinite alternate;
+    will-change: transform, opacity;
+}
+
+.thruster-core-anim {
+    animation: thrusterCoreIdle 0.6s ease-in-out infinite alternate;
+}
+
+.thruster-smoke-anim {
+    animation: thrusterSmokeIdle 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes thrusterIdle {
+    0% {
+        transform: scaleY(0.7) scaleX(0.85);
+        opacity: 0.55;
+        filter: drop-shadow(0 0 4px #00e5ff);
+    }
+    100% {
+        transform: scaleY(1.05) scaleX(1.1);
+        opacity: 0.85;
+        filter: drop-shadow(0 0 8px #00e5ff);
+    }
+}
+
+@keyframes thrusterCoreIdle {
+    0% {
+        transform: scaleY(0.7);
+        opacity: 0.6;
+    }
+    100% {
+        transform: scaleY(1.1);
+        opacity: 0.95;
+    }
+}
+
+@keyframes thrusterSmokeIdle {
+    0% {
+        transform: translateY(0px) scale(0.8);
+        opacity: 0.25;
+    }
+    100% {
+        transform: translateY(3px) scale(1.1);
+        opacity: 0.55;
+    }
+}
+
+/* Propulsor en Modo Boost (En pleno vuelo entre planetas) */
+#bot-thruster.bot-thruster-boost {
+    opacity: 1 !important;
+    transform: scale(1.3) translateY(3px) !important;
+}
+
+#bot-thruster.bot-thruster-boost .thruster-flame-anim {
+    animation: thrusterBoost 0.14s ease-in-out infinite alternate !important;
+}
+
+#bot-thruster.bot-thruster-boost .thruster-core-anim {
+    animation: thrusterCoreBoost 0.10s ease-in-out infinite alternate !important;
+}
+
+#bot-thruster.bot-thruster-boost .thruster-smoke-anim {
+    animation: thrusterSmokeBoost 0.22s linear infinite !important;
+}
+
+@keyframes thrusterBoost {
+    0% {
+        transform: scaleY(1.3) scaleX(0.9);
+        filter: drop-shadow(0 0 10px #00e5ff) drop-shadow(0 0 20px rgba(72, 202, 228, 0.95));
+    }
+    100% {
+        transform: scaleY(1.85) scaleX(1.2);
+        filter: drop-shadow(0 0 14px #00e5ff) drop-shadow(0 0 30px rgba(72, 202, 228, 1));
+    }
+}
+
+@keyframes thrusterCoreBoost {
+    0% {
+        transform: scaleY(1.0) scaleX(0.8);
+        opacity: 0.85;
+    }
+    100% {
+        transform: scaleY(1.6) scaleX(1.25);
+        opacity: 1;
+    }
+}
+
+@keyframes thrusterSmokeBoost {
+    0% {
+        transform: translateY(0) scale(0.8);
+        opacity: 0.65;
+    }
+    100% {
+        transform: translateY(9px) scale(1.7);
+        opacity: 0;
+    }
+}
+
+/* Portal Card Enhancements */
+.portal-card {
+    will-change: transform, box-shadow, border-color;
+}
+
+.portal-card.active {
+    transform: translateY(-4px);
+}
+
+.portal-card:hover {
+    transform: translateY(-6px);
+}
+
+/* Traveling Showcase Card (Screen 3 Badge -> Screen 4 Showcase) */
+.traveling-game-card {
+    will-change: transform, width, height, opacity;
+}
+
+.traveling-card-frame {
+    will-change: width, height, border-radius, box-shadow;
+}
+
+.traveling-card-title {
+    will-change: transform;
+}
+
+.traveling-card-content {
+    will-change: transform, opacity;
+}
+
+/* Hide scrollbars for Carousel */
+.scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+    display: none;
+}
+
+/* Adventure Carousel Mobile Snap */
+@media (max-width: 767px) {
+    .adventure-carousel {
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+    }
 }
 

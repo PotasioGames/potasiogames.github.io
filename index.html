@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="es" class="scroll-smooth">
+<html lang="es">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Potasio Games - We Make Fun</title>
     <meta name="description"
-        content="Estudio de desarrollo de videojuegos indie. Creadores de Impostor y experiencias sociales únicas.">
+        content="Estudio de desarrollo de videojuegos indie. Creadores de Impostor y Orbitar — experiencias únicas para reuniones y adrenalina espacial en tu celular.">
     <meta name="keywords"
-        content="videojuegos indie, potasio games, impostor, juego de rol, juegos de cartas, deducción social, party game, juegos de mesa para celular">
+        content="videojuegos indie, potasio games, impostor, orbitar, juego arcade, gravedad, espacio, juego de rol, juegos de cartas, deducción social, party game, juegos para celular, android">
     <meta name="robots" content="index, follow">
     <meta name="theme-color" content="#f4ee5a">
 
@@ -20,27 +20,18 @@
     <meta property="og:type" content="website">
     <meta property="og:title" content="Potasio Games - We Make Fun">
     <meta property="og:description"
-        content="Estudio de desarrollo de videojuegos indie. Creadores de Impostor y experiencias sociales únicas.">
-    <!-- NOTA: Reemplaza 'potasio-games-web.vercel.app' con tu dominio final para que las redes sociales puedan cargar la imagen -->
+        content="Estudio de desarrollo de videojuegos indie. Creadores de Impostor y Orbitar — experiencias únicas para reuniones y adrenalina espacial en tu celular.">
     <meta property="og:image" content="https://potasio-games-web.vercel.app/logo-share.png">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary">
     <meta property="twitter:title" content="Potasio Games - We Make Fun">
     <meta property="twitter:description"
-        content="Estudio de desarrollo de videojuegos indie. Creadores de Impostor y experiencias sociales únicas.">
+        content="Estudio de desarrollo de videojuegos indie. Creadores de Impostor y Orbitar — experiencias únicas para reuniones y adrenalina espacial en tu celular.">
     <meta property="twitter:image" content="https://potasio-games-web.vercel.app/logo-share.png">
 
-    <!-- Tailwind CSS (CDN) -->
+    <!-- Tailwind CSS (CDN with matching configuration) -->
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-
-    <!-- GSAP for Animations -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollToPlugin.min.js"></script>
 
     <!-- Custom Styles -->
     <link rel="stylesheet" href="assets/css/style.css">
@@ -55,9 +46,24 @@
                             secondary: '#c578cb',  // Bordo/Burgundy
                         },
                         dark: {
+                            950: '#050811',
                             900: '#0a0f1a',
                             800: '#111827',
                             700: '#1f2937',
+                        },
+                        orbitar: {
+                            space: '#0B1019',
+                            star: '#8B949E',
+                            player: '#48CAE4',
+                            start: '#25527E',
+                            'start-rim': '#4A85BE',
+                            goal: '#1D7853',
+                            'goal-rim': '#38B27C',
+                            plasma: '#D96B27',
+                            filament: '#FFA94D',
+                            core: '#FFF3BF',
+                            shield: '#00E5FF',
+                            danger: '#B83826',
                         }
                     },
                     animation: {
@@ -75,7 +81,9 @@
                         }
                     },
                     fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
+                        sans: ['Outfit', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
                     }
                 }
             }
@@ -83,247 +91,905 @@
     </script>
 </head>
 
-<body class="bg-dark-900 text-slate-100 font-sans antialiased overflow-x-hidden overflow-hidden">
+<body class="bg-dark-900 text-slate-100 font-sans antialiased overflow-x-hidden">
 
-    <!-- Navigation -->
-    <nav id="navbar" class="fixed w-full z-50 bg-dark-900/80 backdrop-blur-md border-b border-white/5 opacity-0 pointer-events-none">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-20">
-                <div class="flex items-center gap-3">
-                    <img src="assets/img/logo-potasiogames.png" alt="Potasio Games Logo"
-                        class="w-10 h-10 object-cover rounded-xl">
-                    <span class="text-2xl font-bold tracking-tight text-white select-none">Potasio<span
-                            class="text-potasio-secondary">Games</span></span>
-                </div>
-                <div class="hidden md:block">
-                    <div class="ml-10 flex items-baseline space-x-8">
-                        <a href="#games"
-                            class="hover:text-potasio-primary transition-colors px-3 py-2 rounded-md text-sm font-medium select-none">Juegos</a>
-                        <a href="#about"
-                            class="hover:text-potasio-primary transition-colors px-3 py-2 rounded-md text-sm font-medium select-none">Nosotros</a>
-                        <a href="#contact"
-                            class="bg-white/10 hover:bg-white/20 px-4 py-2 rounded-full text-sm font-medium transition-all select-none">Contacto</a>
-                    </div>
-                </div>
-            </div>
+    <!-- ================================================================= -->
+    <!-- STAGE GLOBAL PERSISTENTE: FONDO FIJO ENTRE ESCENAS               -->
+    <!-- Da la sensación de que la posición en pantalla es fija y solo se desplaza el contenido -->
+    <!-- ================================================================= -->
+    <div id="global-scrolly-background" class="fixed inset-0 z-0 pointer-events-none overflow-hidden select-none">
+        <!-- Base Color Layer -->
+        <div id="global-bg-base" class="absolute inset-0 transition-colors duration-700 bg-[#030612]"></div>
+
+        <!-- 1. Splash Purple Glow (Hero) -->
+        <div id="global-hero-glow" class="absolute inset-0 transition-opacity duration-700 opacity-100"
+            style="background-image: radial-gradient(ellipse at 50% 50%, rgba(55, 40, 100, 0.25) 0%, transparent 65%);">
         </div>
-    </nav>
 
-    <!-- Hero Section (GSAP Container) -->
-    <!-- h-screen: The section takes exactly one viewport. GSAP will add the scroll space. -->
-    <section id="hero-trigger" class="relative overflow-hidden">
-
-        <!-- Layer 1: Background (CSS gradient, no image) -->
-        <div id="hero-bg" class="absolute inset-0 z-0" style="
-            background-color: #030612;
-            background-image: radial-gradient(ellipse at 50% 50%, rgba(55, 40, 100, 0.25) 0%, transparent 65%);
-        "></div>
-
-        <!-- Interactive Spotlight (follows cursor) -->
-        <div id="hero-spotlight" class="absolute inset-0 pointer-events-none z-0 opacity-0 transition-opacity duration-700" style="
+        <!-- 2. Interactive Spotlight (Hero Splash) -->
+        <div id="hero-spotlight" class="absolute inset-0 opacity-0 transition-opacity duration-700" style="
             --mouse-x: 50%;
             --mouse-y: 50%;
             background: radial-gradient(circle 350px at var(--mouse-x) var(--mouse-y), rgba(244, 238, 90, 0.08) 0%, rgba(197, 120, 203, 0.08) 50%, transparent 100%);
         "></div>
 
-        <!-- Layer 2: Logo images (Stacked, centered) -->
-        <div id="hero-logo-layer" class="relative z-10 w-full h-full flex flex-col items-center justify-center" style="
-            perspective: 1000px;
-            transform-style: preserve-3d;
-        ">
+        <!-- 3. Orbitar Ambient Glow (Cyan) -->
+        <div id="global-orbitar-glow" class="absolute inset-0 transition-opacity duration-700 opacity-0"
+            style="background: radial-gradient(ellipse at 50% 30%, rgba(72,202,228,0.18) 0%, rgba(11,16,25,0.92) 65%, transparent 100%);">
+        </div>
 
-            <!-- Logo + GAMES STUDIOS wrapper (relative container for overlay) -->
-            <div id="hero-logo-wrapper" class="relative w-full px-4 md:px-32 lg:px-48 xl:px-72 2xl:px-[24rem]" style="
-                max-width: 1728px;
+        <!-- 4. Impostor Ambient Glow (Purple / Potasio) -->
+        <div id="global-impostor-glow" class="absolute inset-0 transition-opacity duration-700 opacity-0"
+            style="background: radial-gradient(ellipse at 50% 45%, rgba(197,120,203,0.18) 0%, rgba(10,15,26,0.95) 70%, transparent 100%);">
+        </div>
+
+        <!-- 5. Single Persistent Space Canvas (Stars and Comets for Orbitar) -->
+        <canvas id="global-space-canvas"
+            class="absolute inset-0 w-full h-full opacity-0 transition-opacity duration-700"></canvas>
+    </div>
+
+    <!-- ================================================================= -->
+    <!-- STAGE DEL CARTEL VIAJERO (PANTALLAS 3 Y 4: BADGE -> SHOWCASE)     -->
+    <!-- Viaja desde la esquina de Pantalla 3 al centro de Pantalla 4      -->
+    <!-- ================================================================= -->
+    <div id="game-showcase-stage" class="fixed inset-0 pointer-events-none z-30 select-none overflow-hidden opacity-0">
+        <!-- Cartel Viajero Orbitar -->
+        <div id="traveling-card-orbitar"
+            class="traveling-game-card absolute will-change-transform opacity-0 pointer-events-none overflow-hidden rounded-2xl"
+            style="left: 0; top: 0;">
+            <!-- Marco adaptable (de badge pequeño a ficha completa max-w-4xl) -->
+            <div id="traveling-frame-orbitar"
+                class="traveling-card-frame absolute inset-0 rounded-2xl bg-gradient-to-b from-dark-800/95 to-dark-900/95 border-2 border-cyan-400/80 shadow-[0_0_35px_rgba(34,211,238,0.25)] pointer-events-none transition-colors duration-300">
+            </div>
+
+            <!-- Título único que NUNCA desaparece ni cambia de escala -->
+            <h3 id="traveling-title-orbitar"
+                class="traveling-card-title absolute text-2xl sm:text-3xl font-extrabold text-white font-display tracking-tight whitespace-nowrap leading-none z-20 pointer-events-none">
+                Orbitar
+            </h3>
+
+            <!-- Contenido de la Ficha de Pantalla 4 (se agranda e intensifica de forma inversa al salir de pantalla 3) -->
+            <div id="traveling-content-orbitar"
+                class="traveling-card-content absolute z-10 flex flex-col md:flex-row items-center gap-4 md:gap-10 p-5 sm:p-6 md:p-10 opacity-0 pointer-events-none origin-center will-change-transform">
+                <!-- Icono -->
+                <div class="flex-shrink-0 flex flex-col items-center">
+                    <div
+                        class="w-20 h-20 sm:w-28 sm:h-28 md:w-36 md:h-36 rounded-2xl md:rounded-3xl overflow-hidden border-2 border-cyan-400/40 shadow-[0_0_30px_rgba(72,202,228,0.3)] p-1 bg-dark-950 flex items-center justify-center">
+                        <img src="assets/img/icon-orbitar.png" alt="Orbitar"
+                            class="w-full h-full object-cover rounded-xl md:rounded-2xl">
+                    </div>
+                </div>
+
+                <!-- Información y Botón de Descarga Oficial -->
+                <div class="flex-1 text-center md:text-left flex flex-col justify-center">
+                    <div class="flex flex-wrap items-center justify-center md:justify-start gap-1.5 sm:gap-2 mb-2">
+                        <span
+                            class="px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-cyan-400/15 text-cyan-300 text-[10px] sm:text-xs font-mono font-bold uppercase border border-cyan-400/30">
+                            Arcade Gravitatorio • 2D
+                        </span>
+                        <span class="text-[10px] sm:text-xs font-mono text-slate-400">Android • 1 Jugador •
+                            Offline</span>
+                    </div>
+
+                    <!-- Espacio reservado para el título en Pantalla 4 -->
+                    <div
+                        class="h-7 sm:h-9 mb-2 sm:mb-3 opacity-0 pointer-events-none select-none flex items-center justify-center md:justify-start">
+                        <span class="text-2xl sm:text-3xl font-extrabold font-display leading-none">Orbitar</span>
+                    </div>
+
+                    <p
+                        class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-4 sm:mb-6 font-light line-clamp-3 md:line-clamp-none">
+                        Tocás la pantalla para soltarte de la órbita de un planeta y saltar al siguiente usando
+                        su gravedad. Si calculás mal el ángulo o el momento, te atrapa una barrera de plasma
+                        solar o chocás contra un cinturón de asteroides. En niveles más profundos, agujeros
+                        negros y campos de repulsión te esperan.
+                    </p>
+
+                    <div class="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-3 sm:gap-4">
+                        <a href="https://play.google.com/store/apps/details?id=com.potasiogames.orbitar" target="_blank"
+                            class="traveling-play-btn inline-flex items-center gap-2.5 sm:gap-3 bg-white text-dark-900 px-5 sm:px-7 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl font-bold hover:bg-slate-100 transition-all shadow-xl hover:scale-105 active:scale-95 text-xs sm:text-sm pointer-events-auto">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg"
+                                alt="Google Play" class="h-5 sm:h-7">
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cartel Viajero Impostor -->
+        <div id="traveling-card-impostor"
+            class="traveling-game-card absolute will-change-transform opacity-0 pointer-events-none overflow-hidden rounded-2xl hidden"
+            style="left: 0; top: 0;">
+            <!-- Marco adaptable -->
+            <div id="traveling-frame-impostor"
+                class="traveling-card-frame absolute inset-0 rounded-2xl bg-gradient-to-b from-dark-800/95 to-dark-900/95 border-2 border-potasio-primary/80 shadow-[0_0_35px_rgba(244,238,90,0.3)] pointer-events-none transition-colors duration-300">
+            </div>
+
+            <!-- Título único -->
+            <h3 id="traveling-title-impostor"
+                class="traveling-card-title absolute text-2xl sm:text-3xl font-extrabold text-white font-display tracking-tight whitespace-nowrap leading-none z-20 pointer-events-none">
+                Impostor
+            </h3>
+
+            <!-- Contenido de la Ficha de Pantalla 4 (se agranda e intensifica de forma inversa al salir de pantalla 3) -->
+            <div id="traveling-content-impostor"
+                class="traveling-card-content absolute z-10 flex flex-col md:flex-row items-center gap-4 md:gap-10 p-5 sm:p-6 md:p-10 opacity-0 pointer-events-none origin-center will-change-transform">
+                <div class="flex-shrink-0 flex flex-col items-center">
+                    <div
+                        class="w-20 h-20 sm:w-28 sm:h-28 md:w-36 md:h-36 rounded-2xl md:rounded-3xl overflow-hidden border-2 border-potasio-primary/40 shadow-[0_0_30px_rgba(244,238,90,0.3)] p-1 bg-dark-950 flex items-center justify-center">
+                        <img src="assets/img/icon.png" alt="Impostor"
+                            class="w-full h-full object-cover rounded-xl md:rounded-2xl">
+                    </div>
+                </div>
+
+                <div class="flex-1 text-center md:text-left flex flex-col justify-center">
+                    <div class="flex flex-wrap items-center justify-center md:justify-start gap-1.5 sm:gap-2 mb-2">
+                        <span
+                            class="px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-potasio-primary/15 text-potasio-primary text-[10px] sm:text-xs font-mono font-bold uppercase border border-potasio-primary/30">
+                            Party Game / Deducción Social
+                        </span>
+                        <span class="text-[10px] sm:text-xs font-mono text-slate-400">1 Solo Celular • 3 a 20+
+                            Jugadores</span>
+                    </div>
+
+                    <div
+                        class="h-7 sm:h-9 mb-2 sm:mb-3 opacity-0 pointer-events-none select-none flex items-center justify-center md:justify-start">
+                        <span class="text-2xl sm:text-3xl font-extrabold font-display leading-none">Impostor</span>
+                        <span class="text-potasio-primary font-bold text-base sm:text-xl ml-2 leading-none">¿Sabes
+                            mentir?</span>
+                    </div>
+
+                    <p
+                        class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-4 sm:mb-6 font-light line-clamp-3 md:line-clamp-none">
+                        El juego definitivo para tus reuniones. Todos en la mesa reciben una palabra secreta,
+                        menos uno que es el impostor. Hablan por turnos diciendo pistas sin regalar la palabra;
+                        el grupo tiene que descubrir quién miente y el impostor debe camuflarse con cara de
+                        póker antes de que lo voten.
+                    </p>
+
+                    <div class="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-3 sm:gap-4">
+                        <a href="https://play.google.com/store/apps/details?id=com.augustodelisio.impostor"
+                            target="_blank"
+                            class="traveling-play-btn inline-flex items-center gap-2.5 sm:gap-3 bg-white text-dark-900 px-5 sm:px-7 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl font-bold hover:bg-slate-100 transition-all shadow-xl hover:scale-105 active:scale-95 text-xs sm:text-sm pointer-events-auto">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg"
+                                alt="Google Play" class="h-5 sm:h-7">
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================================================================= -->
+    <!-- ESCENA 1: HERO (SPLASH -> ELEGÍ TU PRÓXIMA AVENTURA)              -->
+    <!-- Transición idéntica preservada, accionada por scroll nativo       -->
+    <!-- ================================================================= -->
+    <div id="hero-scene" class="scrolly-scene snap-scene h-[250svh] relative z-20">
+        <section id="hero-trigger"
+            class="scrolly-sticky-viewport flex items-center justify-center select-none bg-transparent">
+
+            <!-- Layer 2: Central 3D Logo Layer (Splash Screen) -->
+            <div id="hero-logo-layer" class="relative z-10 w-full h-full flex flex-col items-center justify-center"
+                style="
+                perspective: 1000px;
                 transform-style: preserve-3d;
             ">
-
-                <!-- Full logo: [icon] POTASIO -->
-                <img
-                    src="assets/img/full-logo-potasio.png"
-                    alt="Potasio"
-                    class="w-full object-contain logo-glow-pulse"
+                <!-- Logo + GAMES STUDIOS wrapper -->
+                <div id="hero-logo-wrapper" class="relative w-full px-4 md:px-32 lg:px-48 xl:px-72 2xl:px-[24rem]"
                     style="
-                        transform: translateZ(10px);
-                    "
-                >
+                    max-width: 1728px;
+                    transform-style: preserve-3d;
+                ">
+                    <!-- Full logo: [icon] POTASIO -->
+                    <img src="assets/img/full-logo-potasio.png" alt="Potasio"
+                        class="w-full object-contain logo-glow-pulse" style="transform: translateZ(10px);">
 
-                <!-- GAMES STUDIOS text: overlapping, bottom-right of logo -->
-                <img
-                    src="assets/img/text-games-studios.png"
-                    alt="Games Studios"
-                    class="absolute object-contain w-[55%] md:w-[38%] right-[8%] md:right-[18%] bottom-[8%]"
-                    style="
-                        transform: translateZ(45px);
-                        max-width: 1252px;
-                    "
-                >
-
-            </div>
-
-            <!-- Scroll Indicator (UX Cue) -->
-            <div id="scroll-indicator"
-                class="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-3 text-slate-400 opacity-80 mix-blend-difference cursor-pointer select-none">
-                <span class="text-xs uppercase tracking-[0.2em] animate-pulse whitespace-nowrap">Desliza para descubrir</span>
-                <div
-                    class="w-6 h-10 border-2 border-slate-400 rounded-full flex justify-center p-1 shadow-[0_0_10px_rgba(255,255,255,0.1)]">
-                    <div class="w-1 h-2 bg-potasio-primary rounded-full animate-[bounce_1.5s_infinite]"></div>
+                    <!-- GAMES STUDIOS text: overlapping, bottom-right of logo -->
+                    <img src="assets/img/text-games-studios.png" alt="Games Studios"
+                        class="absolute object-contain w-[55%] md:w-[38%] right-[8%] md:right-[18%] bottom-[8%]" style="
+                            transform: translateZ(45px);
+                            max-width: 1252px;
+                        ">
                 </div>
-            </div>
 
-        </div>
-
-        <!-- Layer 3: Text Content (Starts Invisible, shown after transition) -->
-        <div id="hero-content-layer" class="absolute inset-x-0 top-0 z-10 w-full flex flex-col items-center justify-center">
-            <div id="hero-content" class="text-center opacity-0 translate-y-20 px-4 max-w-5xl">
-                <h1
-                    class="text-5xl md:text-8xl font-extrabold tracking-tight mb-8 text-white drop-shadow-2xl select-none">
-                    Desarrollando <br>
-                    <span
-                        class="bg-clip-text text-transparent bg-gradient-to-r from-potasio-primary to-potasio-secondary">Diversión
-                        Pura</span>
-                </h1>
-                <p class="mb-12 text-xl md:text-2xl text-slate-300 font-light max-w-3xl mx-auto leading-relaxed">
-                    Creamos mundos donde la estrategia social y la adrenalina se encuentran.
-                </p>
-
-                <div class="flex justify-center gap-6">
-                    <a href="#games"
-                        class="group relative px-10 py-5 bg-potasio-primary text-dark-900 font-bold text-lg rounded-full overflow-hidden transition-all hover:scale-110 hover:shadow-[0_0_40px_rgba(244,238,90,0.5)]">
-                        <span class="relative z-10">Ver Juegos</span>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-
-    <!-- Games Section -->
-    <section id="games" class="py-20 bg-dark-800/50 relative z-20">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16 select-none">
-                <h2 class="text-3xl font-bold text-white mb-4">Nuestros Juegos</h2>
-                <div class="w-20 h-1 bg-potasio-secondary mx-auto rounded-full"></div>
-            </div>
-
-            <!-- Game Card: Impostor -->
-            <div
-                class="bg-dark-700/50 rounded-3xl overflow-hidden border border-white/5 hover:border-potasio-primary/50 transition-all duration-300 shadow-2xl group max-w-4xl mx-auto">
-                <div class="grid md:grid-cols-2 gap-0">
+                <!-- Scroll Indicator (UX Cue) -->
+                <div id="scroll-indicator"
+                    class="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-3 text-slate-400 opacity-80 mix-blend-difference cursor-pointer select-none">
+                    <span class="text-xs uppercase tracking-[0.2em] animate-pulse whitespace-nowrap">Desliza para
+                        descubrir</span>
                     <div
-                        class="h-64 md:h-auto bg-gradient-to-br from-indigo-900 to-purple-900 relative overflow-hidden flex items-center justify-center p-8">
-                        <!-- Placeholder for Game Screenshot/Art -->
-                        <div
-                            class="absolute inset-0 opacity-40 bg-[url('assets/img/splash.png')] sm:bg-[url('assets/img/splash-big.png')] bg-cover bg-center group-hover:scale-110 transition-transform duration-700">
+                        class="w-6 h-10 border-2 border-slate-400 rounded-full flex justify-center p-1 shadow-[0_0_10px_rgba(255,255,255,0.1)]">
+                        <div class="w-1 h-2 bg-potasio-primary rounded-full animate-[bounce_1.5s_infinite]"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Layer 3: Elegí tu Próxima Aventura (Shown on Scrollytelling transition) -->
+            <div id="adventure-layer"
+                class="absolute inset-0 z-10 w-full h-full flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 opacity-0 pointer-events-none translate-y-8 select-none">
+
+                <div class="max-w-5xl w-full mx-auto flex flex-col items-center">
+                    <!-- Section Header -->
+                    <div id="adventure-header" class="text-center mb-4 sm:mb-10 will-change-transform">
+                        <h2 class="text-3xl sm:text-5xl font-extrabold text-white font-display tracking-tight">
+                            Elegí tu Próxima Aventura
+                        </h2>
+                    </div>
+
+                    <!-- Two Interactive Cards (Touch or click to select game; Carousel on mobile) -->
+                    <div id="adventure-cards-container"
+                        class="adventure-carousel flex md:grid md:grid-cols-2 gap-4 sm:gap-8 w-full max-w-4xl
+                        overflow-x-auto md:overflow-visible snap-x snap-mandatory pt-24 -mt-24 pb-8 -mb-8 md:py-2
+                        md:my-0 px-[16vw] md:px-0 scrollbar-none">
+
+                        <!-- TARJETA 1: ORBITAR -->
+                        <div id="portal-orbitar" data-game="orbitar"
+                            class="portal-card active relative p-4 sm:p-8 flex flex-col justify-between cursor-pointer
+                            group w-[68vw] max-w-[250px] shrink-0 snap-center md:w-auto md:max-w-none md:shrink">
+
+                            <!-- Recuadro de Fondo y Borde (se achica hasta recuadrar solo el nombre del juego) -->
+                            <div id="portal-frame-orbitar"
+                                class="portal-card-frame absolute inset-0 rounded-3xl bg-gradient-to-b from-dark-800/95 to-dark-900/95 border-2 border-cyan-400/80 shadow-[0_0_35px_rgba(34,211,238,0.25)] group-hover:border-cyan-400 group-hover:shadow-[0_0_45px_rgba(34,211,238,0.4)] transition-colors duration-300 pointer-events-none z-0">
+                            </div>
+
+                                <div
+                                    class="portal-card-extra relative z-10 hidden md:flex items-center justify-between mb-2 sm:mb-3">
+                                    <span
+                                        class="px-2.5 py-0.5 rounded-full bg-cyan-400/20 text-cyan-300 text-[10px] font-mono font-bold uppercase border border-cyan-400/40">
+                                        Arcade Gravitatorio
+                                    </span>
+                                    <span class="text-[10px] font-mono text-slate-400">1 Jugador • 2D</span>
+                                </div>
+
+                                <!-- Visual Centerpiece: Bot Preview with Orbiting Halo -->
+                                <div
+                                    class="portal-card-extra relative z-10 py-2 sm:py-4 flex items-center justify-center my-auto">
+                                    <div
+                                        class="w-24 h-24 sm:w-32 sm:h-32 rounded-full border border-cyan-400/20 flex items-center justify-center relative">
+                                        <div
+                                            class="absolute inset-0 rounded-full border border-dashed border-cyan-400/40 orbit-dashed-ring">
+                                        </div>
+                                        <img id="portal-bot-img" src="assets/img/player-astronaut.svg" alt="Orbitar"
+                                            class="w-14 h-14 sm:w-20 sm:h-20 drop-shadow-[0_0_20px_rgba(34,211,238,0.7)] group-hover:scale-110 transition-transform duration-300">
+                                    </div>
+                                </div>
+
+                                <!-- Info and Skin Selector -->
+                                <div class="relative z-10">
+                                    <h3 id="portal-title-orbitar"
+                                        class="portal-card-title text-2xl sm:text-3xl font-extrabold text-white font-display mb-1 flex items-center gap-2 w-fit whitespace-nowrap leading-none">
+                                        Orbitar
+                                    </h3>
+                                    <p
+                                        class="portal-card-extra text-xs sm:text-sm text-slate-300 font-light mb-3 sm:mb-4 leading-relaxed">
+                                        Conquistá planetas calculando inercia orbital y navegando por el espacio para
+                                        atravesar todo tipo de desafíos.
+                                    </p>
+
+                                    <!-- Skin Selector Pills inside Card -->
+                                        <div
+                                            class="portal-card-extra bg-dark-900/80 p-2 rounded-2xl border border-white/10 hidden md:block">
+                                            <span
+                                                class="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider block mb-1.5 px-1">
+                                                Traje Espacial:
+                                            </span>
+                                            <div class="grid grid-cols-3 gap-1.5">
+                                                <button type="button" id="portal-skin-astronaut"
+                                                    class="portal-skin-btn flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-xl bg-cyan-400/20 border-2 border-cyan-400 text-white text-xs font-mono font-bold transition-all">
+                                                    <img src="assets/img/player-astronaut.svg" class="w-4 h-4"> Astro
+                                                </button>
+                                                <button type="button" id="portal-skin-pilot"
+                                                    class="portal-skin-btn flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-xl bg-dark-800 border border-white/10 text-slate-400 hover:text-white text-xs font-mono transition-all">
+                                                    <img src="assets/img/suit-pilot.svg" class="w-4 h-4"> Piloto
+                                                </button>
+                                                <button type="button" id="portal-skin-mecha"
+                                                    class="portal-skin-btn flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-xl bg-dark-800 border border-white/10 text-slate-400 hover:text-white text-xs font-mono transition-all">
+                                                    <img src="assets/img/suit-mecha.svg" class="w-4 h-4"> Mecha
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- TARJETA 2: IMPOSTOR -->
+                                <div id="portal-impostor" data-game="impostor"
+                                    class="portal-card relative p-4 sm:p-8 flex flex-col justify-between cursor-pointer
+                                    group w-[68vw] max-w-[250px] shrink-0 snap-center md:w-auto md:max-w-none
+                                    md:shrink">
+
+                                    <!-- Recuadro de Fondo y Borde (se achica hasta recuadrar solo el nombre del juego) -->
+                                    <div id="portal-frame-impostor"
+                                        class="portal-card-frame absolute inset-0 rounded-3xl bg-gradient-to-b from-dark-800/95 to-dark-900/95 border border-white/10 group-hover:border-potasio-primary/70 shadow-xl group-hover:shadow-[0_0_35px_rgba(244,238,90,0.3)] transition-colors duration-300 pointer-events-none z-0">
+                                    </div>
+
+                                        <div
+                                            class="portal-card-extra relative z-10 hidden md:flex items-center justify-between mb-2 sm:mb-3">
+                                            <span
+                                                class="px-2.5 py-0.5 rounded-full bg-potasio-primary/20 text-potasio-primary text-[10px] font-mono font-bold uppercase border border-potasio-primary/40">
+                                                Party Game
+                                            </span>
+                                            <span class="text-[10px] font-mono text-slate-400">3 a 20+ Jugadores</span>
+                                        </div>
+
+                                        <!-- Visual Centerpiece: 3 Cards Preview & Floating Magnifier -->
+                                        <div
+                                            class="portal-card-extra relative z-10 py-2 sm:py-4 flex items-center justify-center my-auto">
+                                            <div class="relative w-36 h-24 sm:h-28 flex items-center justify-center">
+                                                <!-- Card 1: Augusto -->
+                                                <div
+                                                    class="absolute w-14 h-20 rounded-xl bg-gradient-to-br from-slate-800 to-slate-900 border border-white/20 -rotate-12 -translate-x-8 shadow-md flex flex-col justify-between p-1.5">
+                                                    <span
+                                                        class="text-[8px] font-mono text-purple-300 font-bold">Augusto</span>
+                                                    <span
+                                                        class="text-[9px] font-mono text-slate-500 text-center">••••</span>
+                                                    <span
+                                                        class="text-[7px] font-mono text-slate-500 text-center">🔒</span>
+                                                </div>
+                                                <!-- Card 2: Paloma -->
+                                                <div
+                                                    class="absolute w-14 h-20 rounded-xl bg-gradient-to-br from-slate-800 to-slate-900 border border-white/20 rotate-0 shadow-lg flex flex-col justify-between p-1.5 z-10">
+                                                    <span
+                                                        class="text-[8px] font-mono text-purple-300 font-bold">Paloma</span>
+                                                    <span
+                                                        class="text-[9px] font-mono text-slate-500 text-center">••••</span>
+                                                    <span
+                                                        class="text-[7px] font-mono text-slate-500 text-center">🔒</span>
+                                                </div>
+                                                <!-- Card 3: Juan -->
+                                                <div
+                                                    class="absolute w-14 h-20 rounded-xl bg-gradient-to-br from-slate-800 to-slate-900 border border-white/20 rotate-12 translate-x-8 shadow-md flex flex-col justify-between p-1.5">
+                                                    <span
+                                                        class="text-[8px] font-mono text-purple-300 font-bold">Juan</span>
+                                                    <span
+                                                        class="text-[9px] font-mono text-slate-500 text-center">••••</span>
+                                                    <span
+                                                        class="text-[7px] font-mono text-slate-500 text-center">🔒</span>
+                                                </div>
+                                                <!-- Magnifier Vector -->
+                                                <div
+                                                    class="absolute -top-2 right-1 drop-shadow-[0_0_15px_rgba(244,238,90,0.5)] group-hover:scale-110 transition-transform z-20">
+                                                    <svg class="w-10 h-10" viewBox="0 0 64 64" fill="none">
+                                                        <circle cx="26" cy="26" r="18" fill="rgba(244, 238, 90, 0.2)"
+                                                            stroke="#f4ee5a" stroke-width="4" />
+                                                        <line x1="39" y1="39" x2="56" y2="56" stroke="#f4ee5a"
+                                                            stroke-width="5" stroke-linecap="round" />
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Info and Action -->
+                                        <div class="relative z-10">
+                                            <h3 id="portal-title-impostor"
+                                                class="portal-card-title text-2xl sm:text-3xl font-extrabold text-white font-display mb-1 flex items-center gap-2 w-fit whitespace-nowrap leading-none">
+                                                Impostor
+                                            </h3>
+                                            <p
+                                                class="portal-card-extra text-xs sm:text-sm text-slate-300 font-light mb-3 sm:mb-4 leading-relaxed">
+                                                Un solo celular en la ronda. Todos leen la misma palabra clave...
+                                                excepto el
+                                                impostor, que debe mentir y fingir que la conoce.
+                                            </p>
+
+                                            <!-- Highlights -->
+                                            <div
+                                                class="portal-card-extra bg-dark-900/80 p-3 rounded-2xl border
+                                                border-white/10 hidden md:flex items-center justify-around text-center">
+                                                <div>
+                                                    <span
+                                                        class="block text-xs font-bold text-potasio-primary font-mono">1
+                                                        Teléfono</span>
+                                                    <span class="text-[10px] text-slate-400">Pasa y juega</span>
+                                                </div>
+                                                <div class="w-px h-6 bg-white/10"></div>
+                                                <div>
+                                                    <span
+                                                        class="block text-xs font-bold text-potasio-primary font-mono">3
+                                                        a
+                                                        20+</span>
+                                                    <span class="text-[10px] text-slate-400">Para tus previas</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <!-- Mobile Carousel Indicator Dots -->
+                                <div id="adventure-carousel-dots"
+                                    class="flex md:hidden items-center justify-center gap-2.5 mt-2">
+                                    <button type="button" id="dot-orbitar" aria-label="Orbitar"
+                                        class="w-2.5 h-2.5 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.8)] transition-all scale-125"></button>
+                                    <button type="button" id="dot-impostor" aria-label="Impostor"
+                                        class="w-2.5 h-2.5 rounded-full bg-slate-600 transition-all"></button>
+                                </div>
+
+                            </div>
                         </div>
-                        <i data-lucide="users" class="w-32 h-32 text-white/20 absolute"></i>
-                        <div
-                            class="relative z-10 w-full max-w-[200px] aspect-square bg-dark-900/80 rounded-2xl backdrop-blur-sm border border-white/10 flex items-center justify-center shadow-2xl transform group-hover:scale-105 transition-transform duration-500">
-                            <!-- Game Icon Actual -->
-                            <div class="text-center p-4">
-                                <img src="assets/img/icon.png" alt="Impostor Icon"
-                                    class="w-20 h-20 rounded-2xl shadow-lg mx-auto mb-2">
-                                <p class="text-xs font-bold uppercase tracking-widest text-potasio-primary select-none">
-                                    Impostor ¿Sabes
-                                    mentir?
-                                </p>
+        </section>
+    </div>
+
+    <!-- ================================================================= -->
+    <!-- ESCENA 2: TEATRO CINEMÁTICO (ORBITAR & IMPOSTOR CON SCRUB)        -->
+    <!-- Paleta oficial de Colors.ts y Barrera de Plasma solar             -->
+    <!-- ================================================================= -->
+    <div id="games-theater-scene" class="scrolly-scene snap-scene h-[350svh] sm:h-[400svh] relative z-10">
+        <section id="games-theater"
+            class="scrolly-sticky-viewport transition-colors duration-700 bg-transparent select-none">
+
+            <!-- Ancla de medición para la esquina de Pantalla 3 -->
+            <div id="theater-badge-anchor"
+                class="absolute left-6 sm:left-14 top-5 sm:top-7 z-50 pointer-events-none opacity-0 flex items-center justify-center px-6 py-3 rounded-2xl">
+                <span id="theater-badge-anchor-title"
+                    class="text-2xl sm:text-3xl font-extrabold font-display tracking-tight whitespace-nowrap leading-none opacity-0">
+                    Orbitar
+                </span>
+            </div>
+
+            <!-- ============================================== -->
+            <!-- MUNDO 1: ORBITAR (La Odisea Gravitatoria)      -->
+            <!-- ============================================== -->
+            <div id="world-orbitar" class="relative w-full h-full inset-0 z-10 overflow-hidden">
+
+                <!-- Planeta 1 (Origen: Planeta de Inicio) -->
+                <div id="planet-1-container"
+                    class="absolute left-[4%] md:left-[8%] bottom-[8%] md:bottom-[16%] flex flex-col items-center pointer-events-none z-10 w-20 md:w-40">
+                    <div class="relative flex items-center justify-center">
+                        <!-- Anillo Límite Exterior (#5B96D6 al 40%) -->
+                        <div id="planet-1-ring"
+                            class="absolute w-28 h-28 md:w-56 md:h-56 rounded-full border-2 border-[#5B96D6]/40 orbit-dashed-ring pointer-events-none">
+                        </div>
+                        <!-- Planeta Inicio SVG con sombreado esférico 3D exacto -->
+                        <div id="planet-1-body"
+                            class="w-16 h-16 md:w-32 md:h-32 relative flex items-center justify-center">
+                            <svg class="w-full h-full drop-shadow-[0_0_35px_rgba(74,133,190,0.5)]" viewBox="0 0 100 100"
+                                fill="none">
+                                <!-- Campo gravitatorio (#1B344D al 15%) -->
+                                <circle cx="50" cy="50" r="48" fill="rgba(27, 52, 77, 0.15)" />
+                                <!-- Disco base (#25527E con rim light #4A85BE) -->
+                                <circle cx="50" cy="50" r="42" fill="#25527E" stroke="#4A85BE" stroke-width="2.5" />
+                                <!-- Sombra penumbra 3D (+0.12r, +0.12r, radio 0.88r en rgba(0,0,0,0.22)) -->
+                                <circle cx="55" cy="55" r="37" fill="rgba(0, 0, 0, 0.22)" />
+                                <!-- Destello especular 3D (-0.32r, -0.32r, radio 0.26r en rgba(255,255,255,0.30)) -->
+                                <circle cx="36.6" cy="36.6" r="11" fill="rgba(255, 255, 255, 0.30)" />
+                                <!-- Cráteres cel-shaded sutiles -->
+                                <circle cx="44" cy="62" r="5" fill="#1B344D" opacity="0.6" />
+                                <circle cx="62" cy="42" r="3.5" fill="#1B344D" opacity="0.6" />
+                                <circle cx="38" cy="48" r="2.5" fill="#1B344D" opacity="0.5" />
+                            </svg>
+                        </div>
+                    </div>
+                    <span
+                        class="mt-1 md:mt-3 text-[9px] md:text-[11px] font-mono font-bold text-cyan-300/90 bg-dark-900/90 px-2 md:px-2.5 py-0.5 rounded-full border border-cyan-400/40 tracking-wider">
+                        Planeta de Inicio
+                    </span>
+                </div>
+
+                <!-- Planeta Intermedio (Paso obligado: X=Objetivo, Y=Inicio) -->
+                <div id="planet-mid-container"
+                    class="absolute right-[4%] md:right-[8%] bottom-[8%] md:bottom-[16%] flex flex-col items-center pointer-events-none z-10 w-20 md:w-40">
+                    <div class="relative flex items-center justify-center">
+                        <!-- Anillo Límite Exterior (#5B96D6 al 40%) -->
+                        <div id="planet-mid-ring"
+                            class="absolute w-28 h-28 md:w-56 md:h-56 rounded-full border-2 border-[#5B96D6]/40 orbit-dashed-ring pointer-events-none">
+                        </div>
+                        <!-- Planeta Intermedio SVG con sombreado esférico 3D exacto -->
+                        <div id="planet-mid-body"
+                            class="w-16 h-16 md:w-32 md:h-32 relative flex items-center justify-center">
+                            <svg class="w-full h-full drop-shadow-[0_0_35px_rgba(74,133,190,0.5)]" viewBox="0 0 100 100"
+                                fill="none">
+                                <circle cx="50" cy="50" r="48" fill="rgba(27, 52, 77, 0.15)" />
+                                <circle cx="50" cy="50" r="42" fill="#25527E" stroke="#4A85BE" stroke-width="2.5" />
+                                <circle cx="55" cy="55" r="37" fill="rgba(0, 0, 0, 0.22)" />
+                                <circle cx="36.6" cy="36.6" r="11" fill="rgba(255, 255, 255, 0.30)" />
+                                <circle cx="44" cy="62" r="5" fill="#1B344D" opacity="0.6" />
+                                <circle cx="62" cy="42" r="3.5" fill="#1B344D" opacity="0.6" />
+                                <circle cx="38" cy="48" r="2.5" fill="#1B344D" opacity="0.5" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Barrera de Plasma Solar (Rotada 45° y 30% más larga) -->
+                <div id="hazard-container"
+                    class="absolute left-1/2 top-[50%] md:top-[46%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center pointer-events-none z-10 w-44 md:w-80 h-24 md:h-44">
+                    <div class="relative w-full h-full flex items-center justify-center transform rotate-45">
+                        <!-- SVG Puente de Plasma con Micro-planetas y Filamentos de Marea (+30% longitud) -->
+                        <svg class="w-full h-full overflow-visible plasma-pulse" viewBox="0 0 260 120" fill="none">
+                            <!-- Lóbulo de Marea Solar (Cuerpo Translúcido Cóncavo que abarca ambos planetas) -->
+                            <path id="plasma-lobe"
+                                d="M 30,43 A 17 17 0 0 0 30,77 Q 130,67 230,77 A 17 17 0 0 0 230,43 Q 130,53 30,43 Z"
+                                fill="rgba(217, 107, 39, 0.24)" stroke="rgba(255, 160, 66, 0.50)" stroke-width="1.5" />
+                            <!-- Filamento Ondulante de Calor Solar (#FFA94D) -->
+                            <path id="plasma-filament-outer" class="filament-wave" d="M 30,60 C 80,40 180,80 230,60"
+                                stroke="#FFA94D" stroke-width="3.5" stroke-linecap="round" fill="none" opacity="0.85" />
+                            <!-- Filamento Central Incandescente Hitbox (#FFF3BF) -->
+                            <path id="plasma-filament-core" d="M 30,60 C 90,48 170,72 230,60" stroke="#FFF3BF"
+                                stroke-width="2" stroke-linecap="round" fill="none" opacity="0.95" />
+
+                            <!-- Micro-Planeta Extremo Izquierdo -->
+                            <circle cx="30" cy="60" r="17" fill="rgba(255, 160, 66, 0.16)" />
+                            <circle cx="30" cy="60" r="12" fill="#D96B27" stroke="#FFA042" stroke-width="1.5" />
+                            <circle cx="31.7" cy="61.7" r="10.3" fill="rgba(90, 24, 6, 0.45)" />
+                            <circle cx="26.6" cy="56.6" r="3.8" fill="rgba(255, 160, 66, 0.45)" />
+                            <circle cx="26.4" cy="56.4" r="1.9" fill="rgba(255, 255, 255, 0.75)" />
+
+                            <!-- Micro-Planeta Extremo Derecho -->
+                            <circle cx="230" cy="60" r="17" fill="rgba(255, 160, 66, 0.16)" />
+                            <circle cx="230" cy="60" r="12" fill="#D96B27" stroke="#FFA042" stroke-width="1.5" />
+                            <circle cx="231.7" cy="61.7" r="10.3" fill="rgba(90, 24, 6, 0.45)" />
+                            <circle cx="226.6" cy="56.6" r="3.8" fill="rgba(255, 160, 66, 0.45)" />
+                            <circle cx="226.4" cy="56.4" r="1.9" fill="rgba(255, 255, 255, 0.75)" />
+                        </svg>
+                    </div>
+                    <span
+                        class="mt-0.5 md:mt-1 -translate-x-2 md:-translate-x-3 text-[9px] md:text-[10px] font-mono font-bold text-amber-300 bg-dark-900/90 px-2 md:px-2.5 py-0.5 rounded-full border border-amber-500/40 tracking-wider">
+                        Barrera de Plasma
+                    </span>
+                </div>
+
+                <!-- Planeta 2 (Destino: Planeta Objetivo) -->
+                <div id="planet-2-container"
+                    class="absolute right-[4%] md:right-[8%] top-[24%] md:top-[18%] flex flex-col items-center pointer-events-none z-10 w-24 md:w-40">
+                    <div class="relative flex items-center justify-center">
+                        <!-- Límite de Captura Exterior (#38B27C al 40%) -->
+                        <div id="planet-2-ring"
+                            class="absolute w-34 h-34 md:w-60 md:h-60 rounded-full border-2 border-[#38B27C]/40 orbit-dashed-ring pointer-events-none">
+                        </div>
+                        <!-- Planeta Objetivo SVG con sombreado esférico 3D exacto -->
+                        <div id="planet-2-body"
+                            class="w-20 h-20 md:w-36 md:h-36 relative flex items-center justify-center">
+                            <svg class="w-full h-full drop-shadow-[0_0_40px_rgba(56,178,124,0.55)]"
+                                viewBox="0 0 100 100" fill="none">
+                                <!-- Campo gravitatorio (#1B344D al 15%) -->
+                                <circle cx="50" cy="50" r="48" fill="rgba(27, 52, 77, 0.15)" />
+                                <!-- Disco base (#1D7853 con rim light #38B27C) -->
+                                <circle cx="50" cy="50" r="44" fill="#1D7853" stroke="#38B27C" stroke-width="2.5" />
+                                <!-- Sombra penumbra 3D (+0.12r, +0.12r, radio 0.88r) -->
+                                <circle cx="55.3" cy="55.3" r="38.7" fill="rgba(0, 0, 0, 0.22)" />
+                                <!-- Destello especular 3D (-0.32r, -0.32r, radio 0.26r) -->
+                                <circle cx="36" cy="36" r="11.4" fill="rgba(255, 255, 255, 0.30)" />
+                                <!-- Cráteres esmeralda sutiles -->
+                                <circle cx="45" cy="64" r="5.5" fill="#135238" opacity="0.6" />
+                                <circle cx="64" cy="40" r="4" fill="#135238" opacity="0.6" />
+                            </svg>
+                        </div>
+                    </div>
+                    <span
+                        class="mt-1 md:mt-3 text-[9px] md:text-[11px] font-mono font-bold text-emerald-300/90 bg-dark-900/90 px-2 md:px-2.5 py-0.5 rounded-full border border-emerald-400/40 tracking-wider">
+                        Planeta Objetivo
+                    </span>
+                </div>
+
+                <!-- ============================================== -->
+                <!-- ACTOR PRINCIPAL: EL BOT VIAJERO (#48CAE4)      -->
+                <!-- ============================================== -->
+                <div id="scrolly-bot"
+                    class="absolute z-30 pointer-events-none transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center will-change-transform scale-90 md:scale-100">
+                    <div class="relative flex items-center justify-center">
+                        <!-- Aura Suave Cósmica (movimiento continuo orgánico que respira aun quieto) -->
+                        <div id="bot-aura"
+                            class="absolute -inset-3 sm:-inset-4 rounded-full pointer-events-none animate-bot-aura">
+                        </div>
+
+                        <!-- Bot Image SVG -->
+                        <img id="orbitar-bot-img" src="assets/img/player-astronaut.svg" alt="Orbitar Robot"
+                            class="w-16 h-16 sm:w-20 sm:h-20 drop-shadow-[0_0_24px_rgba(72,202,228,0.85)] transition-all duration-150 relative z-10">
+
+                        <!-- Thruster Blast (propulsor con vida: modo idle suave y boost en vuelo) -->
+                        <div id="bot-thruster"
+                            class="absolute -bottom-5 inset-x-0 flex flex-col items-center pointer-events-none z-0">
+                            <!-- Núcleo incandescente caliente -->
+                            <div id="thruster-core"
+                                class="w-1.5 h-3 bg-white rounded-full blur-[0.5px] thruster-core-anim"></div>
+                            <!-- Llama principal de plasma cian -->
+                            <div id="thruster-flame"
+                                class="w-3.5 h-6 -mt-2.5 rounded-full bg-gradient-to-b from-white via-[#00E5FF] to-transparent blur-[1.5px] thruster-flame-anim">
+                            </div>
+                            <!-- Estela secundaria de partículas de gas -->
+                            <div id="thruster-smoke"
+                                class="w-2.5 h-4 -mt-1 rounded-full bg-cyan-400/30 blur-[2px] thruster-smoke-anim">
+                            </div>
+                        </div>
+
+                        <!-- Shield Bubble (escudo de energía cian #00E5FF) -->
+                        <div id="bot-shield"
+                            class="absolute -inset-2 rounded-full border-2 border-[#00E5FF] bg-[#00E5FF]/20 shadow-[0_0_24px_rgba(0,229,255,0.85)] opacity-0 transition-opacity duration-200 pointer-events-none">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ============================================== -->
+                <!-- HITOS NARRATIVOS (z-40 para estar sobre planetas) -->
+                <!-- ============================================== -->
+                <!-- Hito 1: Órbita Inicial -->
+                <div id="orbitar-m1"
+                    class="absolute z-40 left-4 right-4 md:right-auto md:left-14 top-16 md:top-24 max-w-sm md:max-w-xs p-3.5 sm:p-5 rounded-2xl bg-dark-800/90 border border-cyan-400/40 backdrop-blur-xl shadow-2xl pointer-events-none opacity-0 translate-y-4">
+                    <h4 class="font-display font-bold text-base sm:text-lg text-white mb-0.5 sm:mb-1">Enganchate a la
+                        Gravedad</h4>
+                    <p
+                        class="text-xs text-slate-300 font-light leading-snug sm:leading-relaxed line-clamp-2 md:line-clamp-none">
+                        Girá en la órbita del Planeta de Inicio. Mantené la concentración y preparate para el
+                        lanzamiento.
+                    </p>
+                </div>
+
+                <!-- Hito 2: Tirachinas al Planeta Intermedio -->
+                <div id="orbitar-m2"
+                    class="absolute z-40 left-4 right-4 md:right-auto md:left-14 top-16 md:top-[44%] max-w-sm md:max-w-xs p-3.5 sm:p-5 rounded-2xl bg-dark-800/90 border border-cyan-400/40 backdrop-blur-xl shadow-2xl pointer-events-none opacity-0 translate-y-4 transition-all">
+                    <h4 class="font-display font-bold text-base sm:text-lg text-white mb-0.5 sm:mb-1">Tirachinas al
+                        Planeta Intermedio</h4>
+                    <p
+                        class="text-xs text-slate-300 font-light leading-snug sm:leading-relaxed line-clamp-2 md:line-clamp-none">
+                        Desacople tangencial a 0° para catapultarse a toda velocidad hacia el planeta de paso
+                        intermedio.
+                    </p>
+                </div>
+
+                <!-- Hito 3: Esquivá la Barrera de Plasma -->
+                <div id="orbitar-m3"
+                    class="absolute z-40 left-4 right-4 md:left-auto md:right-1/4 top-16 md:top-20 max-w-sm md:max-w-xs p-3.5 sm:p-5 rounded-2xl bg-dark-800/90 border border-amber-500/50 backdrop-blur-xl shadow-2xl pointer-events-none opacity-0 translate-y-4 transition-all">
+                    <h4 class="font-display font-bold text-base sm:text-lg text-white mb-0.5 sm:mb-1">Esquivá la Barrera
+                        de Plasma</h4>
+                    <p
+                        class="text-xs text-slate-300 font-light leading-snug sm:leading-relaxed line-clamp-2 md:line-clamp-none">
+                        Girá en el Planeta Intermedio y salí a 90° hacia el Planeta Objetivo, esquivando el campo de
+                        plasma solar.
+                    </p>
+                </div>
+
+            </div>
+
+            <!-- ============================================== -->
+            <!-- MUNDO 2: IMPOSTOR (La Ronda Secreta 3D)        -->
+            <!-- ============================================== -->
+            <div id="world-impostor"
+                class="hidden relative w-full h-full inset-0 z-10 flex flex-col items-center justify-center overflow-hidden">
+
+                <!-- Mesa Circular de Cartas 3D -->
+                <div
+                    class="relative w-full max-w-[700px] h-[340px] sm:h-[400px] flex items-center justify-center perspective-1000 select-none">
+
+                    <!-- Lupa Vectorial que Viaja en la Cinemática -->
+                    <div id="impostor-magnifier"
+                        class="pointer-events-none filter drop-shadow-[0_0_20px_rgba(244,238,90,0.6)] will-change-transform">
+                        <svg class="w-16 h-16 sm:w-20 sm:h-20" viewBox="0 0 64 64" fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="26" cy="26" r="18" fill="rgba(244, 238, 90, 0.15)" stroke="#f4ee5a"
+                                stroke-width="3.5" />
+                            <circle cx="26" cy="26" r="14" stroke="rgba(255, 255, 255, 0.35)" stroke-width="1.5"
+                                stroke-dasharray="4 2" />
+                            <path d="M18 18 A 12 12 0 0 1 34 18" stroke="rgba(255, 255, 255, 0.7)" stroke-width="2"
+                                stroke-linecap="round" />
+                            <line x1="39" y1="39" x2="56" y2="56" stroke="#f4ee5a" stroke-width="5"
+                                stroke-linecap="round" />
+                            <line x1="43" y1="43" x2="55" y2="55" stroke="#c578cb" stroke-width="2"
+                                stroke-linecap="round" />
+                        </svg>
+                    </div>
+
+                    <!-- 3 Cartas de Jugadores -->
+                    <!-- Carta 1: Augusto -->
+                    <div id="impostor-card-1"
+                        class="impostor-card w-24 h-36 sm:w-28 sm:h-42 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 border border-white/20 shadow-2xl p-3 flex flex-col justify-between transform-style-3d will-change-transform transition-all">
+                        <div class="h-full flex flex-col justify-between">
+                            <span class="text-[11px] font-mono text-purple-300 font-bold tracking-wide">Augusto</span>
+                            <div id="card-1-word"
+                                class="text-center font-display font-bold text-xs sm:text-sm text-slate-500 transition-colors duration-300">
+                                ••••••
+                            </div>
+                            <span id="card-1-status" class="text-[9px] font-mono text-slate-500 text-center">🔒 En
+                                secreto</span>
+                        </div>
+                    </div>
+
+                    <!-- Carta 2: Paloma -->
+                    <div id="impostor-card-2"
+                        class="impostor-card w-24 h-36 sm:w-28 sm:h-42 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 border border-white/20 shadow-2xl p-3 flex flex-col justify-between transform-style-3d will-change-transform transition-all">
+                        <div class="h-full flex flex-col justify-between">
+                            <span class="text-[11px] font-mono text-purple-300 font-bold tracking-wide">Paloma</span>
+                            <div id="card-2-word"
+                                class="text-center font-display font-bold text-xs sm:text-sm text-slate-500 transition-colors duration-300">
+                                ••••••
+                            </div>
+                            <span id="card-2-status" class="text-[9px] font-mono text-slate-500 text-center">🔒 En
+                                secreto</span>
+                        </div>
+                    </div>
+
+                    <!-- Carta 3: Juan (El Impostor) -->
+                    <div id="impostor-card-3"
+                        class="impostor-card w-24 h-36 sm:w-28 sm:h-42 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 border border-white/20 shadow-2xl p-3 flex flex-col justify-between transform-style-3d will-change-transform transition-all z-30">
+                        <div id="card-3-front" class="h-full flex flex-col justify-between">
+                            <span class="text-[11px] font-mono text-purple-300 font-bold tracking-wide">Juan</span>
+                            <div id="card-3-word"
+                                class="text-center font-display font-bold text-xs sm:text-sm text-slate-500 transition-colors duration-300">
+                                ••••••
+                            </div>
+                            <span id="card-3-status" class="text-[9px] font-mono text-slate-500 text-center">🔒 En
+                                secreto</span>
+                        </div>
+                        <div id="card-3-back" class="hidden h-full flex flex-col items-center justify-center">
+                            <span class="text-[11px] font-mono text-red-400 font-bold tracking-wide mb-1">Juan</span>
+                            <div
+                                class="impostor-stamp px-2 py-1 font-bold text-xs sm:text-sm uppercase text-center animate-bounce">
+                                IMPOSTOR
+                            </div>
+                            <span
+                                class="text-[9px] font-mono text-red-400 mt-2 font-bold tracking-wider">¡ATRAPADO!</span>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+    </div>
+
+    <!-- ================================================================= -->
+    <!-- ESCENA 3: SHOWCASE Y CONTACTO                                     -->
+    <!-- Ficha de descarga y panel de contacto                             -->
+    <!-- ================================================================= -->
+    <div id="bottom-scene" class="scrolly-scene snap-scene h-[220svh] relative z-10">
+        <section id="bottom-trigger"
+            class="scrolly-sticky-viewport flex items-center justify-center select-none bg-transparent">
+
+            <!-- Capa 1: Ficha de Juego y Descarga Oficial -->
+            <div id="showcase-layer"
+                class="absolute inset-0 z-10 w-full h-full flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 select-none transition-all">
+                <div class="max-w-4xl w-full mx-auto relative z-10">
+                    <!-- Ficha Ancla de Medición de Orbitar -->
+                    <div id="showcase-anchor-orbitar"
+                        class="showcase-card-anchor bg-gradient-to-b from-dark-800/90 to-dark-900/90 rounded-2xl md:rounded-3xl p-5 sm:p-6 md:p-10 border border-cyan-400/30 flex flex-col md:flex-row items-center gap-4 md:gap-10 opacity-0 pointer-events-none select-none">
+                        <!-- Icono -->
+                        <div class="flex-shrink-0 flex flex-col items-center">
+                            <div class="w-20 h-20 sm:w-28 sm:h-28 md:w-36 md:h-36 rounded-2xl md:rounded-3xl p-1"></div>
+                        </div>
+
+                        <!-- Información y Botón de Descarga Oficial -->
+                        <div class="flex-1 text-center md:text-left flex flex-col justify-center">
+                            <div
+                                class="flex flex-wrap items-center justify-center md:justify-start gap-1.5 sm:gap-2 mb-2">
+                                <span
+                                    class="px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-mono font-bold uppercase">
+                                    Arcade Gravitatorio • 2D
+                                </span>
+                                <span class="text-[10px] sm:text-xs font-mono">Android • 1 Jugador • Offline</span>
+                            </div>
+
+                            <div id="showcase-title-anchor-orbitar"
+                                class="h-7 sm:h-9 mb-2 sm:mb-3 flex items-center justify-center md:justify-start">
+                                <span
+                                    class="text-2xl sm:text-3xl font-extrabold font-display tracking-tight leading-none opacity-0">Orbitar</span>
+                            </div>
+
+                            <p
+                                class="text-xs sm:text-sm leading-relaxed mb-4 sm:mb-6 font-light line-clamp-3 md:line-clamp-none">
+                                Tocás la pantalla para soltarte de la órbita de un planeta y saltar al siguiente usando
+                                su gravedad. Si calculás mal el ángulo o el momento, te atrapa una barrera de plasma
+                                solar o chocás contra un cinturón de asteroides. En niveles más profundos, agujeros
+                                negros y campos de repulsión te esperan.
+                            </p>
+
+                            <div
+                                class="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-3 sm:gap-4">
+                                <div class="h-10 sm:h-12 w-36 sm:w-44"></div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="p-8 md:p-12 flex flex-col justify-center">
-                        <div class="flex items-center gap-3 mb-4">
-                            <span
-                                class="px-3 py-1 bg-potasio-primary/10 text-potasio-primary text-xs font-bold rounded-full uppercase tracking-wider">Social
-                                Deduction</span>
-                            <span
-                                class="px-3 py-1 bg-purple-500/10 text-purple-400 text-xs font-bold rounded-full uppercase tracking-wider">Party
-                                Game</span>
+                    <!-- Ficha Ancla de Medición de Impostor -->
+                    <div id="showcase-anchor-impostor"
+                        class="showcase-card-anchor hidden bg-gradient-to-b from-dark-800/90 to-dark-900/90 rounded-2xl md:rounded-3xl p-5 sm:p-6 md:p-10 border border-purple-500/30 flex flex-col md:flex-row items-center gap-4 md:gap-10 opacity-0 pointer-events-none select-none">
+                        <div class="flex-shrink-0 flex flex-col items-center">
+                            <div class="w-20 h-20 sm:w-28 sm:h-28 md:w-36 md:h-36 rounded-2xl md:rounded-3xl p-1"></div>
                         </div>
-                        <h3 class="text-3xl font-bold text-white mb-4 select-none">Impostor ¿Sabes mentir?</h3>
-                        <p class="text-slate-400 mb-8 leading-relaxed">
-                            El juego definitivo para tus reuniones. Disfruta del modo clásico donde un jugador debe
-                            engañar a todos, o explora nuestros nuevos modos de juego que llevarán la tensión y las
-                            risas al siguiente nivel. ¡Descubre quién miente usando palabras secretas e ingenio social!
-                        </p>
 
-                        <div class="flex flex-col sm:flex-row gap-4">
-                            <a href="https://play.google.com/store/apps/details?id=com.augustodelisio.impostor"
-                                target="_blank"
-                                class="flex items-center justify-center gap-3 bg-white text-dark-900 px-6 py-3 rounded-xl font-bold hover:bg-gray-100 transition-colors">
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg"
-                                    alt="Get it on Google Play" class="h-8">
+                        <div class="flex-1 text-center md:text-left flex flex-col justify-center">
+                            <div
+                                class="flex flex-wrap items-center justify-center md:justify-start gap-1.5 sm:gap-2 mb-2">
+                                <span
+                                    class="px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-mono font-bold uppercase">
+                                    Party Game / Deducción Social
+                                </span>
+                                <span class="text-[10px] sm:text-xs font-mono">1 Solo Celular • 3 a 20+ Jugadores</span>
+                            </div>
+
+                            <div id="showcase-title-anchor-impostor"
+                                class="h-7 sm:h-9 mb-2 sm:mb-3 flex items-center justify-center md:justify-start">
+                                <span
+                                    class="text-2xl sm:text-3xl font-extrabold font-display tracking-tight leading-none opacity-0">Impostor</span>
+                            </div>
+
+                            <p
+                                class="text-xs sm:text-sm leading-relaxed mb-4 sm:mb-6 font-light line-clamp-3 md:line-clamp-none">
+                                El juego definitivo para tus reuniones. Todos en la mesa reciben una palabra secreta,
+                                menos uno que es el impostor. Hablan por turnos diciendo pistas sin regalar la palabra;
+                                el grupo tiene que descubrir quién miente y el impostor debe camuflarse con cara de
+                                póker antes de que lo voten.
+                            </p>
+
+                            <div
+                                class="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-3 sm:gap-4">
+                                <div class="h-10 sm:h-12 w-36 sm:w-44"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Scroll Cue to Contact Stage -->
+                <div id="showcase-scroll-cue"
+                    class="absolute bottom-5 sm:bottom-7 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-1.5 text-slate-400 hover:text-white transition-colors cursor-pointer select-none">
+                    <span class="text-[10px] uppercase font-mono tracking-widest">Sobre el Estudio & Contacto</span>
+                    <i data-lucide="chevron-down" class="w-4 h-4 animate-bounce text-potasio-primary"></i>
+                </div>
+            </div>
+
+            <!-- Capa 2: Sobre Potasio & Contacto (Entra in-place al avanzar el scroll) -->
+            <div id="contact-layer"
+                class="absolute inset-0 z-10 w-full h-full flex flex-col justify-between items-center px-4 sm:px-6 lg:px-8 py-8 sm:py-10 opacity-0 pointer-events-none translate-y-8 select-none transition-all">
+
+                <div class="my-auto max-w-3xl w-full mx-auto flex flex-col items-center gap-6 sm:gap-8">
+                    <!-- Sobre Potasio Games -->
+                    <div class="text-center max-w-xl">
+                        <h2 class="text-2xl sm:text-4xl font-extrabold text-white font-display mb-3">Sobre Potasio Games
+                        </h2>
+                        <p class="text-xs sm:text-sm text-slate-300 leading-relaxed font-light">
+                            Somos un pequeño estudio indie apasionado por conectar personas a través de juegos simples
+                            pero
+                            profundos. Creemos que las mejores experiencias ocurren cara a cara, riendo y jugando con
+                            amigos.
+                        </p>
+                    </div>
+
+                    <!-- Contact Card -->
+                    <div
+                        class="w-full max-w-lg bg-gradient-to-b from-dark-800 to-dark-900 rounded-3xl p-6 sm:p-8 border border-white/10 shadow-2xl relative overflow-hidden group text-center">
+                        <div
+                            class="absolute top-0 right-0 w-48 h-48 bg-potasio-secondary/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none">
+                        </div>
+
+                        <div class="relative z-10">
+                            <div
+                                class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-potasio-secondary/15 text-potasio-secondary mb-3 group-hover:scale-110 transition-transform">
+                                <i data-lucide="mail" class="w-6 h-6"></i>
+                            </div>
+
+                            <h3 class="text-xl sm:text-2xl font-bold text-white mb-2">¿Hablamos?</h3>
+                            <p class="text-slate-400 text-xs sm:text-sm mb-5 max-w-sm mx-auto">
+                                ¿Tienes alguna sugerencia, encontraste un bug o simplemente quieres saludar? Estamos
+                                siempre atentos a nuestra comunidad.
+                            </p>
+
+                            <a href="#" id="contact-btn"
+                                class="inline-flex items-center gap-2.5 px-7 py-3 bg-potasio-primary text-dark-900 font-bold rounded-xl hover:bg-yellow-300 transition-all shadow-lg hover:scale-105 active:scale-95 text-xs sm:text-sm cursor-pointer">
+                                <i data-lucide="mail" class="w-4 h-4"></i>
+                                <span>Escríbenos un Correo</span>
+                                <i data-lucide="arrow-right" class="w-4 h-4"></i>
                             </a>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </section>
 
-    <!-- About Section -->
-    <section id="about" class="py-20 relative overflow-hidden">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10 select-none">
-            <h2 class="text-3xl font-bold text-white mb-8">Sobre Potasio Games</h2>
-            <p class="text-xl text-slate-300 leading-relaxed">
-                Somos un pequeño estudio indie apasionado por conectar personas a través de juegos simples pero
-                profundos. Creemos que las mejores experiencias ocurren cara a cara, riendo y jugando con amigos.
-            </p>
-        </div>
-    </section>
-
-    <!-- Contact Section -->
-    <section id="contact" class="py-20 relative">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <div
-                class="bg-gradient-to-b from-dark-800 to-dark-900 rounded-3xl p-10 border border-white/5 shadow-2xl relative overflow-hidden group">
-                <!-- Decorative background elements -->
-                <div
-                    class="absolute top-0 right-0 w-64 h-64 bg-potasio-secondary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:bg-potasio-secondary/10 transition-all duration-700">
-                </div>
-
-                <div class="relative z-10">
-                    <div
-                        class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-potasio-secondary/10 text-potasio-secondary mb-6 group-hover:scale-110 transition-transform duration-300">
-                        <i data-lucide="mail" class="w-8 h-8"></i>
+                <!-- Footer Bar -->
+                <footer
+                    class="w-full max-w-4xl border-t border-white/10 pt-4 flex flex-col sm:flex-row justify-between items-center gap-3 text-xs text-slate-500">
+                    <div class="flex items-center gap-2">
+                        <span class="font-bold text-white">Potasio<span
+                                class="text-potasio-secondary">Games</span></span>
                     </div>
-
-                    <h2 class="text-3xl font-bold text-white mb-4 select-none">¿Hablamos?</h2>
-                    <p class="text-slate-400 mb-8 max-w-lg mx-auto text-lg">
-                        ¿Tienes alguna sugerencia, encontraste un bug o simplemente quieres saludar?
-                        Estamos siempre atentos a nuestra comunidad.
-                    </p>
-
-                    <a href="#" id="contact-btn"
-                        class="inline-flex items-center gap-3 px-8 py-4 bg-potasio-primary text-dark-900 font-bold rounded-xl hover:bg-yellow-300 transition-all duration-300 hover:shadow-[0_0_20px_rgba(244,238,90,0.3)] hover:-translate-y-0.5 active:translate-y-0 group-hover:-translate-y-1 cursor-pointer">
-                        <i data-lucide="mail" class="w-5 h-5"></i>
-                        <span>Escríbenos un Correo</span>
-                        <i data-lucide="arrow-right" class="w-5 h-5 transition-transform group-hover:translate-x-1"></i>
-                    </a>
-                </div>
+                    <div>
+                        <a href="privacy.html" class="hover:text-white transition-colors">Política de Privacidad</a>
+                    </div>
+                    <div>
+                        &copy; 2026 Potasio Games. All rights reserved.
+                    </div>
+                </footer>
             </div>
-        </div>
-    </section>
 
-    <!-- Footer -->
-    <footer class="bg-dark-900 border-t border-white/5 py-12">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex flex-col md:flex-row justify-between items-center gap-8">
-                <div class="flex items-center gap-2 select-none">
-                    <span class="text-xl font-bold text-white">Potasio<span
-                            class="text-potasio-secondary">Games</span></span>
-                </div>
-
-                <div class="flex gap-8 text-sm text-slate-400">
-                    <a href="privacy.html" class="hover:text-white transition-colors">Política de Privacidad</a>
-                </div>
-
-                <div class="text-sm text-slate-500">
-                    &copy; 2026 Potasio Games. All rights reserved.
-                </div>
-            </div>
-        </div>
-    </footer>
+        </section>
+    </div>
 
     <!-- Redemption Modal (Hidden by default) -->
     <div id="redeem-modal"
@@ -358,220 +1024,8 @@
         </div>
     </div>
 
-    <!-- Main Logic -->
-    <script>
-        // Initialize Icons
-        lucide.createIcons();
-
-        // Register GSAP Plugins
-        gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
-
-        // State control
-        let textVisible = false;
-        let animating = false;
-
-        // Timeline Setup
-        const tl = gsap.timeline({ paused: true });
-
-        // Build Animation (Splash -> Text)
-        tl.to("#scroll-indicator", { opacity: 0, scale: 0.5, duration: 0.3, ease: "power1.out" })
-            .to("#hero-bg", { opacity: 0, duration: 0.8, ease: "power2.inOut" }, 0)
-            .to("#hero-spotlight", { opacity: 0, duration: 0.8, ease: "power2.inOut" }, 0)
-            .to("#hero-logo-layer", { opacity: 0, scale: 1.05, duration: 1.0, ease: "power2.inOut" }, 0)
-            .to("#hero-content", { opacity: 1, y: 0, duration: 1, ease: "power2.out" }, "-=0.8")
-            .to("#navbar", { 
-                opacity: 1, 
-                pointerEvents: "auto", 
-                backgroundColor: "rgba(10, 15, 26, 0.95)", 
-                backdropFilter: "blur(12px)", 
-                borderBottom: "1px solid rgba(255, 255, 255, 0.05)", 
-                duration: 0.8, 
-                ease: "power2.out" 
-            }, "-=0.8");
-
-        // Helper Functions
-        function animateToText() {
-            animating = true;
-            const hw = document.getElementById('hero-logo-wrapper');
-            if (hw) {
-                gsap.to(hw, { rotateX: 0, rotateY: 0, duration: 0.5 });
-            }
-            tl.play().then(() => {
-                animating = false;
-                textVisible = true;
-                document.body.classList.remove('overflow-hidden');
-            });
-        }
-
-        function animateToSplash() {
-            animating = true;
-            document.body.classList.add('overflow-hidden');
-            window.scrollTo(0, 0); // Ensure window is at top when returning to splash
-            tl.reverse().then(() => {
-                animating = false;
-                textVisible = false;
-            });
-        }
-
-        // --- Interactive 3D Tilt & Mouse Spotlight Logic ---
-        const heroTrigger = document.getElementById('hero-trigger');
-        const heroWrapper = document.getElementById('hero-logo-wrapper');
-        const heroSpotlight = document.getElementById('hero-spotlight');
-
-        if (heroTrigger && heroWrapper && heroSpotlight) {
-            heroTrigger.addEventListener('mousemove', (e) => {
-                if (textVisible) return;
-
-                const rect = heroTrigger.getBoundingClientRect();
-                const normX = (e.clientX - rect.left) / rect.width - 0.5;
-                const normY = (e.clientY - rect.top) / rect.height - 0.5;
-
-                const pctX = ((e.clientX - rect.left) / rect.width) * 100;
-                const pctY = ((e.clientY - rect.top) / rect.height) * 100;
-
-                gsap.to(heroWrapper, {
-                    rotateX: normY * -12,
-                    rotateY: normX * 12,
-                    duration: 0.5,
-                    ease: "power1.out",
-                    overwrite: "auto"
-                });
-
-                gsap.to(heroSpotlight, {
-                    "--mouse-x": `${pctX}%`,
-                    "--mouse-y": `${pctY}%`,
-                    duration: 0.8,
-                    ease: "power2.out",
-                    overwrite: "auto"
-                });
-            });
-
-            heroTrigger.addEventListener('mouseenter', () => {
-                if (textVisible) return;
-                gsap.to(heroSpotlight, { opacity: 1, duration: 0.5 });
-            });
-
-            heroTrigger.addEventListener('mouseleave', () => {
-                gsap.to(heroWrapper, {
-                    rotateX: 0,
-                    rotateY: 0,
-                    duration: 0.5,
-                    ease: "power1.out",
-                    overwrite: "auto"
-                });
-                gsap.to(heroSpotlight, { opacity: 0, duration: 0.5 });
-            });
-        }
-
-        // --- Scroll Indicator Click Logic ---
-        const scrollIndicator = document.getElementById('scroll-indicator');
-        if (scrollIndicator) {
-            scrollIndicator.addEventListener('click', () => {
-                if (!textVisible && !animating) {
-                    animateToText();
-                }
-            });
-        }
-
-        // --- Custom Observer Logic for "Scroll-Jacking" ---
-        window.addEventListener("wheel", (e) => {
-            if (animating) {
-                e.preventDefault();
-                return;
-            }
-
-            if (!textVisible) {
-                e.preventDefault();
-                if (e.deltaY > 0) {
-                    animateToText();
-                }
-            } else {
-                if (window.scrollY <= 0 && e.deltaY < 0) {
-                    e.preventDefault();
-                    animateToSplash();
-                }
-            }
-        }, { passive: false });
-
-        let touchStartY = 0;
-        window.addEventListener("touchstart", (e) => {
-            touchStartY = e.touches[0].clientY;
-        }, { passive: false });
-
-        window.addEventListener("touchmove", (e) => {
-            if (animating) {
-                e.preventDefault();
-                return;
-            }
-
-            const currentY = e.touches[0].clientY;
-            const deltaY = touchStartY - currentY;
-
-            if (!textVisible) {
-                e.preventDefault();
-                if (deltaY > 5) {
-                    animateToText();
-                }
-            } else {
-                if (window.scrollY <= 0 && deltaY < -5) {
-                    e.preventDefault();
-                    animateToSplash();
-                }
-            }
-        }, { passive: false });
-
-        // --- Code Redemption Deep Link Logic ---
-        (function () {
-            const urlParams = new URLSearchParams(window.location.search);
-            const code = urlParams.get('code');
-
-            if (code) {
-                const appUrl = `impostor://redeem?code=${encodeURIComponent(code)}`;
-                const modal = document.getElementById('redeem-modal');
-                const openBtn = document.getElementById('redeem-open-btn');
-                const spinner = document.getElementById('redeem-spinner');
-                const icon = document.getElementById('redeem-icon');
-                const title = document.getElementById('redeem-title');
-                const message = document.getElementById('redeem-message');
-                const closeBtn = document.getElementById('redeem-close-btn');
-
-                if (!modal) return;
-
-                modal.classList.remove('hidden');
-                if (openBtn) openBtn.href = appUrl;
-
-                // Re-initialize icons just for the modal
-                lucide.createIcons();
-
-                setTimeout(() => {
-                    window.location.href = appUrl;
-                }, 500);
-
-                setTimeout(() => {
-                    if (spinner) spinner.classList.add('hidden');
-                    if (icon) icon.classList.remove('hidden');
-                    if (title) title.textContent = '¡Código Detectado!';
-                    if (message) message.textContent = 'Toca el botón para activar tu código en la app Impostor.';
-                }, 2000);
-
-                if (closeBtn) {
-                    closeBtn.addEventListener('click', () => {
-                        modal.classList.add('hidden');
-                        window.history.replaceState({}, document.title, window.location.pathname);
-                    });
-                }
-            }
-        })();
-
-        // Abre el cliente de correo predeterminado del usuario sin exponer el correo en texto plano en el HTML
-        document.getElementById('contact-btn')?.addEventListener('click', (e) => {
-            e.preventDefault();
-            const user = "potasiogames";
-            const domain = "hotmail.com";
-            const subject = encodeURIComponent("Contacto desde Potasio Games");
-            window.location.href = `mailto:${user}@${domain}?subject=${subject}`;
-        });
-    </script>
+    <!-- Main Application Bundle (Vite) -->
+    <script type="module" src="/assets/ts/main.ts"></script>
 </body>
 
 </html>
