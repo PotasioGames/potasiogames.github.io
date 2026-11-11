@@ -59,6 +59,17 @@ export function isMobileViewport(): boolean {
 let activeGameId: GameId = 'orbitar';
 let currentSkin: SkinKey = 'astronaut';
 let isHeroSplash = true;
+let savedCarouselScrollLeft = 0;
+let gestureStartScrollY = 0;
+let gateLockedTarget: number | null = null;
+let isProgrammaticScroll = false;
+let isHeroAutoScrolling = false;
+let isBottomAutoScrolling = false;
+let wheelBurstTimer: number | null = null;
+let touchClearTimer: number | null = null;
+
+let orbitarTimeline: gsap.core.Timeline | null = null;
+let impostorTimeline: gsap.core.Timeline | null = null;
 
 const SKIN_CONFIG: Record<SkinKey, { normal: string; alert: string; relaxed: string; name: string }> = {
   astronaut: {
@@ -266,14 +277,33 @@ export function updateAdventureModalTransition(): void {
   // Allow card to travel freely out of carousel boundaries during Phase 2 shrink & dock
   const adventureContainer = document.getElementById('adventure-cards-container');
   if (adventureContainer) {
-    adventureContainer.style.overflow = rawShrinkDock > 0 ? 'visible' : '';
+    if (rawShrinkDock > 0) {
+      if (adventureContainer.style.overflow !== 'visible') {
+        savedCarouselScrollLeft = adventureContainer.scrollLeft;
+        adventureContainer.style.overflow = 'visible';
+      }
+    } else {
+      if (adventureContainer.style.overflow === 'visible') {
+        adventureContainer.style.overflow = '';
+        adventureContainer.scrollLeft = savedCarouselScrollLeft;
+      }
+    }
   }
 
-  // 1. Fade out "Elegí tu Próxima Aventura" header during Phase 1
+  // 1. Fade out "Elegí tu Próxima Aventura" header and carousel dots during Phase 1
   if (adventureHeader) {
     gsap.set(adventureHeader, {
       opacity: 1 - easeCenter,
       y: -16 * easeCenter
+    });
+  }
+
+  const carouselDots = document.getElementById('adventure-carousel-dots');
+  if (carouselDots) {
+    gsap.set(carouselDots, {
+      opacity: Math.max(0, 1 - rawCenter * 3),
+      y: -12 * easeCenter,
+      pointerEvents: rawCenter > 0.05 ? 'none' : 'auto'
     });
   }
 
@@ -631,74 +661,195 @@ ScrollTrigger.create({
   }
 });
 
-window.addEventListener('scroll', () => {
-  updateAdventureModalTransition();
-}, { passive: true });
+// ---------------------------------------------------------------------------
+// Screen Checkpoints & Multi-Screen Forced Braking System
+// ---------------------------------------------------------------------------
+const heroSceneEl = document.getElementById('hero-scene');
+const bottomSceneEl = document.getElementById('bottom-scene');
 
-// Scroll Indicator UX Cue Click
-document.getElementById('scroll-indicator')?.addEventListener('click', () => {
-  const heroScene = document.getElementById('hero-scene');
-  if (heroScene) {
-    const heroStickyScrollable = Math.max(1, heroScene.offsetHeight - window.innerHeight);
-    const targetY = heroScene.offsetTop + heroStickyScrollable * 0.50;
-    gsap.to(window, { scrollTo: targetY, duration: 0.9, ease: "power2.inOut" });
+  function getSectionBoundaries() {
+    const vh = window.innerHeight;
+    const heroScene = document.getElementById('hero-scene');
+    const theaterScene = document.getElementById('games-theater-scene');
+    const bottomScene = document.getElementById('bottom-scene');
+
+    const heroSticky = heroScene ? Math.max(1, heroScene.offsetHeight - vh) : vh * 1.5;
+    const bottomSticky = bottomScene ? Math.max(1, bottomScene.offsetHeight - vh) : vh * 1.2;
+
+    const cp1 = 0;
+    const cp2 = heroScene ? Math.round(heroScene.offsetTop + heroSticky * 0.50) : Math.round(vh * 0.75);
+    const cp3 = theaterScene ? Math.round(theaterScene.offsetTop) : Math.round(vh * 2.5);
+    const cp4 = bottomScene ? Math.round(bottomScene.offsetTop) : Math.round(vh * 6.0);
+    const cp5 = bottomScene ? Math.round(bottomScene.offsetTop + bottomSticky) : Math.round(vh * 7.2);
+
+    return { cp1, cp2, cp3, cp4, cp5 };
+  }
+
+  function programmaticScrollTo(targetY: number, duration: number = 0.9, onComplete?: () => void): void {
+    isProgrammaticScroll = true;
+    gateLockedTarget = null;
+    gsap.to(window, {
+      scrollTo: targetY,
+      duration: duration,
+      ease: "power2.inOut",
+      onComplete: () => {
+        gestureStartScrollY = targetY;
+        setTimeout(() => {
+        isProgrammaticScroll = false;
+        onComplete?.();
+      }, 100);
   }
 });
+}
 
-// ---------------------------------------------------------------------------
-// Screen 1 (Splash) <-> Screen 2 ("Elegí tu Próxima Aventura") Auto-Glide
-// ---------------------------------------------------------------------------
-let isHeroAutoScrolling = false;
-const heroSceneEl = document.getElementById('hero-scene');
-
-function triggerHeroGlide(targetY: number): void {
-  isHeroAutoScrolling = true;
-  gsap.to(window, {
-    scrollTo: targetY,
-    duration: 0.9,
-    ease: "power2.inOut",
-    onComplete: () => {
-      setTimeout(() => {
+    function triggerHeroGlide(targetY: number): void {
+      isHeroAutoScrolling = true;
+      programmaticScrollTo(targetY, 0.9, () => {
         isHeroAutoScrolling = false;
-      }, 150);
+      });
     }
-  });
-}
 
-if (heroSceneEl) {
-  window.addEventListener('wheel', (e) => {
-    if (isHeroAutoScrolling) return;
+    window.addEventListener('scroll', () => {
+      const curY = window.scrollY;
 
-    const rect = heroSceneEl.getBoundingClientRect();
-    if (rect.top <= 10 && rect.bottom >= window.innerHeight - 10) {
-      const heroStickyScrollable = Math.max(1, rect.height - window.innerHeight);
-      const currentScroll = -rect.top;
-      const progress = currentScroll / heroStickyScrollable;
-
-      // Downward wheel from Screen 1 (Splash) -> Glide into Screen 2 top
-      if (e.deltaY > 15 && progress < 0.35) {
-        e.preventDefault();
-        const targetY = heroSceneEl.offsetTop + heroStickyScrollable * 0.50;
-        triggerHeroGlide(targetY);
+      if (gateLockedTarget !== null) {
+        if (Math.abs(curY - gateLockedTarget) > 1) {
+          window.scrollTo({ top: gateLockedTarget, behavior: 'instant' });
+        }
+        updateAdventureModalTransition();
+        return;
       }
-      // Upward wheel from Screen 2 top -> Glide back up to Screen 1 (Splash)
-      else if (e.deltaY < -15 && progress >= 0.38 && progress <= 0.54) {
-        e.preventDefault();
-        triggerHeroGlide(heroSceneEl.offsetTop);
+
+      if (!isHeroAutoScrolling && !isBottomAutoScrolling && !isProgrammaticScroll) {
+        const { cp2, cp3, cp4 } = getSectionBoundaries();
+
+        // Clamp if momentum overshoots a gate
+        if (gestureStartScrollY < cp3 - 25 && curY >= cp3) {
+          gateLockedTarget = cp3;
+          window.scrollTo({ top: cp3, behavior: 'instant' });
+        } else if (gestureStartScrollY < cp4 - 25 && curY >= cp4) {
+          gateLockedTarget = cp4;
+          window.scrollTo({ top: cp4, behavior: 'instant' });
+        } else if (gestureStartScrollY > cp3 + 25 && curY <= cp3) {
+          gateLockedTarget = cp3;
+          window.scrollTo({ top: cp3, behavior: 'instant' });
+        } else if (gestureStartScrollY > cp2 + 25 && curY <= cp2) {
+          gateLockedTarget = cp2;
+          window.scrollTo({ top: cp2, behavior: 'instant' });
+        }
       }
-    }
-  }, { passive: false });
-}
+
+      updateAdventureModalTransition();
+    }, { passive: true });
+
+    // Scroll Indicator UX Cue Click
+    document.getElementById('scroll-indicator')?.addEventListener('click', () => {
+      const { cp2 } = getSectionBoundaries();
+      programmaticScrollTo(cp2, 0.9);
+    });
+
+    window.addEventListener('wheel', (e) => {
+      if (wheelBurstTimer) clearTimeout(wheelBurstTimer);
+      if (wheelBurstTimer === null) {
+        gestureStartScrollY = window.scrollY;
+        gateLockedTarget = null;
+      }
+      wheelBurstTimer = window.setTimeout(() => {
+        wheelBurstTimer = null;
+        gateLockedTarget = null;
+        gestureStartScrollY = window.scrollY;
+      }, 180);
+
+      if (!isHeroAutoScrolling && !isBottomAutoScrolling && !isProgrammaticScroll) {
+        const { cp2, cp3, cp4 } = getSectionBoundaries();
+        const curY = window.scrollY;
+
+        // Moving DOWN
+        if (e.deltaY > 0) {
+          if (gestureStartScrollY < cp3 - 25 && curY >= cp3 - 4) {
+            e.preventDefault();
+            gateLockedTarget = cp3;
+            window.scrollTo({ top: cp3, behavior: 'instant' });
+            return;
+          }
+          if (gestureStartScrollY < cp4 - 25 && curY >= cp4 - 4) {
+            e.preventDefault();
+            gateLockedTarget = cp4;
+            window.scrollTo({ top: cp4, behavior: 'instant' });
+            return;
+          }
+        }
+        // Moving UP
+        else if (e.deltaY < 0) {
+          if (gestureStartScrollY > cp3 + 25 && curY <= cp3 + 4) {
+            e.preventDefault();
+            gateLockedTarget = cp3;
+            window.scrollTo({ top: cp3, behavior: 'instant' });
+            return;
+          }
+          if (gestureStartScrollY > cp2 + 25 && curY <= cp2 + 4) {
+            e.preventDefault();
+            gateLockedTarget = cp2;
+            window.scrollTo({ top: cp2, behavior: 'instant' });
+            return;
+          }
+        }
+      }
+
+      // Screen 1 (Splash) <-> Screen 2 ("Elegí tu Próxima Aventura") Auto-Glide on wheel
+      if (heroSceneEl && !isHeroAutoScrolling && !isProgrammaticScroll) {
+        const rect = heroSceneEl.getBoundingClientRect();
+        if (rect.top <= 10 && rect.bottom >= window.innerHeight - 10) {
+          const heroStickyScrollable = Math.max(1, rect.height - window.innerHeight);
+          const currentScroll = -rect.top;
+          const progress = currentScroll / heroStickyScrollable;
+
+          // Downward wheel from Screen 1 (Splash) -> Glide into Screen 2 top
+          if (e.deltaY > 15 && progress < 0.35) {
+            e.preventDefault();
+            const { cp2 } = getSectionBoundaries();
+            triggerHeroGlide(cp2);
+            return;
+          }
+          // Upward wheel from Screen 2 top -> Glide back up to Screen 1 (Splash)
+          else if (e.deltaY < -15 && progress >= 0.38 && progress <= 0.54) {
+            e.preventDefault();
+            triggerHeroGlide(heroSceneEl.offsetTop);
+            return;
+          }
+        }
+  }
+}, { passive: false });
 
 // Consolidated Touch Glide Handling for Screen 1 <-> Screen 2 and Screen 4 <-> Screen 5
 let touchStartX = 0;
 let touchStartY = 0;
 
 window.addEventListener('touchstart', (e) => {
+  if (touchClearTimer) clearTimeout(touchClearTimer);
+  touchClearTimer = null;
+  gateLockedTarget = null;
   if (e.touches.length > 0) {
     touchStartX = e.touches[0].clientX;
     touchStartY = e.touches[0].clientY;
   }
+  gestureStartScrollY = window.scrollY;
+}, { passive: true });
+
+window.addEventListener('touchend', () => {
+  if (touchClearTimer) clearTimeout(touchClearTimer);
+  touchClearTimer = window.setTimeout(() => {
+    gateLockedTarget = null;
+    gestureStartScrollY = window.scrollY;
+  }, 120);
+}, { passive: true });
+
+window.addEventListener('touchcancel', () => {
+  if (touchClearTimer) clearTimeout(touchClearTimer);
+  touchClearTimer = window.setTimeout(() => {
+    gateLockedTarget = null;
+    gestureStartScrollY = window.scrollY;
+  }, 120);
 }, { passive: true });
 
 window.addEventListener('touchmove', (e) => {
@@ -711,6 +862,43 @@ window.addEventListener('touchmove', (e) => {
 
   // If gesture is predominantly horizontal (e.g. mobile card carousel swipe), do not intercept
   if (Math.abs(deltaX) > Math.abs(deltaY)) return;
+
+  // Inter-Screen Gate Enforcement on Touch
+  if (!isHeroAutoScrolling && !isBottomAutoScrolling && !isProgrammaticScroll) {
+    const { cp2, cp3, cp4 } = getSectionBoundaries();
+    const curY = window.scrollY;
+
+    // Moving DOWN
+    if (deltaY > 0) {
+      if (gestureStartScrollY < cp3 - 25 && curY >= cp3 - 4) {
+        e.preventDefault();
+        gateLockedTarget = cp3;
+        window.scrollTo({ top: cp3, behavior: 'instant' });
+        return;
+      }
+      if (gestureStartScrollY < cp4 - 25 && curY >= cp4 - 4) {
+        e.preventDefault();
+        gateLockedTarget = cp4;
+        window.scrollTo({ top: cp4, behavior: 'instant' });
+        return;
+      }
+    }
+    // Moving UP
+    else if (deltaY < 0) {
+      if (gestureStartScrollY > cp3 + 25 && curY <= cp3 + 4) {
+        e.preventDefault();
+        gateLockedTarget = cp3;
+        window.scrollTo({ top: cp3, behavior: 'instant' });
+        return;
+      }
+      if (gestureStartScrollY > cp2 + 25 && curY <= cp2 + 4) {
+        e.preventDefault();
+        gateLockedTarget = cp2;
+        window.scrollTo({ top: cp2, behavior: 'instant' });
+        return;
+      }
+    }
+  }
 
   // 1. Hero Scene Touch Auto-Glide (Screen 1 <-> Screen 2)
   if (heroSceneEl) {
@@ -726,8 +914,8 @@ window.addEventListener('touchmove', (e) => {
 
       if (deltaY > 25 && progress < 0.35) {
         e.preventDefault();
-        const targetY = heroSceneEl.offsetTop + heroStickyScrollable * 0.50;
-        triggerHeroGlide(targetY);
+        const { cp2 } = getSectionBoundaries();
+        triggerHeroGlide(cp2);
         return;
       } else if (deltaY < -25 && progress >= 0.38 && progress <= 0.54) {
         e.preventDefault();
@@ -753,26 +941,16 @@ window.addEventListener('touchmove', (e) => {
         e.preventDefault();
         isBottomAutoScrolling = true;
         const targetY = bottomSceneEl.offsetTop + maxScroll;
-        gsap.to(window, {
-          scrollTo: targetY,
-          duration: 1.1,
-          ease: "power2.inOut",
-          onComplete: () => {
-            setTimeout(() => { isBottomAutoScrolling = false; }, 200);
-          }
+        programmaticScrollTo(targetY, 1.1, () => {
+          isBottomAutoScrolling = false;
         });
         return;
       } else if (deltaY < -25 && progress > 0.6) {
         e.preventDefault();
         isBottomAutoScrolling = true;
         const targetY = bottomSceneEl.offsetTop;
-        gsap.to(window, {
-          scrollTo: targetY,
-          duration: 1.1,
-          ease: "power2.inOut",
-          onComplete: () => {
-            setTimeout(() => { isBottomAutoScrolling = false; }, 200);
-          }
+        programmaticScrollTo(targetY, 1.1, () => {
+          isBottomAutoScrolling = false;
         });
         return;
       }
@@ -903,11 +1081,22 @@ function getOrbitarGeometry(): OrbitarGeometry | null {
 
   if (!world || !body1 || !bodyMid || !body2 || !hazard) return null;
 
+  const isHidden = world.classList.contains('hidden');
+  if (isHidden) {
+    world.style.display = 'block';
+    world.style.visibility = 'hidden';
+  }
+
   const wRect = world.getBoundingClientRect();
   const b1Rect = body1.getBoundingClientRect();
   const bMidRect = bodyMid.getBoundingClientRect();
   const b2Rect = body2.getBoundingClientRect();
   const hRect = hazard.getBoundingClientRect();
+
+  if (isHidden) {
+    world.style.display = '';
+    world.style.visibility = '';
+  }
 
   // Radio calculado sobre el cuerpo del planeta en sí (no sobre el anillo exterior)
   // El disco sólido en SVG tiene radio 42/50 del wrapper.
@@ -1098,9 +1287,6 @@ if (adventureCarousel) {
 // ---------------------------------------------------------------------------
 // 7. Scene 2: Theater Cinematic Timelines Driven by Scrub
 // ---------------------------------------------------------------------------
-let orbitarTimeline: gsap.core.Timeline | null = null;
-let impostorTimeline: gsap.core.Timeline | null = null;
-
 function buildOrbitarTimeline(): gsap.core.Timeline {
   const tl = gsap.timeline({ paused: true });
   const bot = document.getElementById('scrolly-bot');
@@ -1161,19 +1347,19 @@ function buildOrbitarTimeline(): gsap.core.Timeline {
   // FASE 3: Órbita en Planeta Intermedio y preparación de salida a 90° (arriba)
   // -------------------------------------------------------------------------
   tl.to(orbitMid, {
-      // De Math.PI (lado izquierdo) gira 1.25 vueltas hasta 3.5*PI (vértice superior = hacia arriba)
-      angle: Math.PI + Math.PI * 2.5,
-      duration: 2.2,
-      ease: "power1.inOut",
-      onUpdate: () => {
-        const x = pMid.x + Math.cos(orbitMid.angle) * pMid.r;
-        const y = pMid.y + Math.sin(orbitMid.angle) * pMid.r;
-        // Pies apoyados en el planeta intermedio, terminando en 1080° (0° mod 360, cabeza hacia arriba)
-        const rot = (orbitMid.angle * 180 / Math.PI) + 90 + 360;
-        gsap.set(bot, { x: x, y: y, rotation: rot });
-        updateBotMotionEffects(x, y, false); // En órbita: las estrellas no se mueven
-      }
-    }, 5.0);
+    // De Math.PI (lado izquierdo) gira 1.25 vueltas hasta 3.5*PI (vértice superior = hacia arriba)
+    angle: Math.PI + Math.PI * 2.5,
+    duration: 2.2,
+    ease: "power1.inOut",
+    onUpdate: () => {
+      const x = pMid.x + Math.cos(orbitMid.angle) * pMid.r;
+      const y = pMid.y + Math.sin(orbitMid.angle) * pMid.r;
+      // Pies apoyados en el planeta intermedio, terminando en 1080° (0° mod 360, cabeza hacia arriba)
+      const rot = (orbitMid.angle * 180 / Math.PI) + 90 + 360;
+      gsap.set(bot, { x: x, y: y, rotation: rot });
+      updateBotMotionEffects(x, y, false); // En órbita: las estrellas no se mueven
+    }
+  }, 5.0);
 
   // -------------------------------------------------------------------------
   // FASE 4: Salto a 90° (vertical hacia arriba) esquivando la Barrera de Plasma
@@ -1197,18 +1383,18 @@ function buildOrbitarTimeline(): gsap.core.Timeline {
   // FASE 5: Captura y Órbita en Planeta Objetivo
   // -------------------------------------------------------------------------
   tl.to(orbitGoal, {
-      angle: (Math.PI / 2) + Math.PI * 3.5,
-      duration: 2.8,
-      ease: "power2.out",
-      onUpdate: () => {
-        const x = p2.x + Math.cos(orbitGoal.angle) * p2.r;
-        const y = p2.y + Math.sin(orbitGoal.angle) * p2.r;
-        // Pies apoyados sobre el Planeta Objetivo y cabeza apuntando hacia afuera (+720 = 0° mod 360)
-        const rot = (orbitGoal.angle * 180 / Math.PI) + 90 + 720;
-        gsap.set(bot, { x: x, y: y, rotation: rot });
-        updateBotMotionEffects(x, y, false); // En órbita: las estrellas no se mueven
-      }
-    }, 9.2);
+    angle: (Math.PI / 2) + Math.PI * 3.5,
+    duration: 2.8,
+    ease: "power2.out",
+    onUpdate: () => {
+      const x = p2.x + Math.cos(orbitGoal.angle) * p2.r;
+      const y = p2.y + Math.sin(orbitGoal.angle) * p2.r;
+      // Pies apoyados sobre el Planeta Objetivo y cabeza apuntando hacia afuera (+720 = 0° mod 360)
+      const rot = (orbitGoal.angle * 180 / Math.PI) + 90 + 720;
+      gsap.set(bot, { x: x, y: y, rotation: rot });
+      updateBotMotionEffects(x, y, false); // En órbita: las estrellas no se mueven
+    }
+  }, 9.2);
 
   // Callback general reactivo para sincronizar sprite y propulsor hacia adelante y en reversa
   tl.eventCallback("onUpdate", () => {
@@ -1269,18 +1455,18 @@ function buildImpostorTimeline(): gsap.core.Timeline {
 
   // Step 1: Scan Augusto (Card 1)
   tl.call(() => {
-      const w = document.getElementById('card-1-word');
-      const s = document.getElementById('card-1-status');
-      if (w) {
-        w.textContent = 'CALCULADORA';
-        w.className = 'text-center font-display font-bold text-xs sm:text-sm text-purple-300 drop-shadow-[0_0_8px_rgba(197,120,203,0.8)]';
-      }
-      if (s) {
-        s.textContent = '✓ Palabra clave';
-        s.className = 'text-[9px] font-mono text-purple-300 text-center font-bold';
-      }
-      if (cards[0]) cards[0].classList.add('border-purple-400/60');
-    }, [], 1.0)
+    const w = document.getElementById('card-1-word');
+    const s = document.getElementById('card-1-status');
+    if (w) {
+      w.textContent = 'CALCULADORA';
+      w.className = 'text-center font-display font-bold text-xs sm:text-sm text-purple-300 drop-shadow-[0_0_8px_rgba(197,120,203,0.8)]';
+    }
+    if (s) {
+      s.textContent = '✓ Palabra clave';
+      s.className = 'text-[9px] font-mono text-purple-300 text-center font-bold';
+    }
+    if (cards[0]) cards[0].classList.add('border-purple-400/60');
+  }, [], 1.0)
     .to(cards[0], { scale: 1.08, duration: 0.3, yoyo: true, repeat: 1 }, 1.0);
 
   // Step 2: Scan Paloma (Card 2)
@@ -1336,7 +1522,42 @@ function buildImpostorTimeline(): gsap.core.Timeline {
   return tl;
 }
 
+let theaterScrollTrigger: ScrollTrigger | null = null;
+
+export function rebuildTheaterTimelines(): void {
+  setupInitialOrbitarPosition();
+  setupInitialImpostorPosition();
+
+  if (orbitarTimeline) orbitarTimeline.kill();
+  if (impostorTimeline) impostorTimeline.kill();
+
+  orbitarTimeline = buildOrbitarTimeline();
+  impostorTimeline = buildImpostorTimeline();
+
+  const theaterScene = document.getElementById('games-theater-scene');
+  const bottomScene = document.getElementById('bottom-scene');
+
+  if (theaterScene && bottomScene) {
+    const tRect = theaterScene.getBoundingClientRect();
+    const bRect = bottomScene.getBoundingClientRect();
+    if (tRect.top <= 10 && bRect.top > 10) {
+      window.scrollTo({ top: theaterScene.offsetTop, behavior: 'instant' });
+      orbitarTimeline.progress(0);
+      impostorTimeline.progress(0);
+      setupInitialOrbitarPosition();
+      setupInitialImpostorPosition();
+    } else if (theaterScrollTrigger) {
+      if (activeGameId === 'orbitar') {
+        orbitarTimeline.progress(theaterScrollTrigger.progress);
+      } else {
+        impostorTimeline.progress(theaterScrollTrigger.progress);
+      }
+    }
+  }
+}
+
 function initTheaterScrollytelling(): void {
+  if (theaterScrollTrigger) theaterScrollTrigger.kill();
   if (orbitarTimeline) orbitarTimeline.kill();
   if (impostorTimeline) impostorTimeline.kill();
 
@@ -1346,406 +1567,401 @@ function initTheaterScrollytelling(): void {
   orbitarTimeline = buildOrbitarTimeline();
   impostorTimeline = buildImpostorTimeline();
 
-  ScrollTrigger.create({
-    trigger: "#games-theater-scene",
-    start: "top top",
-    end: "bottom bottom",
-    scrub: 0.6,
-    onUpdate: (self) => {
-      if (activeGameId === 'orbitar' && orbitarTimeline) {
-        orbitarTimeline.progress(self.progress);
-      } else if (activeGameId === 'impostor' && impostorTimeline) {
-        impostorTimeline.progress(self.progress);
+    theaterScrollTrigger = ScrollTrigger.create({
+      trigger: "#games-theater-scene",
+      start: "top top",
+      end: "bottom bottom",
+      scrub: 0.6,
+      onUpdate: (self) => {
+        if (activeGameId === 'orbitar' && orbitarTimeline) {
+          orbitarTimeline.progress(self.progress);
+        } else if (activeGameId === 'impostor' && impostorTimeline) {
+          impostorTimeline.progress(self.progress);
+        }
       }
-    }
-  });
-}
+    });
+  }
 
 // ---------------------------------------------------------------------------
 // 8. Scene 3: Showcase -> Contact Transition
 // ---------------------------------------------------------------------------
 const bottomTl = gsap.timeline({ paused: true });
-bottomTl
-  .fromTo("#game-showcase-stage",
-    { opacity: 1, scale: 1, pointerEvents: "auto" },
-    { opacity: 0, scale: 1.04, pointerEvents: "none", duration: 0.7, ease: "power2.inOut" }
-  )
-  .to("#showcase-layer", { opacity: 0, pointerEvents: "none", duration: 0.7, ease: "power2.inOut" }, 0)
-  .to("#showcase-scroll-cue", { opacity: 0, duration: 0.35, ease: "power1.out" }, 0)
-  .to("#contact-layer", { opacity: 1, y: 0, pointerEvents: "auto", duration: 0.7, ease: "power2.out" }, "-=0.4");
+  bottomTl
+    .fromTo("#game-showcase-stage",
+      { opacity: 1, scale: 1, pointerEvents: "auto" },
+      { opacity: 0, scale: 1.04, pointerEvents: "none", duration: 0.7, ease: "power2.inOut" }
+    )
+    .to("#showcase-layer", { opacity: 0, pointerEvents: "none", duration: 0.7, ease: "power2.inOut" }, 0)
+    .to("#showcase-scroll-cue", { opacity: 0, duration: 0.35, ease: "power1.out" }, 0)
+    .to("#contact-layer", { opacity: 1, y: 0, pointerEvents: "auto", duration: 0.7, ease: "power2.out" }, "-=0.4");
 
-ScrollTrigger.create({
-  trigger: "#bottom-scene",
-  start: "top top",
-  end: "bottom bottom",
-  scrub: 0.6,
-  snap: {
-    snapTo: [0, 1],
-    duration: { min: 0.7, max: 1.1 },
-    delay: 0,
-    ease: "power2.inOut"
-  },
-  animation: bottomTl
-});
-
-// Single wheel motion trigger to glide through superposition without stopping midway
-let isBottomAutoScrolling = false;
-const bottomSceneEl = document.getElementById('bottom-scene');
-
-if (bottomSceneEl) {
-  window.addEventListener('wheel', (e) => {
-    if (isBottomAutoScrolling) return;
-
-    const rect = bottomSceneEl.getBoundingClientRect();
-    if (rect.top <= 10 && rect.bottom >= window.innerHeight - 10) {
-      const maxScroll = rect.height - window.innerHeight;
-      const currentScroll = -rect.top;
-      const progress = maxScroll > 0 ? currentScroll / maxScroll : 0;
-
-      if (e.deltaY > 15 && progress < 0.4) {
-        e.preventDefault();
-        isBottomAutoScrolling = true;
-        const targetY = bottomSceneEl.offsetTop + maxScroll;
-        gsap.to(window, {
-          scrollTo: targetY,
-          duration: 1.1,
-          ease: "power2.inOut",
-          onComplete: () => {
-            setTimeout(() => { isBottomAutoScrolling = false; }, 200);
-          }
-        });
-      } else if (e.deltaY < -15 && progress > 0.6) {
-        e.preventDefault();
-        isBottomAutoScrolling = true;
-        const targetY = bottomSceneEl.offsetTop;
-        gsap.to(window, {
-          scrollTo: targetY,
-          duration: 1.1,
-          ease: "power2.inOut",
-          onComplete: () => {
-            setTimeout(() => { isBottomAutoScrolling = false; }, 200);
-          }
-        });
-      }
-    }
-  }, { passive: false });
-}
-
-// Scroll Cue inside Showcase to view Contact
-document.getElementById('showcase-scroll-cue')?.addEventListener('click', () => {
-  const bottomScene = document.getElementById('bottom-scene');
-  if (bottomScene) {
-    const targetY = bottomScene.offsetTop + bottomScene.offsetHeight * 0.85;
-    gsap.to(window, { scrollTo: targetY, duration: 0.9, ease: "power2.inOut" });
-  }
-});
-
-// Anchor Navigation for navlinks (#contact, #about, #games)
-document.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach((anchor) => {
-  anchor.addEventListener('click', (e) => {
-    const targetId = anchor.getAttribute('href');
-    if (!targetId || targetId === '#') return;
-
-    if (targetId === '#contact' || targetId === '#about') {
-      e.preventDefault();
-      const bottomScene = document.getElementById('bottom-scene');
-      if (bottomScene) {
-        const targetY = bottomScene.offsetTop + bottomScene.offsetHeight * 0.85;
-        gsap.to(window, { scrollTo: targetY, duration: 0.9, ease: "power2.inOut" });
-      }
-    } else if (targetId === '#games' || targetId === '#games-theater') {
-      e.preventDefault();
-      const theaterScene = document.getElementById('games-theater-scene');
-      if (theaterScene) {
-        gsap.to(window, { scrollTo: theaterScene.offsetTop, duration: 0.9, ease: "power2.inOut" });
-      }
-    }
+  ScrollTrigger.create({
+    trigger: "#bottom-scene",
+    start: "top top",
+    end: "bottom bottom",
+    scrub: 0.6,
+    snap: {
+      snapTo: [0, 1],
+      duration: { min: 0.7, max: 1.1 },
+      delay: 0,
+      ease: "power2.inOut"
+    },
+    animation: bottomTl
   });
-});
 
-// ---------------------------------------------------------------------------
-// 9. Reusable Orbitar Space Canvas (Twinkling Stars & Comets)
-// ---------------------------------------------------------------------------
-function initSpaceCanvas(canvasId: string, isVisibleFn: () => boolean): void {
-  const canvas = document.getElementById(canvasId) as HTMLCanvasElement | null;
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  if (!ctx) return;
+  // Single wheel motion trigger to glide through superposition without stopping midway
+  if (bottomSceneEl) {
+    window.addEventListener('wheel', (e) => {
+      if (isBottomAutoScrolling || isProgrammaticScroll) return;
 
-  let width = 0;
-  let height = 0;
-  let stars: Array<{ x: number; y: number; radius: number; baseAlpha: number; phase: number; speed: number; colorType: string }> = [];
-  let comets: Array<{ x: number; y: number; dx: number; dy: number; length: number; opacity: number; decay: number }> = [];
-  const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  let isRunning = false;
-  let animId: number | null = null;
-  let lastComet = Date.now();
+      const rect = bottomSceneEl.getBoundingClientRect();
+      if (rect.top <= 10 && rect.bottom >= window.innerHeight - 10) {
+        const maxScroll = rect.height - window.innerHeight;
+        const currentScroll = -rect.top;
+        const progress = maxScroll > 0 ? currentScroll / maxScroll : 0;
 
-  function resize(): void {
-    if (!canvas) return;
-    const parent = canvas.parentElement;
-    width = parent ? parent.offsetWidth : window.innerWidth;
-    height = parent ? parent.offsetHeight : window.innerHeight;
-    canvas.width = width * dpr;
-    canvas.height = height * dpr;
-    ctx!.setTransform(1, 0, 0, 1, 0, 0);
-    ctx!.scale(dpr, dpr);
-    initStars();
+        if (e.deltaY > 15 && progress < 0.4) {
+          e.preventDefault();
+          isBottomAutoScrolling = true;
+          const targetY = bottomSceneEl.offsetTop + maxScroll;
+        programmaticScrollTo(targetY, 1.1, () => {
+            isBottomAutoScrolling = false;
+          });
+        } else if (e.deltaY < -15 && progress > 0.6) {
+          e.preventDefault();
+          isBottomAutoScrolling = true;
+          const targetY = bottomSceneEl.offsetTop;
+        programmaticScrollTo(targetY, 1.1, () => {
+            isBottomAutoScrolling = false;
+          });
+        }
+      }
+    }, { passive: false });
   }
 
-  function initStars(): void {
-    stars = [];
-    const count = Math.min(Math.floor((width * height) / 7500), 130);
-    for (let i = 0; i < count; i++) {
-      stars.push({
-        x: Math.random() * width,
-        y: Math.random() * height,
-        radius: Math.random() * 1.4 + 0.4,
-        baseAlpha: Math.random() * 0.7 + 0.2,
-        phase: Math.random() * Math.PI * 2,
-        speed: Math.random() * 0.02 + 0.008,
-        colorType: Math.random() < 0.3 ? 'playerCyan' : 'neutralGrey'
+  // Scroll Cue inside Showcase to view Contact
+  document.getElementById('showcase-scroll-cue')?.addEventListener('click', () => {
+    const { cp5 } = getSectionBoundaries();
+    programmaticScrollTo(cp5, 0.9);
+  });
+
+  // Anchor Navigation for navlinks (#contact, #about, #games)
+  document.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach((anchor) => {
+    anchor.addEventListener('click', (e) => {
+      const targetId = anchor.getAttribute('href');
+      if (!targetId || targetId === '#') return;
+
+      if (targetId === '#contact' || targetId === '#about') {
+        e.preventDefault();
+        const { cp5 } = getSectionBoundaries();
+        programmaticScrollTo(cp5, 0.9);
+      } else if (targetId === '#games' || targetId === '#games-theater') {
+        e.preventDefault();
+        const { cp3 } = getSectionBoundaries();
+        programmaticScrollTo(cp3, 0.9);
+      }
+    });
+  });
+
+  // ---------------------------------------------------------------------------
+  // 9. Reusable Orbitar Space Canvas (Twinkling Stars & Comets)
+  // ---------------------------------------------------------------------------
+  function initSpaceCanvas(canvasId: string, isVisibleFn: () => boolean): void {
+    const canvas = document.getElementById(canvasId) as HTMLCanvasElement | null;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let width = 0;
+    let height = 0;
+    let stars: Array<{ x: number; y: number; radius: number; baseAlpha: number; phase: number; speed: number; colorType: string }> = [];
+    let comets: Array<{ x: number; y: number; dx: number; dy: number; length: number; opacity: number; decay: number }> = [];
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    let isRunning = false;
+    let animId: number | null = null;
+    let lastComet = Date.now();
+
+    function resize(): void {
+      if (!canvas) return;
+      const parent = canvas.parentElement;
+      width = parent ? parent.offsetWidth : window.innerWidth;
+      height = parent ? parent.offsetHeight : window.innerHeight;
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      ctx!.setTransform(1, 0, 0, 1, 0, 0);
+      ctx!.scale(dpr, dpr);
+      initStars();
+    }
+
+    function initStars(): void {
+      stars = [];
+      const count = Math.min(Math.floor((width * height) / 7500), 130);
+      for (let i = 0; i < count; i++) {
+        stars.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          radius: Math.random() * 1.4 + 0.4,
+          baseAlpha: Math.random() * 0.7 + 0.2,
+          phase: Math.random() * Math.PI * 2,
+          speed: Math.random() * 0.02 + 0.008,
+          colorType: Math.random() < 0.3 ? 'playerCyan' : 'neutralGrey'
+        });
+      }
+    }
+
+    function spawnComet(): void {
+      if (comets.length >= 2) return;
+      const startX = Math.random() * (width * 0.75);
+      const startY = Math.random() * (height * 0.35);
+      const angle = (Math.PI / 4) + (Math.random() * 0.2 - 0.1);
+      const speed = Math.random() * 4.5 + 3.5;
+      const length = Math.random() * 80 + 70;
+      comets.push({
+        x: startX,
+        y: startY,
+        dx: Math.cos(angle) * speed,
+        dy: Math.sin(angle) * speed,
+        length: length,
+        opacity: 1,
+        decay: 0.012
       });
     }
-  }
 
-  function spawnComet(): void {
-    if (comets.length >= 2) return;
-    const startX = Math.random() * (width * 0.75);
-    const startY = Math.random() * (height * 0.35);
-    const angle = (Math.PI / 4) + (Math.random() * 0.2 - 0.1);
-    const speed = Math.random() * 4.5 + 3.5;
-    const length = Math.random() * 80 + 70;
-    comets.push({
-      x: startX,
-      y: startY,
-      dx: Math.cos(angle) * speed,
-      dy: Math.sin(angle) * speed,
-      length: length,
-      opacity: 1,
-      decay: 0.012
-    });
-  }
+    function render(): void {
+      if (!isRunning || !ctx) return;
+      ctx.clearRect(0, 0, width, height);
 
-  function render(): void {
-    if (!isRunning || !ctx) return;
-    ctx.clearRect(0, 0, width, height);
-
-    // Render twinkling stars
-    for (const star of stars) {
-      star.phase += star.speed;
-      const alpha = star.baseAlpha * (0.6 + 0.4 * Math.sin(star.phase));
-      ctx.beginPath();
-      ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
-      ctx.fillStyle = star.colorType === 'playerCyan'
-        ? `rgba(72, 202, 228, ${alpha})`
-        : `rgba(139, 148, 158, ${alpha})`;
-      ctx.fill();
-    }
-
-    // Spawn comets periodically
-    const now = Date.now();
-    if (now - lastComet > 4500 + Math.random() * 3500) {
-      spawnComet();
-      lastComet = now;
-    }
-
-    // Render comets
-    for (let i = comets.length - 1; i >= 0; i--) {
-      const c = comets[i];
-      c.x += c.dx;
-      c.y += c.dy;
-      c.opacity -= c.decay;
-
-      if (c.opacity <= 0 || c.x > width + 100 || c.y > height + 100) {
-        comets.splice(i, 1);
-        continue;
+      // Render twinkling stars
+      for (const star of stars) {
+        star.phase += star.speed;
+        const alpha = star.baseAlpha * (0.6 + 0.4 * Math.sin(star.phase));
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+        ctx.fillStyle = star.colorType === 'playerCyan'
+          ? `rgba(72, 202, 228, ${alpha})`
+          : `rgba(139, 148, 158, ${alpha})`;
+        ctx.fill();
       }
 
-      const dist = Math.hypot(c.dx, c.dy);
-      const tailX = c.x - (c.dx / dist) * c.length;
-      const tailY = c.y - (c.dy / dist) * c.length;
+      // Spawn comets periodically
+      const now = Date.now();
+      if (now - lastComet > 4500 + Math.random() * 3500) {
+        spawnComet();
+        lastComet = now;
+      }
 
-      const grad = ctx.createLinearGradient(tailX, tailY, c.x, c.y);
-      grad.addColorStop(0, 'rgba(72, 202, 228, 0)');
-      grad.addColorStop(0.7, `rgba(72, 202, 228, ${c.opacity * 0.6})`);
-      grad.addColorStop(1, `rgba(255, 255, 255, ${c.opacity})`);
+      // Render comets
+      for (let i = comets.length - 1; i >= 0; i--) {
+        const c = comets[i];
+        c.x += c.dx;
+        c.y += c.dy;
+        c.opacity -= c.decay;
 
-      ctx.beginPath();
-      ctx.moveTo(tailX, tailY);
-      ctx.lineTo(c.x, c.y);
-      ctx.strokeStyle = grad;
-      ctx.lineWidth = 1.6;
-      ctx.stroke();
-
-      ctx.beginPath();
-      ctx.arc(c.x, c.y, 2, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(255, 255, 255, ${c.opacity})`;
-      ctx.shadowColor = '#48cae4';
-      ctx.shadowBlur = 8;
-      ctx.fill();
-      ctx.shadowBlur = 0;
-    }
-
-    animId = requestAnimationFrame(render);
-  }
-
-  window.addEventListener('resize', resize);
-  resize();
-
-  spaceCanvasWakeup = () => {
-    if (isVisibleFn() && !isRunning) {
-      isRunning = true;
-      render();
-    }
-  };
-
-  spaceCanvasSleep = () => {
-    isRunning = false;
-    if (animId) {
-      cancelAnimationFrame(animId);
-      animId = null;
-    }
-  };
-
-  addStarParallax = (dx: number, dy: number) => {
-    if (!width || !height) return;
-    for (let i = 0; i < stars.length; i++) {
-      const s = stars[i];
-      s.x = (s.x + dx + width) % width;
-      s.y = (s.y + dy + height) % height;
-    }
-  };
-
-  const section = canvas.closest('section') || canvas.parentElement;
-  if (section) {
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting && isVisibleFn()) {
-          spaceCanvasWakeup?.();
-        } else {
-          spaceCanvasSleep?.();
+        if (c.opacity <= 0 || c.x > width + 100 || c.y > height + 100) {
+          comets.splice(i, 1);
+          continue;
         }
-      });
-    }, { threshold: 0.05 });
-    observer.observe(section);
-  }
 
-  isRunning = true;
-  render();
-}
+        const dist = Math.hypot(c.dx, c.dy);
+        const tailX = c.x - (c.dx / dist) * c.length;
+        const tailY = c.y - (c.dy / dist) * c.length;
 
-// ---------------------------------------------------------------------------
-// 10. Contact Form Mailto Obfuscation (Strict Security Rule)
-// ---------------------------------------------------------------------------
-document.getElementById('contact-btn')?.addEventListener('click', (e) => {
-  e.preventDefault();
-  const user = "potasiogames";
-  const domain = "hotmail.com";
-  const subject = encodeURIComponent("Contacto desde Potasio Games");
-  window.location.href = `mailto:${user}@${domain}?subject=${subject}`;
-});
+        const grad = ctx.createLinearGradient(tailX, tailY, c.x, c.y);
+        grad.addColorStop(0, 'rgba(72, 202, 228, 0)');
+        grad.addColorStop(0.7, `rgba(72, 202, 228, ${c.opacity * 0.6})`);
+        grad.addColorStop(1, `rgba(255, 255, 255, ${c.opacity})`);
 
-// ---------------------------------------------------------------------------
-// 11. Code Redemption Deep Link Modal
-// ---------------------------------------------------------------------------
-(function initCodeRedemption() {
-  const urlParams = new URLSearchParams(window.location.search);
-  const code = urlParams.get('code');
+        ctx.beginPath();
+        ctx.moveTo(tailX, tailY);
+        ctx.lineTo(c.x, c.y);
+        ctx.strokeStyle = grad;
+        ctx.lineWidth = 1.6;
+        ctx.stroke();
 
-  if (code) {
-    const appUrl = `impostor://redeem?code=${encodeURIComponent(code)}`;
-    const modal = document.getElementById('redeem-modal');
-    const openBtn = document.getElementById('redeem-open-btn') as HTMLAnchorElement | null;
-    const spinner = document.getElementById('redeem-spinner');
-    const icon = document.getElementById('redeem-icon');
-    const title = document.getElementById('redeem-title');
-    const message = document.getElementById('redeem-message');
-    const closeBtn = document.getElementById('redeem-close-btn');
+        ctx.beginPath();
+        ctx.arc(c.x, c.y, 2, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 255, 255, ${c.opacity})`;
+        ctx.shadowColor = '#48cae4';
+        ctx.shadowBlur = 8;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      }
 
-    if (!modal) return;
-
-    modal.classList.remove('hidden');
-    if (openBtn) openBtn.href = appUrl;
-    refreshIcons();
-
-    setTimeout(() => {
-      window.location.href = appUrl;
-    }, 500);
-
-    setTimeout(() => {
-      if (spinner) spinner.classList.add('hidden');
-      if (icon) icon.classList.remove('hidden');
-      if (title) title.textContent = '¡Código Detectado!';
-      if (message) message.textContent = 'Toca el botón para activar tu código en la app Impostor.';
-    }, 2000);
-
-    if (closeBtn) {
-      closeBtn.addEventListener('click', () => {
-        modal.classList.add('hidden');
-        window.history.replaceState({}, document.title, window.location.pathname);
-      });
+      animId = requestAnimationFrame(render);
     }
+
+    window.addEventListener('resize', resize);
+    resize();
+
+    spaceCanvasWakeup = () => {
+      if (isVisibleFn() && !isRunning) {
+        isRunning = true;
+        render();
+      }
+    };
+
+    spaceCanvasSleep = () => {
+      isRunning = false;
+      if (animId) {
+        cancelAnimationFrame(animId);
+        animId = null;
+      }
+    };
+
+    addStarParallax = (dx: number, dy: number) => {
+      if (!width || !height) return;
+      for (let i = 0; i < stars.length; i++) {
+        const s = stars[i];
+        s.x = (s.x + dx + width) % width;
+        s.y = (s.y + dy + height) % height;
+      }
+    };
+
+    const section = canvas.closest('section') || canvas.parentElement;
+    if (section) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && isVisibleFn()) {
+            spaceCanvasWakeup?.();
+          } else {
+            spaceCanvasSleep?.();
+          }
+        });
+      }, { threshold: 0.05 });
+      observer.observe(section);
+    }
+
+    isRunning = true;
+    render();
   }
-})();
 
-// ---------------------------------------------------------------------------
-// 12. Lifecycle & Resize Bindings
-// ---------------------------------------------------------------------------
-export function resetAllStates(): void {
-  window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-  activeGameId = 'orbitar';
-  currentSkin = 'astronaut';
-  isHeroSplash = true;
-  lastBotX = null;
-  lastBotY = null;
+  // ---------------------------------------------------------------------------
+  // 10. Contact Form Mailto Obfuscation (Strict Security Rule)
+  // ---------------------------------------------------------------------------
+  document.getElementById('contact-btn')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    const user = "potasiogames";
+    const domain = "hotmail.com";
+    const subject = encodeURIComponent("Contacto desde Potasio Games");
+    window.location.href = `mailto:${user}@${domain}?subject=${subject}`;
+  });
 
-  heroTl.progress(0);
-  bottomTl.progress(0);
-  if (orbitarTimeline) orbitarTimeline.progress(0);
-  if (impostorTimeline) impostorTimeline.progress(0);
+  // ---------------------------------------------------------------------------
+  // 11. Code Redemption Deep Link Modal
+  // ---------------------------------------------------------------------------
+  (function initCodeRedemption() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('code');
 
-  updateGlobalBackground(0, 'orbitar');
-  updatePortalCardsUI('orbitar');
-  updateShowcase('orbitar');
-  setupInitialOrbitarPosition();
-  setupInitialImpostorPosition();
-  updateAdventureModalTransition();
+    if (code) {
+      const appUrl = `impostor://redeem?code=${encodeURIComponent(code)}`;
+      const modal = document.getElementById('redeem-modal');
+      const openBtn = document.getElementById('redeem-open-btn') as HTMLAnchorElement | null;
+      const spinner = document.getElementById('redeem-spinner');
+      const icon = document.getElementById('redeem-icon');
+      const title = document.getElementById('redeem-title');
+      const message = document.getElementById('redeem-message');
+      const closeBtn = document.getElementById('redeem-close-btn');
 
-  ScrollTrigger.refresh(true);
-}
+      if (!modal) return;
 
-function initApp(): void {
-  initTheaterScrollytelling();
-  initSpaceCanvas('global-space-canvas', () => activeGameId === 'orbitar');
-  refreshIcons();
-  resetAllStates();
-}
+      modal.classList.remove('hidden');
+      if (openBtn) openBtn.href = appUrl;
+      refreshIcons();
 
-window.addEventListener('pageshow', () => {
-  resetAllStates();
-});
+      setTimeout(() => {
+        window.location.href = appUrl;
+      }, 500);
 
-if (document.readyState === 'complete' || document.readyState === 'interactive') {
-  setTimeout(initApp, 60);
-} else {
-  document.addEventListener('DOMContentLoaded', initApp);
-}
+      setTimeout(() => {
+        if (spinner) spinner.classList.add('hidden');
+        if (icon) icon.classList.remove('hidden');
+        if (title) title.textContent = '¡Código Detectado!';
+        if (message) message.textContent = 'Toca el botón para activar tu código en la app Impostor.';
+      }, 2000);
 
-ScrollTrigger.addEventListener("refreshInit", () => {
-  setupInitialOrbitarPosition();
-  setupInitialImpostorPosition();
-  updateAdventureModalTransition();
-});
+      if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
+          modal.classList.add('hidden');
+          window.history.replaceState({}, document.title, window.location.pathname);
+        });
+      }
+    }
+  })();
 
-window.addEventListener('resize', () => {
-  updateAdventureModalTransition();
-  ScrollTrigger.refresh();
-});
+  // ---------------------------------------------------------------------------
+  // 12. Lifecycle & Resize Bindings
+  // ---------------------------------------------------------------------------
+  export function resetAllStates(): void {
+    gateLockedTarget = null;
+    if (touchClearTimer) clearTimeout(touchClearTimer);
+    touchClearTimer = null;
+    if (wheelBurstTimer) clearTimeout(wheelBurstTimer);
+    wheelBurstTimer = null;
+    isProgrammaticScroll = false;
+    isHeroAutoScrolling = false;
+    isBottomAutoScrolling = false;
+    gestureStartScrollY = 0;
 
-window.addEventListener('orientationchange', () => {
-  setTimeout(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    activeGameId = 'orbitar';
+    currentSkin = 'astronaut';
+    isHeroSplash = true;
+    lastBotX = null;
+    lastBotY = null;
+
+    heroTl.progress(0);
+    bottomTl.progress(0);
+    if (orbitarTimeline) orbitarTimeline.progress(0);
+    if (impostorTimeline) impostorTimeline.progress(0);
+
+    updateGlobalBackground(0, 'orbitar');
+    updatePortalCardsUI('orbitar');
+    updateShowcase('orbitar');
+    setupInitialOrbitarPosition();
+    setupInitialImpostorPosition();
     updateAdventureModalTransition();
-    ScrollTrigger.refresh();
-  }, 200);
-});
+
+    ScrollTrigger.refresh(true);
+  }
+
+  function initApp(): void {
+    initTheaterScrollytelling();
+    initSpaceCanvas('global-space-canvas', () => activeGameId === 'orbitar');
+    refreshIcons();
+    resetAllStates();
+  }
+
+  window.addEventListener('pageshow', () => {
+    resetAllStates();
+  });
+
+  if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    setTimeout(initApp, 60);
+  } else {
+    document.addEventListener('DOMContentLoaded', initApp);
+  }
+
+  ScrollTrigger.addEventListener("refreshInit", () => {
+    setupInitialOrbitarPosition();
+    setupInitialImpostorPosition();
+    updateAdventureModalTransition();
+  });
+
+  let resizeDebounceTimer: number | null = null;
+  window.addEventListener('resize', () => {
+    updateAdventureModalTransition();
+    if (resizeDebounceTimer) clearTimeout(resizeDebounceTimer);
+    resizeDebounceTimer = window.setTimeout(() => {
+      rebuildTheaterTimelines();
+      ScrollTrigger.refresh();
+    }, 100);
+  });
+
+  window.addEventListener('orientationchange', () => {
+    setTimeout(() => {
+      updateAdventureModalTransition();
+      rebuildTheaterTimelines();
+      ScrollTrigger.refresh();
+    }, 200);
+  });

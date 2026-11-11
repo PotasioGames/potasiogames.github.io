@@ -37,19 +37,9 @@ body {
     font-family: 'JetBrains Mono', monospace;
 }
 
-/* Layout Stability & Mobile Scroll-Snap */
+/* Layout Stability */
 html {
     scrollbar-gutter: stable;
-}
-
-@media (pointer: coarse) {
-    html {
-        scroll-snap-type: y proximity;
-    }
-    .snap-scene {
-        scroll-snap-align: start;
-        scroll-snap-stop: normal;
-    }
 }
 
 /* Custom Scrollbar */
